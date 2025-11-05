@@ -86,20 +86,20 @@ export async function listPullRequestsRepo({
 		reset: Number(rateLimit["x-ratelimit-reset"]),
 	};
 
-	const prs = (res.data?.items ?? []).map((it) => ({
-		id: String(it.id),
-		number: it.number,
-		title: it.title,
-		body: it.body || "",
-		html_url: it.html_url,
-		state: it.state,
-		created_at: it.created_at,
-		updated_at: it.updated_at,
+	const prs = (res.data?.items ?? []).map((item) => ({
+		id: String(item.id),
+		number: item.number,
+		title: item.title,
+		body: item.body || "",
+		html_url: item.html_url,
+		state: item.state,
+		created_at: item.created_at,
+		updated_at: item.updated_at,
 		user: {
-			login: it.user?.login,
-			avatar_url: it.user?.avatar_url,
+			login: item.user?.login,
+			avatar_url: item.user?.avatar_url,
 		},
-		is_merged: Boolean(it.pull_request?.merged_at),
+		is_merged: Boolean(item.pull_request?.merged_at),
 		repo: repoFullName,
 	}));
 
