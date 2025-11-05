@@ -19,7 +19,8 @@
     - About 탭: 내 프로필 (2주차 쯤 LLM으로 내용을 생성하여 만들 예정)
   - `.env`: 환경 설정. 내 github token 저장되어 있음 (`.env.example` 참고)
   - `RepoCard.tsx`: card for each public repo
-    - 각 `RepoCard` 클릭 시 그 repo의 commit 가져와서 보여주도록 (페이지 당 5개씩)
+    - 각 `RepoCard` 의 `Commits` 버튼 클릭 시 그 repo의 recent commit 30개 가져와서 보여주도록 (페이지 당 5개씩): `CommitList.tsx`
+    - 각 `RepoCard` 의 `PRs` 버튼 클릭 시 그 repo의 PR 30개 가져와서 보여주도록: `PRList.tsx`
   - `RepoGrid.tsx`: maps `RepoCard`s and shows all repos
 
 ### 2주차
