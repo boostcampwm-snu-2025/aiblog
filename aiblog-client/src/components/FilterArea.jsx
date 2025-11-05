@@ -1,29 +1,43 @@
 import {
-  FormControl,
-  FormLabel,
+  Box,
   RadioGroup,
   FormControlLabel,
   Radio,
+  FormControl,
+  FormLabel,
 } from '@mui/material';
 import { useAppContext } from '@/contexts/AppContext';
 
 export function FilterArea() {
   const { filterType, setFilterType, isLoading } = useAppContext();
 
+  const handleChange = (event) => {
+    setFilterType(event.target.value);
+  };
+
   return (
-    <FormControl component="fieldset" sx={{ mt: 2 }} disabled={isLoading}>
-      <FormLabel component="legend">Data Type</FormLabel>
-      <RadioGroup
-        row
-        aria-label="data type filter"
-        name="filterType"
-        value={filterType}
-        onChange={(e) => setFilterType(e.target.value)}
-      >
-        <FormControlLabel value="all" control={<Radio />} label="All" />
-        <FormControlLabel value="commits" control={<Radio />} label="Commits" />
-        <FormControlLabel value="prs" control={<Radio />} label="PRs" />
-      </RadioGroup>
-    </FormControl>
+    <Box sx={{ pt: 1 }}>
+      <FormControl component="fieldset" disabled={isLoading}>
+        <FormLabel component="legend" sx={{ mb: 1, fontSize: '0.875rem' }}>
+          Select Data Type:
+        </FormLabel>
+        
+        <RadioGroup
+          row
+          aria-label="filter type"
+          name="filter-type-group"
+          value={filterType}
+          onChange={handleChange}
+        >
+          <FormControlLabel value="all" control={<Radio size="small" />} label="All" />
+          <FormControlLabel
+            value="commits"
+            control={<Radio size="small" />}
+            label="Commits"
+          />
+          <FormControlLabel value="prs" control={<Radio size="small" />} label="PRs" />
+        </RadioGroup>
+      </FormControl>
+    </Box>
   );
 }

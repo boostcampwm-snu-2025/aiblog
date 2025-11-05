@@ -1,29 +1,39 @@
-import { Box, Paper, Grid } from '@mui/material';
-import { useAppContext } from '@/contexts/AppContext';
-
-// Import the components
+import {
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  Collapse,
+} from '@mui/material';
 import { InputArea } from '@/components/InputArea';
 import { FilterArea } from '@/components/FilterArea';
 import { LeftPanel } from '@/components/LeftPanel';
 import { RightPanel } from '@/components/RightPanel';
+import { useAppContext } from '@/contexts/AppContext';
 
-// This component contains the original content of App.jsx
 export function MainPage() {
-  const { handleSubmit } = useAppContext();
+  const { handleSubmit, repoName } = useAppContext();
 
   return (
-    <>
-      <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: '8px' }}>
-        <Box component="form" onSubmit={handleSubmit}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{ display: 'flex', flexDirection: 'column', gap: 3, p: 3 }}
+    >
+      <Card>
+        <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <InputArea />
-          <FilterArea />
-        </Box>
-      </Paper>
 
-      <Grid container spacing={4}>
+          <Collapse in={!!repoName}>
+            <FilterArea />
+          </Collapse>
+        </CardContent>
+      </Card>
+
+      <Grid container spacing={3}>
         <LeftPanel />
         <RightPanel />
       </Grid>
-    </>
+    </Box>
   );
 }
