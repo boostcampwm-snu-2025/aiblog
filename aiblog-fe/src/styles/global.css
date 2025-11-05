@@ -1,0 +1,115 @@
+/* Global styles are defined here */
+
+@import "./colors.css";
+
+/* Base */
+* {
+	box-sizing: border-box;
+}
+html,
+body,
+#root {
+	height: 100%;
+	margin: 0;
+}
+body {
+	background: var(--gray-25);
+	color: var(--gray-900);
+	font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+		"Noto Sans KR", Arial, sans-serif;
+}
+
+/* Layout */
+.container {
+	max-width: 1040px;
+	margin: 0 auto;
+}
+
+/* Header */
+.app-header {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	backdrop-filter: saturate(180%) blur(6px);
+	background-color: color-mix(in srgb, var(--pink-500) 15%, transparent);
+}
+.app-title {
+	margin: 0;
+	font-size: 22px;
+	line-height: 1.2;
+}
+
+/* Card / Buttons / Inputs */
+.card {
+	background: var(--white);
+	border: 1px solid var(--gray-200);
+	border-radius: 16px;
+	box-shadow: 0 8px 24px rgba(240, 101, 149, 0.12);
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 14px;
+	border-radius: 10px;
+	border: 1px solid var(--pink-500);
+	background: linear-gradient(180deg, var(--pink-500), var(--pink-600));
+	color: var(--white);
+	font-weight: 600;
+	cursor: pointer;
+}
+.btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+.btn.ghost {
+	background: transparent;
+	color: var(--pink-700);
+	border-color: var(--gray-200);
+}
+
+.input,
+.select {
+	border: 1px solid var(--gray-200);
+	background: var(--white);
+	color: var(--gray-900);
+	border-radius: 12px;
+	padding: 10px 12px;
+	outline: none;
+}
+.input:focus,
+.select:focus {
+	border-color: var(--pink-500);
+	box-shadow: 0 0 0 3px var(--pink-200);
+}
+
+/* Grid */
+.grid {
+	display: grid;
+	gap: 12px;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* Skeleton */
+.skeleton {
+	height: 14px;
+	width: 100%;
+	background: linear-gradient(
+		90deg,
+		var(--gray-100),
+		var(--gray-50),
+		var(--gray-100)
+	);
+	background-size: 200% 100%;
+	border-radius: 8px;
+	animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}

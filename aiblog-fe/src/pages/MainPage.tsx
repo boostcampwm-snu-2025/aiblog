@@ -1,8 +1,11 @@
+import "../styles/global.css";
+import Header from "../ui/Header";
+
 const MainPage = () => {
 	return (
-		<>
-			<div>Main page</div>
-		</>
+		<div className="container">
+			<Header />
+		</div>
 	);
 };
 
