@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      // '@' 별칭을 'src' 디렉토리로 매핑
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src"] // 설정 적용 범위를 'src' 폴더로 한정
+}

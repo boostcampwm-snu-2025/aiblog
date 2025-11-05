@@ -2,11 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
-import CssBaseline from '@mui/material/CssBaseline';
 
+// 1. Import AppProvider
+import { AppProvider } from '@/contexts/AppContext.jsx'
+
+// 2. Wrap <App /> with <AppProvider>
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <CssBaseline />
-    <App />
-  </React.StrictMode>,
+    <AppProvider>
+      <App />
+    </AppProvider>
+  </React.StrictMode>
 );
