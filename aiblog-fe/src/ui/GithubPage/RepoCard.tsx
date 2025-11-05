@@ -1,26 +1,24 @@
+import type { CSSProperties } from "react";
 import type { RepoItem } from "../../types/githubRepoData";
-
 interface RepoCardProps {
 	repo: RepoItem;
+	onSelect?: (fullName: string) => void;
 }
 
-const repoCardStyles = {
-	card: {
-		padding: 16,
-	},
-	header: {
-		display: "flex",
-		alignItems: "center",
-		gap: 12,
-	},
-	avatar: {
-		borderRadius: 8,
-		border: "1px solid var(--gray-200)",
-	},
-	link: {
-		fontWeight: 700,
-		color: "var(--pink-700)",
-	},
+const repoCardStyles: {
+	card: CSSProperties;
+	header: CSSProperties;
+	avatar: CSSProperties;
+	link: CSSProperties;
+	description: CSSProperties;
+	metaContainer: CSSProperties;
+	metaItem: CSSProperties;
+	clickable: CSSProperties;
+} = {
+	card: { padding: 16 },
+	header: { display: "flex", alignItems: "center", gap: 12 },
+	avatar: { borderRadius: 8, border: "1px solid var(--gray-200)" },
+	link: { fontWeight: 700, color: "var(--pink-700)" },
 	description: {
 		margin: "6px 0 0",
 		color: "var(--gray-700)",
@@ -28,21 +26,30 @@ const repoCardStyles = {
 		textOverflow: "ellipsis",
 		whiteSpace: "nowrap",
 	},
-	metaContainer: {
-		display: "flex",
-		gap: 8,
-		marginTop: 12,
-		// flexWrap: "wrap",
-	},
-	metaItem: {
-		padding: "4px 10px",
-		fontSize: 12,
-	},
+	metaContainer: { display: "flex", gap: 8, marginTop: 12 },
+	metaItem: { padding: "4px 10px", fontSize: 12 },
+	clickable: { cursor: "pointer", transition: "box-shadow .12s ease" },
 };
 
-const RepoCard = ({ repo }: RepoCardProps) => {
+const RepoCard = ({ repo, onSelect }: RepoCardProps) => {
 	return (
-		<article className="card" style={repoCardStyles.card}>
+		<article
+			className="card"
+			style={{
+				...repoCardStyles.card,
+				...(onSelect ? repoCardStyles.clickable : {}),
+			}}
+			onClick={() => onSelect?.(repo.full_name)}
+			role={onSelect ? "button" : undefined}
+			tabIndex={onSelect ? 0 : undefined}
+			onKeyDown={(e) => {
+				if (!onSelect) return;
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+					onSelect(repo.full_name);
+				}
+			}}
+		>
 			<div style={repoCardStyles.header}>
 				{repo.owner?.avatar_url && (
 					<img
@@ -60,6 +67,7 @@ const RepoCard = ({ repo }: RepoCardProps) => {
 						rel="noreferrer"
 						style={repoCardStyles.link}
 						title={repo.full_name}
+						onClick={(e) => e.stopPropagation()}
 					>
 						{repo.full_name}
 					</a>
@@ -86,6 +94,7 @@ const RepoCard = ({ repo }: RepoCardProps) => {
 					href={repo.html_url}
 					target="_blank"
 					rel="noreferrer"
+					onClick={(e) => e.stopPropagation()}
 				>
 					View on GitHub
 				</a>
