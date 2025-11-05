@@ -1,5 +1,5 @@
 import { MY_REPOS_API } from "../../constants/api";
-import type { RepoListResponse } from "../../types/githubData";
+import type { RepoListResponse } from "../../types/githubRepoData";
 
 export async function fetchMyPublicRepos(): Promise<RepoListResponse> {
 	const token = import.meta.env.VITE_GITHUB_TOKEN;

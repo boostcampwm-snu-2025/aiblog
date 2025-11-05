@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { RepoItem } from "../../types/githubData";
+import type { RepoItem } from "../../types/githubRepoData";
 import RepoCard from "./RepoCard";
 
 interface RepoGridProps {

@@ -1,4 +1,4 @@
-import type { RepoItem } from "../../types/githubData";
+import type { RepoItem } from "../../types/githubRepoData";
 
 interface RepoCardProps {
 	repo: RepoItem;

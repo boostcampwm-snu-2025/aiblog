@@ -5,7 +5,7 @@ import Header from "../ui/Header";
 import type { HeaderTabType } from "../types/headerTab";
 
 import RepoGrid from "../ui/GithubPage/RepoGrid";
-import type { RepoItem } from "../types/githubData";
+import type { RepoItem } from "../types/githubRepoData";
 import { fetchMyPublicRepos } from "../utils/api/github";
 
 const mainPageStyles = {
