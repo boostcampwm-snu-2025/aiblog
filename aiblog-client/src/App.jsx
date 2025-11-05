@@ -1,32 +1,34 @@
-import { Container, Box, Paper, Grid } from '@mui/material';
+import { Container } from '@mui/material';
 import { useAppContext } from '@/contexts/AppContext';
 
-// Import the new components
+// Import components
 import { Header } from '@/components/Header';
-import { InputArea } from '@/components/InputArea';
-import { FilterArea } from '@/components/FilterArea';
-import { LeftPanel } from '@/components/LeftPanel';
-import { RightPanel } from '@/components/RightPanel';
+
+// Import pages
+import { MainPage } from '@/pages/MainPage';
+import { SavedPostsPage } from '@/pages/SavedPostsPage';
+import { SettingsPage } from '@/pages/SettingsPage';
 
 function App() {
-  // Only handleSubmit is needed from context for the form wrapper
-  const { handleSubmit } = useAppContext();
+  const { page } = useAppContext();
+
+  // Helper function to render the correct page
+  const renderPage = () => {
+    switch (page) {
+      case 'saved':
+        return <SavedPostsPage />;
+      case 'settings':
+        return <SettingsPage />;
+      case 'main':
+      default:
+        return <MainPage />;
+    }
+  };
 
   return (
     <Container maxWidth="lg">
       <Header />
-
-      <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: '8px' }}>
-        <Box component="form" onSubmit={handleSubmit}>
-          <InputArea />
-          <FilterArea />
-        </Box>
-      </Paper>
-
-      <Grid container spacing={4}>
-        <LeftPanel />
-        <RightPanel />
-      </Grid>
+      {renderPage()}
     </Container>
   );
 }
