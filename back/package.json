@@ -4,9 +4,9 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "dev": "set -a && . ./.env && set +a && tsx watch src/index.ts",
+    "build": "set -a && . ./.env && set +a && tsc",
+    "start": "set -a && . ./.env && set +a && node dist/index.js"
   },
   "keywords": [],
   "author": "",
