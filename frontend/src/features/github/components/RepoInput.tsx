@@ -1,13 +1,18 @@
-import { useState } from "react";
-
 interface RepoInputProps {
+  owner: string;
+  repo: string;
+  onChangeOwner: (v: string) => void;
+  onChangeRepo: (v: string) => void;
   onSubmit: (owner: string, repo: string) => void;
 }
 
-export default function RepoInput({ onSubmit }: RepoInputProps) {
-  const [owner, setOwner] = useState("");
-  const [repo, setRepo] = useState("");
-
+export default function RepoInput({
+  owner,
+  repo,
+  onChangeOwner,
+  onChangeRepo,
+  onSubmit,
+}: RepoInputProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!owner || !repo) return;
@@ -23,14 +28,14 @@ export default function RepoInput({ onSubmit }: RepoInputProps) {
         type="text"
         placeholder="owner (ex: facebook)"
         value={owner}
-        onChange={(e) => setOwner(e.target.value)}
+        onChange={(e) => onChangeOwner(e.target.value)}
         className="border rounded px-3 py-2"
       />
       <input
         type="text"
         placeholder="repo (ex: react)"
         value={repo}
-        onChange={(e) => setRepo(e.target.value)}
+        onChange={(e) => onChangeRepo(e.target.value)}
         className="border rounded px-3 py-2"
       />
       <button

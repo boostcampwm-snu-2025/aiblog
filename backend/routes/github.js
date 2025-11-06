@@ -68,4 +68,21 @@ router.get("/prs", async (req, res) => {
   }
 });
 
+// 내 GitHub 저장소 목록 (로그인 계정 기준)
+router.get("/repos", async (req, res) => {
+  try {
+    const response = await axios.get("https://api.github.com/user/repos", {
+      headers: {
+        Authorization: `Bearer ${process.env.VITE_GITHUB_TOKEN}`,
+        "User-Agent": "SmartBlog-App",
+      },
+      params: { per_page: 30, sort: "updated" },
+    });
+    res.json(response.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ message: "GitHub API error", detail: err.message });
+  }
+});
+
 export default router;
