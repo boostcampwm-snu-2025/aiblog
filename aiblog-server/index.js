@@ -1,55 +1,206 @@
-// 1. .env 파일에서 환경 변수를 불러옵니다. (코드 최상단에 위치해야 합니다)
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import 'dotenv/config'; // Use dotenv/config for top-level import
 
-// 2. 필요한 라이브러리를 불러옵니다.
-const express = require('express');
-const cors = require('cors');
-
-// 3. Express 앱을 생성하고 포트를 설정합니다.
 const app = express();
-const port = process.env.PORT || 4000; // .env 파일에 PORT가 없으면 4000번 사용
+const PORT = process.env.PORT || 4000;
 
-// 4. CORS 미들웨어를 설정합니다.
-// React 앱(클라이언트)이 http://localhost:5173 (Vite 기본 포트)에서 실행되므로,
-// 해당 주소의 요청을 허용해줘야 합니다.
-app.use(cors({
-  origin: 'http://localhost:5173'
-}));
+// Middleware
+app.use(cors({ origin: 'http://localhost:5173' })); // Allow client requests
+app.use(express.json()); // Allow parsing JSON (though not needed for GET)
 
-// 5. JSON 요청 본문을 파싱하기 위한 미들웨어 (나중에 POST 요청 시 필요할 수 있음)
-app.use(express.json());
+const GITHUB_API_URL = 'https://api.github.com/graphql';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-// --- API 엔드포인트 ---
+if (!GITHUB_TOKEN) {
+  console.error('ERROR: GITHUB_TOKEN is not defined in .env file.');
+  process.exit(1);
+}
 
-// 6. 1주차 체크포인트 1.5번: 클라이언트/서버 연결 확인용 테스트 API
+/**
+ * Helper function to parse repository name from various inputs.
+ * e.g., "owner/repo", "github.com/owner/repo", "https://github.com/owner/repo"
+ * @param {string} input
+ * @returns {{owner: string, name: string} | null}
+ */
+const parseRepoName = (input) => {
+  if (!input) return null;
+  try {
+    // Try to match "owner/repo" format, ignoring domain prefixes
+    const match = input.match(/github\.com[/:]([\w.-]+)\/([\w.-]+)/i);
+    if (match && match[1] && match[2]) {
+      return { owner: match[1], name: match[2].replace(/\.git$/, '') };
+    }
+
+    // Try to match "owner/repo" directly
+    const directMatch = input.match(/^([\w.-]+)\/([\w.-]+)$/i);
+    if (directMatch && directMatch[1] && directMatch[2]) {
+      return { owner: directMatch[1], name: directMatch[2] };
+    }
+
+    return null; // No valid format found
+  } catch (e) {
+    return null;
+  }
+};
+
+/**
+ * Helper function to get the correct GraphQL query based on filterType.
+ * @param {'all' | 'commits' | 'prs'} filterType
+ * @returns {string} The GraphQL query string
+ */
+const getGraphQLQuery = (filterType) => {
+  const commonFields = `
+    nodes {
+      ... on Commit {
+        __typename
+        oid
+        messageHeadline
+        url
+        committedDate
+        author {
+          name
+          user {
+            login
+          }
+        }
+      }
+      ... on PullRequest {
+        __typename
+        id
+        number
+        title
+        url
+        createdAt
+        author {
+          login
+        }
+      }
+    }
+  `;
+
+  // Query for Commits only
+  if (filterType === 'commits') {
+    return `
+      query GetCommits($owner: String!, $name: String!) {
+        repository(owner: $owner, name: $name) {
+          defaultBranchRef {
+            target {
+              ... on Commit {
+                history(first: 30) {
+                  ${commonFields}
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+  }
+
+  // Query for PRs only
+  if (filterType === 'prs') {
+    return `
+      query GetPullRequests($owner: String!, $name: String!) {
+        repository(owner: $owner, name: $name) {
+          pullRequests(first: 30, states: [OPEN, CLOSED, MERGED], orderBy: {field: CREATED_AT, direction: DESC}) {
+            ${commonFields}
+          }
+        }
+      }
+    `;
+  }
+
+  // Query for All (Commits + PRs) - default
+  return `
+    query GetAllActivity($owner: String!, $name: String!) {
+      repository(owner: $owner, name: $name) {
+        defaultBranchRef {
+          target {
+            ... on Commit {
+              history(first: 20) {
+                ${commonFields}
+              }
+            }
+          }
+        }
+        pullRequests(first: 20, states: [OPEN, CLOSED, MERGED], orderBy: {field: CREATED_AT, direction: DESC}) {
+          ${commonFields}
+        }
+      }
+    }
+  `;
+};
+
+// --- Endpoints ---
+
+// 1. Test endpoint (from previous setup)
 app.get('/api/test', (req, res) => {
-  console.log("✅ /api/test 요청 수신");
   res.json({ message: '👋 Express 서버에서 보낸 메시지입니다!' });
 });
 
-// 7. (1주차 핵심 기능) GitHub API 프록시 엔드포인트
-// TODO: 1주차 체크포인트 2번 항목
-app.get('/api/github/data', (req, res) => {
-  // 체크포인트 2.3: 쿼리 파라미터 받기
-  const { repoName, filterType } = req.query;
+// 2. Main GitHub data endpoint
+app.get('/api/github/data', async (req, res) => {
+  const { repoName, filterType = 'all' } = req.query;
 
-  console.log('클라이언트에서 받은 저장소명:', repoName);
-  console.log('클라이언트에서 받은 필터타입:', filterType);
+  // Step 1: Parse repoName
+  const repoDetails = parseRepoName(repoName);
+  if (!repoDetails) {
+    return res.status(400).json({
+      message: 'Invalid repository format. Please use "owner/repo" or a GitHub URL.',
+    });
+  }
 
-  // TODO:
-  // 1. GitHub API 토큰 불러오기 (process.env.GITHUB_TOKEN)
-  // 2. filterType에 따라 다른 GraphQL 쿼리 문자열 생성
-  // 3. fetch를 사용해 GitHub API 호출 (Node.js 18+ 부터는 fetch 내장)
-  // 4. GitHub로부터 받은 응답을 res.json()으로 클라이언트에 전송
+  // Step 2: Get the correct query
+  const query = getGraphQLQuery(filterType);
+  const variables = {
+    owner: repoDetails.owner,
+    name: repoDetails.name,
+  };
 
-  // 임시 응답 (구현 전)
-  res.status(501).json({ message: '아직 구현되지 않은 엔드포인트입니다.' });
+  // Step 3: Fetch from GitHub GraphQL API
+  try {
+    const githubResponse = await fetch(GITHUB_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+      },
+      body: JSON.stringify({ query, variables }),
+    });
+
+    const data = await githubResponse.json();
+
+    // Step 4: Handle GitHub API errors (e.g., Repo Not Found)
+    if (data.errors) {
+      // Check for a 'NOT_FOUND' error
+      const isNotFound = data.errors.some(err => err.type === 'NOT_FOUND');
+      if (isNotFound) {
+        return res.status(404).json({
+          message: `Repository "${repoDetails.owner}/${repoDetails.name}" not found.`,
+          details: data.errors,
+        });
+      }
+      // Other GitHub errors
+      return res.status(500).json({
+        message: 'Error fetching data from GitHub.',
+        details: data.errors,
+      });
+    }
+
+    // Step 5: Success - return the data to the client
+    res.status(200).json(data);
+  } catch (error) {
+    // Step 6: Handle network or other fetch errors
+    console.error('Server fetch error:', error);
+    res.status(500).json({
+      message: 'Failed to connect to GitHub API.',
+      details: error.message,
+    });
+  }
 });
 
-
-// --- 서버 실행 ---
-
-// 8. 설정한 포트에서 서버를 실행합니다.
-app.listen(port, () => {
-  console.log(`✅ Express 서버가 http://localhost:${port} 에서 실행 중입니다.`);
+// Start the server
+app.listen(PORT, () => {
+  console.log(`✅ Express server is running on http://localhost:${PORT}.`);
 });
