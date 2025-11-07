@@ -25,6 +25,9 @@ export default function GithubPage() {
   const [activeTab, setActiveTab] = useState<"commits" | "prs">("commits");
   const [showRepos, setShowRepos] = useState(false);
 
+  const [commitPage, setCommitPage] = useState(1);
+  const [prPage, setPrPage] = useState(1);
+
   const commitsFetch = useFetch<Commit[], [string, string]>(getCommits);
   const prsFetch = useFetch<PullRequest[], [string, string]>(getPRs);
   const reposFetch = useFetch<Repo[], []>(getMyRepos);
@@ -66,6 +69,24 @@ export default function GithubPage() {
       prDetailFetch.fetchData(owner, repo, selectedPR);
     }
   }, [detailOpen, selectedPR, owner, repo]);
+
+  const handleLoadMoreCommits = async () => {
+    const nextPage = commitPage + 1;
+    const newData = await getCommits(owner, repo, nextPage);
+    if (commitsFetch.data) {
+      commitsFetch.data.push(...newData);
+    }
+    setCommitPage(nextPage);
+  };
+
+  const handleLoadMorePRs = async () => {
+    const nextPage = prPage + 1;
+    const newData = await getPRs(owner, repo, nextPage);
+    if (prsFetch.data) {
+      prsFetch.data.push(...newData);
+    }
+    setPrPage(nextPage);
+  };
 
   const loading = commitsFetch.loading || prsFetch.loading;
 
@@ -135,10 +156,31 @@ export default function GithubPage() {
           {loading && <Loader text="데이터 불러오는 중..." />}
 
           {!loading && activeTab === "commits" && commitsFetch.data && (
-            <CommitList commits={commitsFetch.data} />
+            <>
+              <CommitList commits={commitsFetch.data} />
+              {commitsFetch.data.length >= 10 && (
+                <button
+                  onClick={handleLoadMoreCommits}
+                  className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                >
+                  더 보기
+                </button>
+              )}
+            </>
           )}
+
           {!loading && activeTab === "prs" && prsFetch.data && (
-            <PRList prs={prsFetch.data} onOpenDetail={openPRDetail} />
+            <>
+              <PRList prs={prsFetch.data} onOpenDetail={openPRDetail} />
+              {prsFetch.data.length >= 10 && (
+                <button
+                  onClick={handleLoadMorePRs}
+                  className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                >
+                  더 보기
+                </button>
+              )}
+            </>
           )}
         </>
       )}

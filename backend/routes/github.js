@@ -5,7 +5,7 @@ const router = express.Router();
 
 // 커밋 목록 가져오기
 router.get("/commits", async (req, res) => {
-  const { owner, repo } = req.query;
+  const { owner, repo, per_page = 10, page = 1 } = req.query;
   if (!owner || !repo) return res.status(400).json({ message: "owner/repo required" });
 
   try {
@@ -14,7 +14,7 @@ router.get("/commits", async (req, res) => {
         Authorization: `Bearer ${process.env.VITE_GITHUB_TOKEN}`,
         "User-Agent": "SmartBlog-App",
       },
-      params: { per_page: 10 },
+      params: { per_page, page },
     });
     res.json(response.data);
   } catch (err) {
@@ -23,48 +23,23 @@ router.get("/commits", async (req, res) => {
   }
 });
 
-// PR 목록 가져오기 (GraphQL 버전)
+// PR 목록 가져오기
 router.get("/prs", async (req, res) => {
-  const { owner, repo } = req.query;
+  const { owner, repo, per_page = 10, page = 1, state = "open" } = req.query;
   if (!owner || !repo) return res.status(400).json({ message: "owner/repo required" });
 
-  const query = `
-    query {
-      repository(owner: "${owner}", name: "${repo}") {
-        pullRequests(states: OPEN, first: 10, orderBy: {field: CREATED_AT, direction: DESC}) {
-          nodes {
-            number
-            title
-            url
-            createdAt
-            author {
-              login
-              url
-            }
-          }
-        }
-      }
-    }
-  `;
-
   try {
-    const response = await axios.post(
-      "https://api.github.com/graphql",
-      { query },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.VITE_GITHUB_TOKEN}`,
-          "User-Agent": "SmartBlog-App",
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const prs = response.data.data.repository.pullRequests.nodes;
-    res.json(prs);
+    const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/pulls`, {
+      headers: {
+        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+        "User-Agent": "SmartBlog-App",
+      },
+      params: { per_page, page, state },
+    });
+    res.json(response.data);
   } catch (err) {
     console.error(err.response?.data || err.message);
-    res.status(500).json({ message: "GitHub GraphQL API error", detail: err.message });
+    res.status(500).json({ message: "GitHub API error", detail: err.message });
   }
 });
 

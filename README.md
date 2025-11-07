@@ -7,8 +7,9 @@
 
 ## Backend 
 - [x] /api/github/commits — GitHub REST API로 커밋 목록 조회
-- [x] /api/github/prs — GitHub GraphQL API로 PR 목록 조회
+- [x] /api/github/prs — GitHub REST API로 PR 목록 조회
 - [x] /api/github/repos — 로그인 계정의 저장소 목록 조회
+- [x] /api/pr-detail/${number} — 해당하는 PR의 설명 조회
 - [x] .env 기반 Personal Access Token 보안 관리
 
 ## Frontend 구조
@@ -26,6 +27,7 @@
 - [x] 저장소 클릭 시 자동 입력 및 데이터 fetch
 - [x] “직접 입력” 클릭 시 input 초기화 처리
 - [x] PR 상세 보기 모달 (가장 처음 게시글 마크다운 문서)
+- [x] 리스트 페이지네이션 (10개 + 더보기 버튼)
 
 ## 다음 단계 예정
 - [] LLM(OpenAI 등) 연동으로 커밋/PR 내용 요약

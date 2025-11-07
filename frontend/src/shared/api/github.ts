@@ -48,13 +48,21 @@ const api = axios.create({
   baseURL: "/api/github",
 });
 
-export const getCommits = async (owner: string, repo: string): Promise<Commit[]> => {
-  const res = await api.get("/commits", { params: { owner, repo } });
+export const getCommits = async (
+  owner: string,
+  repo: string,
+  page = 1
+): Promise<Commit[]> => {
+  const res = await api.get("/commits", { params: { owner, repo, page, per_page: 10 } });
   return res.data;
 };
 
-export const getPRs = async (owner: string, repo: string): Promise<PullRequest[]> => {
-  const res = await api.get("/prs", { params: { owner, repo } });
+export const getPRs = async (
+  owner: string,
+  repo: string,
+  page = 1
+): Promise<PullRequest[]> => {
+  const res = await api.get("/prs", { params: { owner, repo, page, per_page: 10 } });
   return res.data;
 };
 
