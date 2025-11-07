@@ -1,7 +1,10 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import cors from "cors";
+import dotenv from "dotenv";
 import express from "express";
+
+dotenv.config();
 
 const app = express();
 const PORT = 3001;
