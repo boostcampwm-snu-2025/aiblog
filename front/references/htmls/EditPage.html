@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Post - Git Log</title>
+    <!-- 1. Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 2. (Optional) Configure Tailwind to use Inter font -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              mono: ["Consolas", "Menlo", "monospace"], // A more common mono font
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- 3. (Optional) Import Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Apply the Inter font as the default */
+      body {
+        font-family: "Inter", "sans-serif";
+      }
+
+      /* Custom styles for diff */
+      .diff-add {
+        background-color: #e6ffed;
+        color: #22863a;
+      }
+
+      .diff-del {
+        background-color: #ffeef0;
+        color: #b31d28;
+      }
+
+      .diff-head {
+        background-color: #f6f8fa;
+        color: #586069;
+      }
+
+      /* Custom styles for select dropdown arrow */
+      select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        appearance: none;
+        -webkit-appearance: none;
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen bg-gray-50 font-sans text-gray-900">
+    <!-- Container set to wide, matching blog list -->
+    <div class="container mx-auto max-w-3xl lg:max-w-7xl p-4 sm:p-8">
+      <!-- --- Header Component --- -->
+      <header
+        class="flex flex-col sm:flex-row justify-between items-center py-6 border-b border-gray-200 mb-8 sm:mb-12"
+      >
+        <!-- Left Side: Title (links to homepage) -->
+        <a
+          href="git-log-blog.html"
+          class="flex items-center text-3xl font-bold text-gray-900 tracking-tight mb-4 sm:mb-0 no-underline"
+        >
+          <span class="text-blue-600 mr-2 font-mono">&gt;_</span>
+          Git Log
+        </a>
+
+        <!-- Right Side: Navigation (Edit is active) -->
+        <nav class="flex space-x-6">
+          <a
+            href="git-log-blog.html"
+            class="text-lg text-gray-600 hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+          >
+            Posts
+          </a>
+          <span class="text-lg font-semibold text-blue-600"> Edit </span>
+        </nav>
+      </header>
+
+      <main class="space-y-8">
+        <!-- --- Selections (Updated Layout) --- -->
+        <div class="flex flex-col sm:flex-row gap-[12px]">
+          <div>
+            <label
+              for="repo-select"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Repository</label
+            >
+            <!-- Updated select classes: added sm:w-80, appearance-none, pr-10. Removed w-full -->
+            <select
+              id="repo-select"
+              class="w-[240px] h-[42px] p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 appearance-none pr-10"
+            >
+              <option>autlyr21 / my-blog</option>
+              <option>autlyr21 / project-orion</option>
+              <option>autlyr21 / dotfiles</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="commit-select"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Commit / PR</label
+            >
+            <!-- Updated select classes: added sm:w-[500px], appearance-none, pr-10. Removed w-full -->
+            <select
+              id="commit-select"
+              class="w-[450px] h-[42px] p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 font-mono text-sm appearance-none pr-10"
+            >
+              <option>[fe2a1d3] feat: Add user auth (#22) | +120 -30</option>
+              <option>
+                [c3b0e5a] fix: Correct responsive layout bug | +5 -8
+              </option>
+              <option>[a9f4d7b] refactor: Simplify API logic | +35 -95</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- --- Collapsible Commit Details --- -->
+        <!-- Using <details> tag for a no-JS collapsible element -->
+        <details
+          class="bg-white rounded-xl shadow-sm border border-gray-100"
+          open
+        >
+          <summary
+            class="p-4 cursor-pointer font-medium text-gray-900 list-none"
+          >
+            <div class="flex justify-between items-center">
+              <span
+                >Details for commit: [fe2a1d3] feat: Add user auth (#22)</span
+              >
+              <span class="text-sm text-gray-500"
+                >(Click to expand/collapse)</span
+              >
+            </div>
+          </summary>
+
+          <div class="border-t border-gray-200 p-4">
+            <h3 class="text-lg font-semibold mb-2">Commit Message</h3>
+            <div class="p-3 bg-gray-50 rounded-md text-gray-800 mb-6">
+              <p class="font-medium">feat: Add user auth (#22)</p>
+              <br />
+              <p>
+                Implements JWT-based authentication for all user-facing routes.
+                - Adds /login and /register endpoints. - Creates new auth
+                middleware to protect routes. - Updates user model with password
+                hashing.
+              </p>
+            </div>
+
+            <h3 class="text-lg font-semibold mb-2">File Changes (3)</h3>
+            <div
+              class="font-mono border border-gray-300 rounded-lg overflow-hidden"
+            >
+              <!-- File 1 -->
+              <div class="diff-head p-2 border-b border-gray-300">
+                src/middleware/auth.js
+              </div>
+              <pre
+                class="flex flex-col items-start p-2 text-sm overflow-x-auto"
+              >
+              <span class="text-gray-500"> 1 | const jwt = require('jsonwebtoken');</span>
+              <span class="diff-add"> 2 |</span>
+              <span class="diff-add"> 3 | const auth = (req, res, next) => {</span>
+              <span class="diff-add"> 4 | // ... auth logic ...</span>
+              <span class="diff-add"> 5 | next();</span>
+              <span class="diff-add"> 6 | };</span>
+              <span class="diff-add"> 7 |</span>
+              <span class="text-gray-500"> 8 | module.exports = auth;</span>
+            </pre>
+              <!-- File 2 -->
+              <div
+                class="diff-head p-2 border-b border-gray-300 border-t border-gray-300"
+              >
+                src/routes/users.js
+              </div>
+              <pre
+                class="flex flex-col items-start p-2 text-sm overflow-x-auto"
+              >
+              <span class="text-gray-500">12 | router.get('/:id', getUser);</span>
+              <span class="diff-del">13 | router.post('/', createUser);</span>
+              <span class="diff-add">13 | const auth = require('../middleware/auth');</span>
+              <span class="diff-add">14 |</span>
+              <span class="diff-add">15 | router.post('/register', createUser);</span>
+              <span class="diff-add">16 | router.post('/login', loginUser);</span>
+              <span class="diff-add">17 |</span>
+              <span class="diff-del">18 | router.put('/:id', updateUser);</span>
+              <span class="diff-add">18 | router.put('/:id', auth, updateUser);</span>
+            </pre>
+            </div>
+          </div>
+        </details>
+
+        <!-- --- Generate Button (New) --- -->
+        <div class="flex justify-center pb-1">
+          <button
+            class="px-6 py-2 bg-green-600 text-white font-medium rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors flex items-center space-x-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm12 2a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0V9h-1a1 1 0 110-2h1V6a1 1 0 011-1zM5 12a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zm12 0a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>Generate Summary</span>
+          </button>
+        </div>
+
+        <!-- --- Markdown Editor --- -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Left Side: Editor -->
+          <div>
+            <label
+              for="md-editor"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Markdown Editor</label
+            >
+            <textarea
+              id="md-editor"
+              rows="20"
+              class="w-full p-3 font-mono text-sm border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+            # My New Blog Post
+
+            This post was auto-generated from my commit `fe2a1d3`.
+
+            ## Key Changes
+            - Added new authentication middleware
+            - Implemented `bcrypt` for password hashing
+            - Created login and register routes
+
+            ### Code Snippet
+            Here's the new middleware:
+
+            ```javascript
+            const auth = (req, res, next) => {
+            // ... auth logic ...
+            next();
+            };
+            ```</textarea
+            >
+          </div>
+
+          <!-- Right Side: Live Preview (Static Mock) -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Live Preview</label
+            >
+            <div
+              class="bg-white p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm border border-gray-100 h-full overflow-y-auto"
+            >
+              <article class="space-y-6 text-gray-700 leading-relaxed">
+                <h1 class="text-3xl font-bold text-gray-900">
+                  My New Blog Post
+                </h1>
+                <p>This post was auto-generated from my commit `fe2a1d3`.</p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 !mt-10 mb-4">
+                  Key Changes
+                </h2>
+                <ul class="list-disc list-outside space-y-2 pl-6">
+                  <li>Added new authentication middleware</li>
+                  <li>Implemented `bcrypt` for password hashing</li>
+                  <li>Created login and register routes</li>
+                </ul>
+
+                <h3 class="text-xl font-semibold text-gray-900 !mt-10 mb-4">
+                  Code Snippet
+                </h3>
+                <p>Here's the new middleware:</p>
+                <pre
+                  class="bg-gray-900 text-gray-50 p-4 rounded-lg overflow-x-auto"
+                ><code class="font-mono"><span
+                    class="text-purple-400">const</span> <span class="text-yellow-300">auth</span> = (<span
+                    class="text-blue-400">req, res, next</span>) =&gt; {
+                  <span class="text-gray-500">// ... auth logic ...</span>
+                  <span class="text-yellow-300">next</span>();
+                  };</code></pre>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <!-- --- Save Button --- -->
+        <div class="flex justify-end pt-2">
+          <button
+            class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          >
+            Save Post
+          </button>
+        </div>
+      </main>
+
+      <!-- --- Footer Component --- -->
+      <footer
+        class="text-center mt-12 py-6 border-t border-gray-200 text-gray-500 text-sm"
+      >
+        &copy; 2025 Git Log. All rights reserved.
+      </footer>
+    </div>
+  </body>
+</html>

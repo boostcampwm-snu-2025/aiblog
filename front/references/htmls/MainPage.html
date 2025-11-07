@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Git Log - A Tech Blog</title>
+    <!-- 1. Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 2. (Optional) Configure Tailwind to use Inter font -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              mono: ["Consolas", "Menlo", "monospace"], // A more common mono font
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- 3. (Optional) Import Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Apply the Inter font as the default */
+      body {
+        font-family: "Inter", "sans-serif";
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen bg-gray-50 font-sans text-gray-900">
+    <!-- Updated container to be wider on large screens -->
+    <div class="container mx-auto max-w-3xl lg:max-w-5xl p-4 sm:p-8">
+      <!-- --- Header Component --- -->
+      <header
+        class="flex flex-col sm:flex-row justify-between items-center py-6 border-b border-gray-200 mb-8 sm:mb-12"
+      >
+        <!-- Left Side: Title (links to homepage) -->
+        <a
+          class="flex items-center text-3xl font-bold text-gray-900 tracking-tight mb-4 sm:mb-0 no-underline"
+          href="git-log-blog.html"
+        >
+          <span class="text-blue-600 mr-2 font-mono">&gt;_</span>
+          Git Log
+        </a>
+
+        <!-- Right Side: Navigation (Edit is active) -->
+        <nav class="flex space-x-6">
+          <a
+            class="text-lg font-semibold text-blue-600"
+            href="git-log-blog.html"
+          >
+            Posts
+          </a>
+          <span
+            class="text-lg text-gray-600 hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+          >
+            Edit
+          </span>
+        </nav>
+      </header>
+
+      <main>
+        <!-- --- Post List Component --- -->
+        <div class="space-y-8">
+          <!-- Post 1 -->
+          <article
+            class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100"
+          >
+            <!-- Post Title -->
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">
+              <a
+                href="#understanding-async-await"
+                class="hover:text-blue-600 transition-colors"
+              >
+                Understanding Async/Await in JavaScript
+              </a>
+            </h2>
+
+            <!-- Post Metadata -->
+            <div class="text-sm text-gray-500 mb-3">November 06, 2025</div>
+
+            <!-- Post Excerpt -->
+            <p class="text-gray-700 leading-relaxed mb-4">
+              A deep dive into how asynchronous JavaScript works and how
+              async/await syntax makes it cleaner and more readable.
+            </p>
+
+            <!-- Read More Link -->
+            <a
+              href="#understanding-async-await"
+              class="text-blue-600 font-medium hover:underline inline-flex items-center"
+            >
+              Read more
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 ml-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                ></path>
+              </svg>
+            </a>
+          </article>
+
+          <!-- Post 2 -->
+          <article
+            class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100"
+          >
+            <!-- Post Title -->
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">
+              <a
+                href="#why-tailwind-css"
+                class="hover:text-blue-600 transition-colors"
+              >
+                Why Tailwind CSS is My New Favorite Framework
+              </a>
+            </h2>
+
+            <!-- Post Metadata -->
+            <div class="text-sm text-gray-500 mb-3">November 04, 2025</div>
+
+            <!-- Post Excerpt -->
+            <p class="text-gray-700 leading-relaxed mb-4">
+              Exploring the pros and cons of utility-first CSS and why I've
+              adopted Tailwind for all my new projects.
+            </p>
+
+            <!-- Read More Link -->
+            <a
+              href="#why-tailwind-css"
+              class="text-blue-600 font-medium hover:underline inline-flex items-center"
+            >
+              Read more
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 ml-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                ></path>
+              </svg>
+            </a>
+          </article>
+
+          <!-- Post 3 -->
+          <article
+            class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100"
+          >
+            <!-- Post Title -->
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">
+              <a
+                href="#guide-to-git-rebase"
+                class="hover:text-blue-600 transition-colors"
+              >
+                A Simple Guide to Git Rebase
+              </a>
+            </h2>
+
+            <!-- Post Metadata -->
+            <div class="text-sm text-gray-500 mb-3">November 01, 2025</div>
+
+            <!-- Post Excerpt -->
+            <p class="text-gray-700 leading-relaxed mb-4">
+              Learn how to use `git rebase` to maintain a clean and linear
+              commit history. We'll cover the basics and a few common scenarios.
+            </p>
+
+            <!-- Read More Link -->
+            <a
+              href="#guide-to-git-rebase"
+              class="text-blue-600 font-medium hover:underline inline-flex items-center"
+            >
+              Read more
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 ml-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                ></path>
+              </svg>
+            </a>
+          </article>
+        </div>
+      </main>
+
+      <!-- --- Footer Component --- -->
+      <footer
+        class="text-center mt-12 py-6 border-t border-gray-200 text-gray-500 text-sm"
+      >
+        &copy; 2025 Git Log. All rights reserved.
+      </footer>
+    </div>
+  </body>
+</html>
