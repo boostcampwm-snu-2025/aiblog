@@ -1,18 +1,19 @@
-import {
-  Grid,
-  Typography,
-  Paper,
-  Box,
-  TextField,
-  Divider,
-  Link,
-  Button, // Import Button
+import { 
+  Typography, 
+  Paper, 
+  Box, 
+  TextField, 
+  Divider, 
+  Link, 
+  Button, 
+  Grid 
 } from '@mui/material';
 import { useAppContext } from '@/contexts/AppContext';
 import CommitIcon from '@mui/icons-material/Commit';
 import PullRequestIcon from '@mui/icons-material/AltRoute';
 import NoteAltIcon from '@mui/icons-material/NoteAlt';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'; // Icon for AI
+
 
 // --- Helper Functions (copied from LeftPanel for consistency) ---
 
@@ -169,12 +170,12 @@ export function RightPanel() {
   };
 
   return (
-    <Grid item xs={12} md={6}>
+    <Grid size={{ xs: 12, md: 6 }}>
       <Paper
         sx={{
           p: 3,
           height: '100%',
-          minHeight: { xs: '300px', md: '70vh' }, // Ensure height matches LeftPanel area
+          minHeight: { xs: '300px', md: '70vh' },
           overflowY: 'auto',
           borderRadius: 2,
         }}
