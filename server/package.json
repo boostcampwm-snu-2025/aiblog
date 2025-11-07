@@ -1,39 +1,40 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "ai blog server",
-  "keywords": [],
-  "license": "ISC",
-  "author": "Kreatinj <kjune1999@naver.com> (https://github.com/kreatinj)",
-  "type": "module",
-  "main": "dist/app.js",
-  "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf dist node_modules",
-    "dev": "nodemon",
-    "lint": "eslint .",
-    "start": "node dist/app.js"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^5.1.0"
-  },
-  "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.5",
-    "@types/node": "^24.10.0",
-    "nodemon": "^3.1.10",
-    "typescript": "^5.9.3"
-  },
-  "devEngines": {
-    "runtime": {
-      "name": "node",
-      "onFail": "error"
-    },
-    "packageManager": {
-      "name": "pnpm",
-      "onFail": "error",
-      "version": "10.12.1"
-    }
-  }
+	"name": "server",
+	"version": "1.0.0",
+	"description": "ai blog server",
+	"keywords": [],
+	"license": "ISC",
+	"author": "Kreatinj <kjune1999@naver.com> (https://github.com/kreatinj)",
+	"type": "module",
+	"main": "dist/app.js",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist node_modules",
+		"dev": "nodemon",
+		"lint": "eslint .",
+		"start": "node dist/app.js"
+	},
+	"dependencies": {
+		"cors": "^2.8.5",
+		"express": "^5.1.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.4",
+		"@types/cors": "^2.8.19",
+		"@types/express": "^5.0.5",
+		"@types/node": "^24.10.0",
+		"nodemon": "^3.1.10",
+		"typescript": "^5.9.3"
+	},
+	"devEngines": {
+		"runtime": {
+			"name": "node",
+			"onFail": "error"
+		},
+		"packageManager": {
+			"name": "pnpm",
+			"onFail": "error",
+			"version": "10.12.1"
+		}
+	}
 }
