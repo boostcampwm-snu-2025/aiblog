@@ -47,7 +47,8 @@ front/
 │   ├── components/ ## Directory for tsx components.
 │   ├── pages/
 │   │   ├── EditPage.tsx ## Page where user can create posts for commits.
-│   │   └── MainPage.tsx ## Page where user can see posts.
+│   │   ├── PostPage.tsx ## Page where user can post.
+│   │   └── MainPage.tsx ## Page where user can see post list.
 │   ├── stores/ ## Directory for zustand stores.
 │   ├── types/ ## Directory for ts files exporting shared interfaces/types etc.
 │   ├── utils/ ## Directory for ts files exporting utility functions.
