@@ -1,7 +1,7 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import cors from "cors";
 import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
 
 const app = express();
 const PORT = 3001;
@@ -14,5 +14,5 @@ app.use(cors());
 app.use(express.json());
 
 app.listen(PORT, () => {
-  console.log(` Server on http://localhost:${PORT}`);
+	console.log(` Server on http://localhost:${PORT}`);
 });
