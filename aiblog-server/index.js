@@ -44,41 +44,39 @@ const parseRepoName = (input) => {
   }
 };
 
+// Define separate fragments for Commits and PRs
+const commitFields = `
+  __typename
+  oid
+  messageHeadline
+  url
+  committedDate
+  author {
+    name
+    user {
+      login
+    }
+  }
+`;
+
+const prFields = `
+  __typename
+  id
+  number
+  title
+  url
+  createdAt
+  author {
+    login
+  }
+`;
+
 /**
  * Helper function to get the correct GraphQL query based on filterType.
  * @param {'all' | 'commits' | 'prs'} filterType
  * @returns {string} The GraphQL query string
  */
 const getGraphQLQuery = (filterType) => {
-  const commonFields = `
-    nodes {
-      ... on Commit {
-        __typename
-        oid
-        messageHeadline
-        url
-        committedDate
-        author {
-          name
-          user {
-            login
-          }
-        }
-      }
-      ... on PullRequest {
-        __typename
-        id
-        number
-        title
-        url
-        createdAt
-        author {
-          login
-        }
-      }
-    }
-  `;
-
   // Query for Commits only
   if (filterType === 'commits') {
     return `
@@ -88,7 +86,11 @@ const getGraphQLQuery = (filterType) => {
             target {
               ... on Commit {
                 history(first: 30) {
-                  ${commonFields}
+                  nodes {
+                    ... on Commit {
+                      ${commitFields}
+                    }
+                  }
                 }
               }
             }
@@ -104,7 +106,11 @@ const getGraphQLQuery = (filterType) => {
       query GetPullRequests($owner: String!, $name: String!) {
         repository(owner: $owner, name: $name) {
           pullRequests(first: 30, states: [OPEN, CLOSED, MERGED], orderBy: {field: CREATED_AT, direction: DESC}) {
-            ${commonFields}
+            nodes {
+              ... on PullRequest {
+                ${prFields}
+              }
+            }
           }
         }
       }
@@ -119,13 +125,21 @@ const getGraphQLQuery = (filterType) => {
           target {
             ... on Commit {
               history(first: 20) {
-                ${commonFields}
+                nodes {
+                  ... on Commit {
+                    ${commitFields}
+                  }
+                }
               }
             }
           }
         }
         pullRequests(first: 20, states: [OPEN, CLOSED, MERGED], orderBy: {field: CREATED_AT, direction: DESC}) {
-          ${commonFields}
+          nodes {
+            ... on PullRequest {
+              ${prFields}
+            }
+          }
         }
       }
     }
@@ -147,7 +161,8 @@ app.get('/api/github/data', async (req, res) => {
   const repoDetails = parseRepoName(repoName);
   if (!repoDetails) {
     return res.status(400).json({
-      message: 'Invalid repository format. Please use "owner/repo" or a GitHub URL.',
+      message:
+        'Invalid repository format. Please use "owner/repo" or a GitHub URL.',
     });
   }
 
@@ -169,12 +184,23 @@ app.get('/api/github/data', async (req, res) => {
       body: JSON.stringify({ query, variables }),
     });
 
+    // Check if the fetch response itself is OK (e.g., 200-299)
+    if (!githubResponse.ok) {
+      const errorData = await githubResponse.json().catch(() => ({})); // Try to parse error
+      return res.status(githubResponse.status).json({
+        message: `GitHub API Error: ${
+          errorData.message || githubResponse.statusText
+        }`,
+        details: errorData,
+      });
+    }
+
     const data = await githubResponse.json();
 
     // Step 4: Handle GitHub API errors (e.g., Repo Not Found)
     if (data.errors) {
       // Check for a 'NOT_FOUND' error
-      const isNotFound = data.errors.some(err => err.type === 'NOT_FOUND');
+      const isNotFound = data.errors.some((err) => err.type === 'NOT_FOUND');
       if (isNotFound) {
         return res.status(404).json({
           message: `Repository "${repoDetails.owner}/${repoDetails.name}" not found.`,
@@ -182,6 +208,10 @@ app.get('/api/github/data', async (req, res) => {
         });
       }
       // Other GitHub errors
+      console.error(
+        '!!! GitHub GraphQL Error:',
+        JSON.stringify(data.errors, null, 2)
+      );
       return res.status(500).json({
         message: 'Error fetching data from GitHub.',
         details: data.errors,
