@@ -1,69 +1,110 @@
-import { createContext, useContext, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
-    // Page State
-    const [page, setPage] = useState('main');
-  
-    // Input UI State
-    const [repoName, setRepoName] = useState('');
-    const [filterType, setFilterType] = useState('all'); // 'all', 'commits', 'prs'
-    const [isLoading, setIsLoading] = useState(false);
+  // Page navigation state
+  const [page, setPage] = useState('main');
 
-    // Data & Selection State
-    const [data, setData] = useState(null);
-    const [error, setError] = useState(null);
-    const [checkedCommits, setCheckedCommits] = useState(new Set());
-    const [activeCommit, setActiveCommit] = useState(null);
-    const [commitNotes, setCommitNotes] = useState({});
+  // Input states
+  const [repoName, setRepoName] = useState('');
+  const [filterType, setFilterType] = useState('all');
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log('Request Start:', { repoName, filterType });
-        setIsLoading(true);
-        setError(null);
-        setData(null);
+  // API states
+  const [isLoading, setIsLoading] = useState(false);
+  const [githubData, setGithubData] = useState(null); // Stores successful data
+  const [apiError, setApiError] = useState(null); // Stores error messages
 
-        // TODO: Fetch data from Express server (W1 Checklist 5.3)
-        // ... fetch logic will go here ...
+  /**
+   * Fetches data from the Express server's proxy endpoint.
+   */
+  const handleSubmit = useCallback(
+    async (event) => {
+      if (event) {
+        event.preventDefault(); // Stop form submission
+      }
 
-        // Simulate API call for 2 seconds
-        setTimeout(() => {
+      // 1. Set loading state and clear previous results
+      setIsLoading(true);
+      setGithubData(null);
+      setApiError(null);
+
+      try {
+        // 2. Construct the URL with query parameters
+        const params = new URLSearchParams({
+          repoName: repoName,
+          filterType: filterType,
+        });
+
+        // 3. Call the Express server endpoint
+        const response = await fetch(
+          `http://localhost:4000/api/github/data?${params.toString()}`
+        );
+
+        const data = await response.json();
+
+        // 4. Handle server-side errors (e.g., 404, 500)
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to fetch data');
+        }
+
+        // 5. Success: Store the data
+        setGithubData(data);
+        console.log('GitHub data fetched:', data);
+      } catch (error) {
+        // 6. Handle fetch errors (network or thrown errors)
+        console.error('Fetch error:', error.message);
+        setApiError(error.message);
+      } finally {
+        // 7. Always stop loading
         setIsLoading(false);
-        console.log('Request simulation ended');
-        }, 2000);
-    };
+      }
+    },
+    [repoName, filterType] // Dependencies for useCallback
+);
 
-    const value = {
-        page,
-        setPage,
-        repoName,
-        setRepoName,
-        filterType,
-        setFilterType,
-        isLoading,
-        setIsLoading,
-        data,
-        setData,
-        error,
-        setError,
-        checkedCommits,
-        setCheckedCommits,
-        activeCommit,
-        setActiveCommit,
-        commitNotes,
-        setCommitNotes,
-        handleSubmit,
-    };
+  // Memoize the context value
+  const value = useMemo(
+    () => ({
+      page,
+      setPage,
+      repoName,
+      setRepoName,
+      isLoading,
+      setIsLoading, // Keep for potential manual control
+      filterType,
+      setFilterType,
+      handleSubmit,
+      githubData,
+      apiError,
+    }),
+    [
+      page,
+      repoName,
+      isLoading,
+      filterType,
+      handleSubmit,
+      githubData,
+      apiError,
+    ]
+  );
 
-    return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
-export function useAppContext() {
-    const context = useContext(AppContext);
-    if (!context) {
-        throw new Error('useAppContext must be used within an AppProvider');
-    }
-    return context;
-}
+/**
+ * Custom hook to consume the AppContext.
+ */
+export const useAppContext = () => {
+  const context = useContext(AppContext);
+  if (context === null) {
+    throw new Error('useAppContext must be used within an AppProvider');
+  }
+  return context;
+};
