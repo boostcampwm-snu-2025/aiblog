@@ -6,11 +6,13 @@ import {
   TextField,
   Divider,
   Link,
+  Button, // Import Button
 } from '@mui/material';
 import { useAppContext } from '@/contexts/AppContext';
 import CommitIcon from '@mui/icons-material/Commit';
 import PullRequestIcon from '@mui/icons-material/AltRoute';
 import NoteAltIcon from '@mui/icons-material/NoteAlt';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'; // Icon for AI
 
 // --- Helper Functions (copied from LeftPanel for consistency) ---
 
@@ -28,7 +30,8 @@ const getItemId = (item) => item.oid || item.id;
 // --- Component ---
 
 export function RightPanel() {
-  const { activeCommit, commitNotes, setCommitNotes } = useAppContext();
+  const { activeCommit, commitNotes, setCommitNotes, checkedCommits } =
+    useAppContext(); // Get checkedCommits
 
   /**
    * Handles changes to the notes textarea.
@@ -68,9 +71,21 @@ export function RightPanel() {
           <Typography variant="h6">Select an item</Typography>
           <Typography variant="body2">
             Click on an item from the list to see details and add notes for the
-            AI summary.
-          </Typography>
-        </Box>
+          AI summary.
+        </Typography>
+        {/* Add the Generate button here as well, disabled if nothing is checked */}
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          startIcon={<AutoAwesomeIcon />}
+          disabled={checkedCommits.size === 0}
+          sx={{ mt: 3, width: '80%' }}
+          // onClick={...} // This logic will be added in Week 2
+        >
+          Generate Blog Post ({checkedCommits.size})
+        </Button>
+      </Box>
       );
     }
 
@@ -86,7 +101,7 @@ export function RightPanel() {
     const user =
       (isCommit
         ? activeCommit.author?.user?.login
-        : activeCommit.author?.login) || 'unknown';
+      : activeCommit.author?.login) || 'unknown';
     const noteValue = commitNotes[currentId] || '';
 
     return (
@@ -137,9 +152,18 @@ export function RightPanel() {
           value={noteValue}
           onChange={handleNoteChange}
         />
-        {/* TODO: Add "Generate Blog Post" button here 
-          (It will use the 'checkedCommits' and 'commitNotes' states)
-        */}
+        {/* --- Add "Generate Blog Post" button --- */}
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          startIcon={<AutoAwesomeIcon />}
+          disabled={checkedCommits.size === 0} // Disabled if no items are checked
+          sx={{ mt: 1 }}
+          // onClick={...} // This logic will be added in Week 2
+        >
+          Generate Blog Post ({checkedCommits.size})
+        </Button>
       </Box>
     );
   };
