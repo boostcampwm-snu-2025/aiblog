@@ -1,1 +1,45 @@
-# aiblog
+## 1주차: 환경 구축 및 GitHub 프록시 연동
+
+-   프로젝트 계획 수립
+    [x] FEATURE.md에 작성
+-   [ ]3-Tier 아키테처 개발 환경 구성
+    -   Client (Vite + React + Typescript)
+        -   [ ] axios 설치 및 기본 API 요청 함수 모듈화
+        -   [ ] owner, repo 입력을 받는 폼 UI 구현
+        -   [ ] API 요청: '조회' 버튼 클릭 시 Express 서버(POST /api/github)로 owner, repo 전송
+        -   [ ] API 응답: 서버로부터 받은 GitHub 데이터(커밋/PR 목록) fetch
+        -   [ ] 기본 렌더링: 받아온 데이터를 간단한 목록(list) 형태로 렌더링
+        -   [ ] 로딩/에러 UI: API 요청 상태에 따른 로딩 스피너 및 에러 메시지 처리
+    -   Server (Express)
+        -   [ ] cors, dotenv, axios (또는 node-fetch) 설치
+        -   [ ] 보안: .env 파일을 사용해 GITHUB_TOKEN 안전하게 관리
+        -   [ ] 프록시 엔드포인트: POST /api/github 구현
+        -   [ ] GitHub API 연동: Client 요청을 받아 GitHub GraphQL API로 대신 요청
+        -   [ ] 데이터 전달: GitHub로부터 받은 JSON 데이터를 Client로 그대로 전달
+
+## 2주차: LLM 연동 및 블로그 콘텐츠 생성
+
+-   [ ] AI 요약 기능 연동 및 UI 고도화
+    -   Client (Vite + React + TypeScript)
+        -   [ ] AI 요약 요청: 목록에서 특정 항목 클릭 시, 'AI 요약' 버튼으로 서버에 요약 요청 (POST /api/summarize)
+        -   [ ] UI/UX 개선: 1주차 목록 UI 개선 (TailwindCSS 활용)
+        -   [ ] 상세 UI: 요약 결과를 보여줄 모달(Modal) 또는 상세 패널(Panel) 구현
+    -   Server (Express)
+        -   [ ] 보안: .env 파일에 GEMINI_API_KEY 추가
+        -   [ ] AI 엔드포인트: POST /api/summarize 엔드포인트 구현
+        -   [ ] 프롬프트 엔지니어링: Client로부터 받은 텍스트(커밋 메시지, PR 내용 등)를 기반으로 Gemini API에 전송할 프롬프트 작성
+        -   [ ] LLM 연동: Google Gemini API 호출 및 응답 데이터 정제
+        -   [ ] AI 응답: 정제된 요약 텍스트를 Client로 전달
+
+## 3주차: 콘텐츠 저장 및 관리 (LocalStorage)
+
+-   [ ] 생성된 글 저장 및 '내 블로그' 기능 구현
+    -   Client (Vite + React + TypeScript)
+        -   [ ] 저장 기능: '블로그로 저장' 버튼 UI 및 로직 구현
+        -   [ ] 데이터 영속성: 생성된 요약 글을 LocalStorage에 저장 (JSON.stringify) 및 로드 (JSON.parse)
+        -   [ ] 전역 상태 (Optional): Context API 또는 Zustand 등을 사용해 '저장된 글' 목록 전역 관리
+        -   [ ] '내 저장 글' UI: 저장된 글 목록을 보여주는 별도 탭 또는 페이지 구현
+        -   [ ] 상세 보기: 저장된 글을 클릭 시, 상세 내용을 볼 수 있는 기능
+    -   Server (Express)
+        -   [ ] (3주차는 LocalStorage 사용으로 서버 작업은 선택 사항)
+        -   [ ] (Optional) DB 연동: 향후 확장을 위해 LocalStorage 대신 Firestore/MongoDB 등 DB 연동을 위한 API (POST /api/posts, GET /api/posts) 구현 고려
