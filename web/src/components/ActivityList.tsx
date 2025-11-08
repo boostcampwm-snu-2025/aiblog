@@ -1,24 +1,24 @@
-// web/src/components/ActivityList.tsx
 import { useEffect, useState } from 'react';
 import type { Activity } from '../types';
 
-type Props = {
+export function ActivityList({
+  items,
+  onSelect,
+}: {
   items: Activity[];
   onSelect?: (ids: string[]) => void;
-};
-
-export function ActivityList({ items, onSelect }: Props) {
+}) {
   const [selected, setSelected] = useState<string[]>([]);
 
   function toggle(id: string) {
-    setSelected((s: string[]) =>
-      s.includes(id) ? s.filter((x: string) => x !== id) : [...s, id]
-    );
+    setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
   }
 
   useEffect(() => {
     onSelect?.(selected);
   }, [selected, onSelect]);
+
+  if (!items.length) return <div className="empty">최근 작업이 없습니다.</div>;
 
   return (
     <div className="list">

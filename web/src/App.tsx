@@ -1,50 +1,47 @@
+// web/src/App.tsx
 import { useState } from 'react';
 import { RepoForm } from './components/RepoForm';
 import { ActivityList } from './components/ActivityList';
 import { Loader } from './components/Loader';
 import { ErrorBanner } from './components/ErrorBanner';
-import { BlogPreview } from './components/BlogPreview';
-import { fetchRecent, summarize } from './api';
+import { fetchRecent } from './api';
 import type { Activity } from './types';
 
-export default function App(){
+export default function App() {
   const [items, setItems] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string|undefined>();
-  const [selected, setSelected] = useState<string[]>([]);
-  const [md, setMd] = useState('');
+  const [error, setError] = useState<string | undefined>();
 
-  async function onSearch(owner:string, repo:string){
-    setError(undefined); setLoading(true); setMd(''); setSelected([]);
-    try { setItems(await fetchRecent(owner, repo)); }
-    catch(e:any){ setError(e.message || '불러오기 실패'); }
-    finally{ setLoading(false); }
-  }
-  async function onSummarize(){
+  async function onSearch(owner: string, repo: string) {
+    setError(undefined);
+    setLoading(true);
+    setItems([]);
     try {
-      const chosen = items.filter(i=>selected.includes(i.id));
-      const text = await summarize(chosen);
-      setMd(text);
-    } catch(e:any){ setError(e.message || '요약 실패'); }
+      const data = (await fetchRecent(owner, repo, 90)) as Activity[]; // 기간은 필요에 맞게
+      setItems(data);
+    } catch (e: any) {
+      setError(e?.message ?? '불러오기 실패');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className="container">
-      <h1>GitHub 활동 요약 블로그</h1>
+      <h1>GitHub 활동 목록</h1>
+
       <RepoForm onSearch={onSearch} />
-      {loading && <Loader/>}
-      {error && <ErrorBanner msg={error}/>}  
-      {!!items.length && <>
-        <div className="toolbar">
-          <button onClick={onSummarize} disabled={!selected.length}>선택 항목 요약 생성</button>
-          <span>{selected.length}개 선택</span>
-        </div>
-        <ActivityList items={items} onSelect={setSelected}/>
-      </>}
-      {!!md && <>
-        <h2>요약 미리보기</h2>
-        <BlogPreview markdown={md}/>
-      </>}
+
+      {loading && <Loader />}
+      {error && <ErrorBanner msg={error} />}
+
+      {!loading && !error && items.length === 0 && (
+        <div className="empty">선택한 기간 내 활동이 없습니다.</div>
+      )}
+
+      {!loading && !error && items.length > 0 && (
+        <ActivityList items={items} />
+      )}
     </div>
   );
 }
