@@ -1,0 +1,7 @@
+# Frontend-specific runtime data
+node_modules
+dist
+dist-ssr
+
+# Environment variables
+*.local
