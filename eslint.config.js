@@ -55,7 +55,7 @@ export default defineConfig([
           pathGroups: [
             { pattern: "{react,react-*,react-*/**}", group: "builtin", position: "before" }, // react는 builtin으로 별도 지정
             {
-              pattern: "@/components/**",
+              pattern: "@/**",
               group: "internal",
               position: "before",
             },
