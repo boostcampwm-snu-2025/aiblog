@@ -1,6 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import "./App.css";
 
 // 1. GitHub에서 받은 커밋 데이터의 타입을 정의합니다. (TypeScript)
 interface CommitNode {
@@ -12,10 +11,6 @@ interface CommitNode {
             email: string;
         };
     };
-}
-
-interface CommitEdge {
-    edges: CommitNode[];
 }
 
 function App() {
@@ -69,7 +64,7 @@ function App() {
     };
 
     return (
-        <div style={{ padding: "20px" }}>
+        <div>
             <h1>GitHub AI 블로거</h1>
             <p>GitHub 레포지토리의 최근 커밋 10개를 불러옵니다.</p>
 
