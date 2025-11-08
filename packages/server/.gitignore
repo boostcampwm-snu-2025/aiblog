@@ -37,3 +37,6 @@ mocha.json
 # Other
 temp/
 tmp/
+
+# Firebase
+src/config/serviceAccountKey.json
