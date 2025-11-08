@@ -26,6 +26,15 @@ export default defineConfig([
       import: importPlugin,
     },
     rules: {
+      "no-console": ["off"],
+      "no-restricted-syntax": [
+        "warn",
+        {
+          selector:
+            "CallExpression[callee.object.name='console'][callee.property.name=/^(log|warn|error|info|trace|debug)$/]",
+          message: "로그 출력이 필요할 경우 customConsole 객체를 사용하세요 `/src/utils/console.ts`",
+        },
+      ],
       "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/consistent-type-imports": [
         "warn",
