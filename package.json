@@ -1,0 +1,14 @@
+{
+  "name": "aiblog",
+  "packageManager": "yarn@4.9.2",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "dev": "concurrently -k \"yarn workspace client dev\" \"yarn workspace server dev\""
+  }
+}
