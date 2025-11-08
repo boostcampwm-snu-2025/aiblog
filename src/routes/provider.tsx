@@ -1,9 +1,18 @@
 import type { PropsWithChildren } from "react";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-const queryClient = new QueryClient();
+import { handleMutationError, handleQueryError } from "@/services/error";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    mutations: {
+      onError: handleMutationError,
+    },
+  },
+  queryCache: new QueryCache({ onError: handleQueryError }),
+});
 
 export default function AppProvider({ children }: PropsWithChildren) {
   return (

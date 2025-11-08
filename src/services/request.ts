@@ -1,4 +1,18 @@
+import { HttpError } from "./error";
+
 const BASE_URL = "/api";
+
+const handleResponse = async <T>(response: Response): Promise<T> => {
+  if (!response.ok) {
+    throw new HttpError(response.status, response.statusText);
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  return await response.json();
+};
 
 export const getRequest = async <T = unknown>(url: string) => {
   const resp = await fetch(`${BASE_URL}${url}`, { method: "GET" });
@@ -26,17 +40,4 @@ export const putRequest = async <T = unknown, D = unknown>(url: string, data: D)
 export const deleteRequest = async <T = unknown>(url: string) => {
   const resp = await fetch(`${BASE_URL}${url}`, { method: "DELETE" });
   return handleResponse<T>(resp);
-};
-
-const handleResponse = async <T>(response: Response): Promise<T> => {
-  if (!response.ok) {
-    const error = new Error(`HTTP Error: ${response.status}`);
-    throw error;
-  }
-
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  return await response.json();
 };
