@@ -1,0 +1,1 @@
+export function Loader(){ return <div className="loader">불러오는 중…</div>; }
