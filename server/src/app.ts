@@ -24,7 +24,9 @@ app.use(express.static(path.join(__dirname, "../../web/dist")));
 app.use(cors());
 app.use(express.json());
 
-const octokit = new Octokit();
+const octokit = new Octokit({
+	auth: env.GITHUB_TOKEN,
+});
 
 const schema = z.object({
 	owner: z.string(),
