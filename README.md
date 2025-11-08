@@ -1,73 +1,66 @@
-# React + TypeScript + Vite
+# AI 기술 블로그
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+GitHub 활동을 자동으로 블로그 포스팅으로 변환하는 개발 블로그 서비스
 
-Currently, two official plugins are available:
+## 📖 서비스 소개
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **GitHub 활동 기반 블로그 생성**: GitHub PR과 커밋 로그를 분석하여 자동으로 개발 블로그를 생성합니다
+- **AI 기반 콘텐츠 생성**: GitHub API와 LLM(OpenAI 등)을 연동해 커밋·PR 내용을 요약하고 글 형태로 변환합니다
+- **개발 히스토리 관리**: 생성된 글을 저장·열람·관리할 수 있어, 나만의 개발 히스토리 블로그를 구축할 수 있습니다
 
-## React Compiler
+## 🛠 기술 스택
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Frontend
 
-## Expanding the ESLint configuration
+- **React 19.1.1** - UI 라이브러리
+- **TypeScript 5.9.3** - 타입 안정성
+- **Vite 7.1.7** - 빌드 도구
+- **React Router 7.9.5** - 라우팅
+- **TanStack Query 5.90.7** - 서버 상태 관리
+- **Tailwind CSS 4.1.17** - 스타일링
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Backend
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Express** - API 서버
+- **Node.js** - 서버 런타임
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### API & 외부 서비스
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **GitHub REST API** - PR 및 커밋 정보 조회
+- **LLM API** - AI 기반 콘텐츠 생성
+- **LocalStorage** - 포스팅 데이터 저장
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📅 개발 기간
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**총 3주 프로젝트**
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **1주차**: 프로젝트 계획 수립, 개발 환경 구성, GitHub 데이터 렌더링
+- **2주차**: 에디터 페이지 구현 및 AI 초안 생성 기능
+- **3주차**: 저장 및 조회 기능, 전체 기능 통합
+
+## 📂 주요 기능
+
+### 1. GitHub 연동
+
+- 레포지토리 검색
+- PR 목록 조회
+- PR 상세 정보 조회 (본문, 커밋 로그)
+
+### 2. 에디터
+
+- 마크다운 기반 에디터
+- PR 정보 참조 패널
+- AI 초안 생성
+
+### 3. 포스팅 관리
+
+- 포스팅 목록 조회
+- 포스팅 상세 조회
+- 포스팅 생성/수정/삭제
+
+## 📚 프로젝트 문서
+
+- [프로젝트 기획서](./project-plan.md) - 요구사항 분석 및 기술 스택
+- [기능 정리](./features.md) - 필수 기능 및 우선순위
+- [주차별 목표](./weekly-goals.md) - 3주간의 개발 계획
+- [체크리스트](./checklist.md) - 주차별 상세 체크리스트
