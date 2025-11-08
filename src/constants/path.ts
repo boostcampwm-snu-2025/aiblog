@@ -7,7 +7,7 @@ export const PATHS = {
       getHref: () => "/posts/create",
 
       search: {
-        path: "create/search",
+        path: "search",
         getHref: () => "/posts/create/search",
       },
     },
