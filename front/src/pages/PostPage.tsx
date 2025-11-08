@@ -121,7 +121,6 @@ export const PostPage = () => {
 
             <div className="space-y-6 text-gray-700 leading-relaxed">
               <ReactMarkdown
-                className="space-y-6"
                 components={{
                   a: ({ node, ...props }) => (
                     <a
