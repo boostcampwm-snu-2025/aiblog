@@ -8,4 +8,5 @@ export interface Activity {
   url: string;
   author: string;
   committedAt: string; // ISO
+  branch?: string; // 브랜치명
 }

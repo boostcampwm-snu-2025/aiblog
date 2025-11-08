@@ -37,6 +37,7 @@ export function ActivityList({
           </a>
           <span className="meta">
             {new Date(it.committedAt).toLocaleString()} · {it.author}
+            {it.branch && <span className="branch"> · 🌿 {it.branch}</span>}
           </span>
         </div>
       ))}
