@@ -1,0 +1,72 @@
+.repository-list {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.repository-list h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.repositories {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.repository-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.repository-card:hover {
+  transform: translateY(-5px);
+}
+
+.repository-card h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.2em;
+}
+
+.repository-card h2 a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.repository-card h2 a:hover {
+  text-decoration: underline;
+}
+
+.description {
+  color: #586069;
+  font-size: 0.9em;
+  margin-bottom: 15px;
+}
+
+.repository-info {
+  display: flex;
+  gap: 15px;
+  font-size: 0.8em;
+  color: #586069;
+}
+
+.repository-info span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.error {
+  color: #cf222e;
+  text-align: center;
+  padding: 20px;
+  background: #ffebe9;
+  border-radius: 6px;
+  margin: 20px auto;
+  max-width: 500px;
+}
