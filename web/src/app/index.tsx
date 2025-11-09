@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { GitCommit, GitPullRequest, Search } from "lucide-react";
-import { useState } from "react";
+import { type FormEvent, useState } from "react";
 
 import { readCommits, readPulls } from "~/api/github";
 import { Button } from "~/components/ui/button";
@@ -10,14 +9,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Input } from "~/components/ui/input";
 import { Skeleton } from "~/components/ui/skeleton";
 
-dayjs.extend(relativeTime);
+import CommitCard from "./commit-card";
 
 function App() {
   const [owner, setOwner] = useState("");
   const [repo, setRepo] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     const [ownerInput, repoInput] = searchQuery.split("/").map(s => s.trim());
     if (ownerInput && repoInput) {
@@ -90,21 +89,7 @@ function App() {
               ) : commits && commits.length > 0 ? (
                 <div className="space-y-4">
                   {commits.slice(0, 10).map((commit) => (
-                    <div className="border-l-2 border-blue-500 pl-4 py-2" key={commit.sha}>
-                      <div className="font-medium text-sm mb-1">
-                        {commit.commit.message.split("\n")[0]}
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        <span className="font-semibold">
-                          {commit.commit.author?.name || "Unknown"}
-                        </span>
-                        {" · "}
-                        {dayjs(commit.commit.author?.date).fromNow()}
-                      </div>
-                      <div className="text-xs text-gray-500 font-mono mt-1">
-                        {commit.sha.substring(0, 7)}
-                      </div>
-                    </div>
+                    <CommitCard commit={commit} key={commit.sha} />
                   ))}
                 </div>
               ) : owner && repo ? (
