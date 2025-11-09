@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 // Example route: Get repos
 app.get("/api/repos", async (req, res) => {
   try {
-    const response = await fetch("https://api.github.com/user/repos?sort=updated&per_page=5", {
+    const response = await fetch("https://api.github.com/user/repos?sort=updated", {
       headers: { Authorization: `token ${process.env.GITHUB_TOKEN}` },
     });
     const data = await response.json();
