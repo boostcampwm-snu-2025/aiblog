@@ -6,3 +6,9 @@ export interface Repo {
   updated_at: string;
   full_name: string;
 }
+export interface Commits {
+    sha: string;
+    message: string;
+    author: string;
+    date: string;
+}

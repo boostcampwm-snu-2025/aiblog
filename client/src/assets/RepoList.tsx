@@ -1,6 +1,6 @@
 import type { Repo } from "./types";
+export default function RepoList({repos, username, onClick}: {repos: Repo[]; username: string, onClick: (username: string, repo: string) => void;}){
 
-export default function RepoList({repos, username}: {repos: Repo[]; username: string}){
     return(
         <div style={{width:"80%", margin:"auto auto"}}>
             <div
@@ -36,7 +36,7 @@ export default function RepoList({repos, username}: {repos: Repo[]; username: st
             <div>
                 {repos    .filter((repo) => repo.full_name.startsWith(`${username}/`))
                 .map((repo) => (
-                <button key={repo.id} style={{ marginBottom: "1rem", width:"100%", textAlign:"left" }}>
+                <button onClick={()=>onClick(username, repo.name)} key={repo.id} style={{ marginBottom: "1rem", width:"100%", textAlign:"left" }}>
                     <a style={{fontSize:"20px",fontFamily:"monospace",color:"#70839F"}} href={repo.html_url} target="_blank" rel="noopener noreferrer">
                     {repo.name}
                     </a>
