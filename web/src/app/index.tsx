@@ -8,6 +8,7 @@ import { readCommits, readPulls } from "~/api/github";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
+import { Skeleton } from "~/components/ui/skeleton";
 
 dayjs.extend(relativeTime);
 
@@ -77,7 +78,15 @@ function App() {
             </CardHeader>
             <CardContent>
               {isLoadingCommits ? (
-                <div className="text-sm text-gray-500">Loading commits...</div>
+                <div className="space-y-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div className="border-l-2 border-blue-200 pl-4 py-2" key={i}>
+                      <Skeleton className="h-4 w-3/4 mb-2" />
+                      <Skeleton className="h-3 w-1/2 mb-1" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  ))}
+                </div>
               ) : commits && commits.length > 0 ? (
                 <div className="space-y-4">
                   {commits.slice(0, 10).map((commit) => (
@@ -117,7 +126,17 @@ function App() {
             </CardHeader>
             <CardContent>
               {isLoadingPulls ? (
-                <div className="text-sm text-gray-500">Loading pull requests...</div>
+                <div className="space-y-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div className="border-l-2 border-green-200 pl-4 py-2" key={i}>
+                      <Skeleton className="h-4 w-3/4 mb-2" />
+                      <Skeleton className="h-3 w-1/2 mb-2" />
+                      <div className="flex gap-2">
+                        <Skeleton className="h-5 w-16" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : pulls && pulls.length > 0 ? (
                 <div className="space-y-4">
                   {pulls.slice(0, 10).map((pr) => (
