@@ -14,6 +14,14 @@ export async function fetchActivities(params: {
   return res.json() as Promise<{ items: Activity[], pageInfo: { page: number; perPage: number } }>;
 }
 
+export async function fetchRepositories(owner: string) {
+  const res = await fetch(`http://localhost:3000/api/github/repos/${owner}`, {
+    credentials: 'include'
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json() as Promise<Array<{ name: string; description: string | null; stars: number; updated_at: string }>>;
+}
+
 export const loginWithGitHub = () => {
   window.location.href = `http://localhost:3000/api/auth/login`;
 };
@@ -22,3 +30,4 @@ export async function getAuthState() {
   const res = await fetch(`http://localhost:3000/api/auth/me`, { credentials: 'include' });
   return res.json() as Promise<{ authenticated: boolean }>;
 }
+

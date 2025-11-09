@@ -74,4 +74,38 @@ router.get('/activities', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/github/repos/:owner
+ * - owner의 모든 public repository 목록 조회
+ */
+router.get('/repos/:owner', async (req, res) => {
+  const owner = String(req.params.owner || '');
+
+  if (!owner) return res.status(400).json({ error: 'owner required' });
+
+  try {
+    const token = (req.session as any).ghToken as string | undefined;
+    const octokit = await buildOctokit(token);
+
+    const { data } = await octokit.repos.listForUser({
+      username: owner,
+      type: 'all',
+      sort: 'updated',
+      direction: 'desc',
+      per_page: 100
+    });
+
+    const repos = data.map(repo => ({
+      name: repo.name,
+      description: repo.description,
+      stars: repo.stargazers_count,
+      updated_at: repo.updated_at
+    }));
+
+    res.json(repos);
+  } catch (e: any) {
+    res.status(500).json({ error: 'GitHub fetch failed', detail: e?.message });
+  }
+});
+
 export default router;

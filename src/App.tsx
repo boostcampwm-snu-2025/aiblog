@@ -1,35 +1,54 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import RepoInput from './components/RepoInput';
 import ActivityList from './components/ActivityList';
-import { getAuthState, loginWithGitHub } from './lib/api';
+import RepositoryList from './components/RepositoryList';
 
 export default function App() {
-  const [auth, setAuth] = useState(false);
-  const [owner, setOwner] = useState('facebook');
-  const [repo, setRepo] = useState('react');
+  const [owner, setOwner] = useState('dev-pyun');
+  const [repo, setRepo] = useState('aiblog');
+  const [loading, setLoading] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
+  // repo가 변경되면 dataLoaded를 false로 리셋
   useEffect(() => {
-    getAuthState()
-      .then(res => setAuth(res.authenticated))
-      .catch(err => {
-        console.error('Auth check failed:', err);
-        setAuth(false);
-      });
-  }, []);
+    setDataLoaded(false);
+  }, [owner, repo]);
+
+  const handleLoadingChange = (isLoading: boolean) => {
+    setLoading(isLoading);
+    if (!isLoading) {
+      setDataLoaded(true);
+    }
+  };
+
+  const showActivityList = repo && dataLoaded;
 
   return (
-    <div style={{ maxWidth:900, margin:'40px auto', padding:16 }}>
+    <div style={{ maxWidth:900, padding:16}}>
       <h1>SmartBlog — GitHub 연동 (Week 1)</h1>
 
       <div style={{ marginBottom:16, display:'flex', gap:12, alignItems:'center' }}>
-        <RepoInput onSubmit={(o, r) => { setOwner(o); setRepo(r); }} />
-        <span>현재: <b>{owner}/{repo}</b></span>
+        <RepoInput
+          owner={owner}
+          repo={repo}
+          onOwnerChange={setOwner}
+          onRepoChange={setRepo}
+          onSubmit={(o, r) => { setOwner(o); setRepo(r); }}
+        />
+        <span>현재: <b>{repo ? `${owner}/${repo}` : owner}</b></span>
         <span style={{ marginLeft:'auto' }}>
-          {auth ? <span>🔓 GitHub 로그인됨</span> : <button onClick={loginWithGitHub}>GitHub 로그인</button>}
+          {loading && <span>⏳ 로딩 중...</span>}
         </span>
       </div>
 
-      <ActivityList owner={owner} repo={repo} />
+      {/* ActivityList를 항상 렌더링하되, 조건에 따라 보이거나 숨김 */}
+      <div style={{ display: showActivityList ? 'block' : 'none' }}>
+        {repo && <ActivityList owner={owner} repo={repo} onLoadingChange={handleLoadingChange} />}
+      </div>
+
+      {!showActivityList && (
+        <RepositoryList owner={owner} onSelectRepo={(selectedRepo) => setRepo(selectedRepo)} onLoadingChange={handleLoadingChange} />
+      )}
     </div>
   );
 }
