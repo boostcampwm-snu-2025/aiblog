@@ -5,7 +5,7 @@ import {
   Outlet,
 } from "@tanstack/react-router";
 import { Header } from "../widgets";
-import { HomePage, SavedPostsPage, SettingsPage } from "../pages";
+import { HomePage, SavedPostsPage, SettingsPage } from "../pages/ui";
 
 const rootRoute = createRootRoute({
   component: () => (
