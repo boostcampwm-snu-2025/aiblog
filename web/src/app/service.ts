@@ -10,7 +10,7 @@ export function useGithubRepository() {
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
-    const [ownerInput, repoInput] = searchQuery.split("/").map(s => s.trim());
+    const [ownerInput, repoInput] = searchQuery.split("/").map((s) => s.trim());
     if (ownerInput && repoInput) {
       setOwner(ownerInput);
       setRepo(repoInput);
@@ -30,21 +30,23 @@ export function useGithubRepository() {
   });
 
   // Derived states for clearer conditional rendering
-  const commitsStatus = !owner || !repo
-    ? "idle"
-    : isLoadingCommits
+  const commitsStatus =
+    !owner || !repo
+      ? "idle"
+      : isLoadingCommits
       ? "loading"
       : commits && commits.length > 0
-        ? "success"
-        : "empty";
+      ? "success"
+      : "empty";
 
-  const pullsStatus = !owner || !repo
-    ? "idle"
-    : isLoadingPulls
+  const pullsStatus =
+    !owner || !repo
+      ? "idle"
+      : isLoadingPulls
       ? "loading"
       : pulls && pulls.length > 0
-        ? "success"
-        : "empty";
+      ? "success"
+      : "empty";
 
   return {
     commits,

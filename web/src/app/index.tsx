@@ -1,7 +1,13 @@
 import { GitCommit, GitPullRequest, Search } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Skeleton } from "~/components/ui/skeleton";
 
@@ -26,7 +32,9 @@ function App() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">GitHub Repository Activity</h1>
+          <h1 className="text-4xl font-bold mb-4">
+            GitHub Repository Activity
+          </h1>
           <form className="flex gap-2" onSubmit={handleSearch}>
             <Input
               className="flex-1"
@@ -58,13 +66,18 @@ function App() {
                 <GitCommit className="w-5 h-5" />
                 Recent Commits
               </CardTitle>
-              <CardDescription>Latest commits to the repository</CardDescription>
+              <CardDescription>
+                Latest commits to the repository
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {commitsStatus === "loading" && (
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <div className="border-l-2 border-blue-200 pl-4 py-2" key={i}>
+                    <div
+                      className="border-l-2 border-blue-200 pl-4 py-2"
+                      key={i}
+                    >
                       <Skeleton className="h-4 w-3/4 mb-2" />
                       <Skeleton className="h-3 w-1/2 mb-1" />
                       <Skeleton className="h-3 w-20" />
@@ -83,7 +96,9 @@ function App() {
                 <div className="text-sm text-gray-500">No commits found</div>
               )}
               {commitsStatus === "idle" && (
-                <div className="text-sm text-gray-500">Enter a repository to view commits</div>
+                <div className="text-sm text-gray-500">
+                  Enter a repository to view commits
+                </div>
               )}
             </CardContent>
           </Card>
@@ -101,7 +116,10 @@ function App() {
               {pullsStatus === "loading" && (
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <div className="border-l-2 border-green-200 pl-4 py-2" key={i}>
+                    <div
+                      className="border-l-2 border-green-200 pl-4 py-2"
+                      key={i}
+                    >
                       <Skeleton className="h-4 w-3/4 mb-2" />
                       <Skeleton className="h-3 w-1/2 mb-2" />
                       <div className="flex gap-2">
@@ -119,7 +137,9 @@ function App() {
                 </div>
               )}
               {pullsStatus === "empty" && (
-                <div className="text-sm text-gray-500">No pull requests found</div>
+                <div className="text-sm text-gray-500">
+                  No pull requests found
+                </div>
               )}
               {pullsStatus === "idle" && (
                 <div className="text-sm text-gray-500">
