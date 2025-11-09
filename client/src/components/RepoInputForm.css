@@ -1,17 +1,17 @@
 .repo-input-form {
-  max-width: 600px;
-  margin: 0 auto;
+  width: 100%;
   padding: 2rem;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #e5e5e5;
 }
 
 .repo-input-form h2 {
   margin-bottom: 1.5rem;
-  color: #333;
-  font-size: 1.5rem;
-  text-align: center;
+  color: #1a1a1a;
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: none;
 }
 
 .input-group {
@@ -22,16 +22,16 @@
 
 .repo-input {
   flex: 1;
-  padding: 0.75rem;
-  font-size: 1rem;
-  border: 2px solid #ddd;
-  border-radius: 4px;
-  transition: border-color 0.3s;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  transition: border-color 0.2s;
 }
 
 .repo-input:focus {
   outline: none;
-  border-color: #646cff;
+  border-color: #9ca3af;
 }
 
 .repo-input:disabled {
@@ -40,24 +40,24 @@
 }
 
 .submit-button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: white;
-  background: #646cff;
+  background: #1a1a1a;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.2s;
   white-space: nowrap;
 }
 
 .submit-button:hover:not(:disabled) {
-  background: #535bf2;
+  background: #2d2d2d;
 }
 
 .submit-button:disabled {
-  background: #a0a0a0;
+  background: #9ca3af;
   cursor: not-allowed;
 }
 
@@ -68,10 +68,7 @@
 }
 
 .hint {
-  color: #666;
-  font-size: 0.875rem;
-  text-align: center;
-  margin-top: 1rem;
+  display: none;
 }
 
 @media (max-width: 640px) {

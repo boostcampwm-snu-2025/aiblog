@@ -1,20 +1,28 @@
+import { useState } from 'react';
 import RepoInputForm from './components/RepoInputForm';
-import ActivityList from './components/ActivityList';
+import CommitList from './components/CommitList';
+import CommitDetail from './components/CommitDetail';
 import { useGitHubActivity } from './hooks/useGitHubActivity';
 import './App.css';
 
 function App() {
-  const { activities, isLoading, error, repoInfo, fetchGitHubActivity } = useGitHubActivity();
+  const { activities, isLoading, error, fetchGitHubActivity } = useGitHubActivity();
+  const [selectedCommit, setSelectedCommit] = useState(null);
 
   return (
     <div className="app">
       <header className="app-header">
-        <h1>GitHub 활동 블로그 생성기</h1>
-        <p>GitHub 레포지토리의 커밋과 PR을 분석하여 자동으로 블로그를 생성합니다.</p>
+        <h1>Smart Blog</h1>
+        <nav className="app-nav">
+          <button className="nav-link">Saved Posts</button>
+          <button className="nav-link">Settings</button>
+        </nav>
       </header>
 
       <main className="app-main">
-        <RepoInputForm onSubmit={fetchGitHubActivity} isLoading={isLoading} />
+        <div className="search-section">
+          <RepoInputForm onSubmit={fetchGitHubActivity} isLoading={isLoading} />
+        </div>
 
         {error && (
           <div className="error-box">
@@ -30,12 +38,13 @@ function App() {
         )}
 
         {!isLoading && activities.length > 0 && (
-          <ActivityList activities={activities} repoInfo={repoInfo} />
-        )}
-
-        {!isLoading && !error && activities.length === 0 && repoInfo === null && (
-          <div className="empty-state">
-            <p>👆 위에서 GitHub 레포지토리를 입력해주세요</p>
+          <div className="content-grid">
+            <CommitList
+              activities={activities}
+              onSelectCommit={setSelectedCommit}
+              selectedCommit={selectedCommit}
+            />
+            <CommitDetail commit={selectedCommit} />
           </div>
         )}
       </main>
