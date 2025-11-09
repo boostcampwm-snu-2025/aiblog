@@ -19,6 +19,12 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Chat state
+  const [chatMessage, setChatMessage] = useState('');
+  const [chatResponse, setChatResponse] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatError, setChatError] = useState('');
+
   const fetchCommits = async () => {
     if (!repo) {
       setError('Please enter a repository name');
@@ -44,6 +50,38 @@ function App() {
       setError('Failed to connect to server. Make sure the backend is running on port 3000.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const sendChatMessage = async () => {
+    if (!chatMessage.trim()) {
+      setChatError('Please enter a message');
+      return;
+    }
+
+    setChatLoading(true);
+    setChatError('');
+    setChatResponse('');
+
+    try {
+      const response = await fetch('http://localhost:3000/api/llm/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: chatMessage }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setChatResponse(data.data.response);
+      } else {
+        setChatError(data.error || 'Failed to get response from Gemini');
+      }
+    } catch (err) {
+      setChatError('Failed to connect to server. Make sure the backend is running on port 3000.');
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -155,6 +193,54 @@ function App() {
             <p className="text-lg">Enter a repository name to view commits</p>
           </div>
         )}
+
+        {/* Chat with Gemini Section */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 mt-8 shadow-2xl border border-white/20">
+          <h2 className="text-2xl font-bold text-white mb-6">
+            💬 Chat with Gemini
+          </h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-white font-medium mb-2">
+                Your Message
+              </label>
+              <textarea
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), sendChatMessage())}
+                className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+                placeholder="Ask Gemini anything..."
+                rows={3}
+              />
+            </div>
+
+            <button
+              onClick={sendChatMessage}
+              disabled={chatLoading}
+              className="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white font-semibold rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
+            >
+              {chatLoading ? 'Thinking...' : 'Send Message'}
+            </button>
+
+            {chatError && (
+              <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+                {chatError}
+              </div>
+            )}
+
+            {chatResponse && (
+              <div className="p-6 bg-white/5 border border-white/10 rounded-lg">
+                <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                  <span>🤖</span> Gemini's Response:
+                </h3>
+                <div className="text-gray-200 whitespace-pre-wrap leading-relaxed">
+                  {chatResponse}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
