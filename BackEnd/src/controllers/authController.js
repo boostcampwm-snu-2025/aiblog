@@ -41,6 +41,7 @@ const githubCallback = (req, res) => {
     redirectUrl.searchParams.append('accessToken', accessToken)
     redirectUrl.searchParams.append('refreshToken', refreshToken)
     redirectUrl.searchParams.append('expiresIn', expiresIn.toString())
+    redirectUrl.searchParams.append('githubAccessToken', user.githubAccessToken)
 
     res.redirect(redirectUrl.toString())
   } catch (error) {

@@ -22,6 +22,7 @@ passport.use(
         login: profile.username || profile.login || '',
         email: profile.emails?.[0]?.value || null,
         avatar_url: profile.photos?.[0]?.value || profile.avatar_url || '',
+        githubAccessToken: accessToken, // GitHub의 실제 액세스 토큰 저장
       }
 
       return done(null, user)

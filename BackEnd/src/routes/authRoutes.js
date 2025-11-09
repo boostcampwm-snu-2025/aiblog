@@ -9,7 +9,7 @@ const router = express.Router()
  * GitHub OAuth 로그인
  * 사용자를 GitHub의 인증 페이지로 리다이렉트
  */
-router.get('/github', passport.authenticate('github', { scope: ['user:email'] }))
+router.get('/github', passport.authenticate('github', { scope: ['user:email', 'repo', 'read:user'] }))
 
 /**
  * GitHub OAuth 콜백
