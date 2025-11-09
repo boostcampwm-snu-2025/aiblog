@@ -11,9 +11,12 @@ export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const owner = searchParams.get("owner") ?? "";
   const repository = searchParams.get("repository") ?? "";
+
+  const hasSearchParams = owner !== "" && repository !== "";
+
   const { data: pullRequests, status } = usePullRequests({
-    owner,
-    repository,
+    params: { owner, repository },
+    queryConfig: { enabled: hasSearchParams },
   });
 
   const handleSearch = (owner: string, repository: string) => {
@@ -32,10 +35,18 @@ export default function SearchPage() {
       <CreatePostHeader />
       <div className="space-y-8 rounded-md border border-gray-300 p-10">
         <RepositorySearchBar initValues={{ owner, repository }} onSearch={handleSearch} />
-        <Divider />
-        {status === "pending" && <LoadingFallback message="PR 목록을 불러오는 중..." />}
-        {status === "error" && <ErrorFallback />}
-        {status === "success" && <SearchResult repositoryName={`${owner}/${repository}`} pullRequests={pullRequests} />}
+        {hasSearchParams ? (
+          <>
+            <Divider />
+            {status === "pending" && <LoadingFallback message="PR 목록을 불러오는 중..." />}
+            {status === "error" && <ErrorFallback />}
+            {status === "success" && (
+              <SearchResult repositoryName={`${owner}/${repository}`} pullRequests={pullRequests} />
+            )}
+          </>
+        ) : (
+          <div>레포지토리를 검색해보세요.</div>
+        )}
       </div>
     </div>
   );

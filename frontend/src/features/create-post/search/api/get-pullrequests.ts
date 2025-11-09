@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
+import type { QueryConfig } from "@/services/react-query";
 import { getRequest } from "@/services/request";
 import type { PullRequest } from "@/types/pullrequest";
 
@@ -12,9 +13,15 @@ const getPullRequests = async ({ owner, repository }: GetPullRequestsParams): Pr
   return getRequest<PullRequest[]>(`/repos/${owner}/${repository}/pulls`);
 };
 
-export const usePullRequests = ({ owner, repository }: GetPullRequestsParams) => {
+type UsePullRequestsOptions = {
+  params: GetPullRequestsParams;
+  queryConfig?: QueryConfig<PullRequest[]>;
+};
+
+export const usePullRequests = ({ params, queryConfig }: UsePullRequestsOptions) => {
   return useQuery({
-    queryKey: ["pullRequests", owner, repository],
-    queryFn: () => getPullRequests({ owner, repository }),
+    queryKey: ["pullRequests", params.owner, params.repository] as const,
+    queryFn: () => getPullRequests(params),
+    ...queryConfig,
   });
 };
