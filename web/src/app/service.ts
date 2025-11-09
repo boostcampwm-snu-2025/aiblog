@@ -17,36 +17,28 @@ export function useGithubRepository() {
     }
   };
 
-  const { data: commits, isLoading: isLoadingCommits } = useQuery({
+  const {
+    data: commits,
+    status: _commitsStatus,
+  } = useQuery({
     enabled: !!owner && !!repo,
     queryFn: () => readCommits(owner, repo),
     queryKey: ["commits", owner, repo],
   });
 
-  const { data: pulls, isLoading: isLoadingPulls } = useQuery({
+  const {
+    data: pulls,
+    status: _pullsStatus,
+  } = useQuery({
     enabled: !!owner && !!repo,
     queryFn: () => readPulls(owner, repo),
     queryKey: ["pulls", owner, repo],
   });
 
   // Derived states for clearer conditional rendering
-  const commitsStatus =
-    !owner || !repo
-      ? "idle"
-      : isLoadingCommits
-      ? "loading"
-      : commits && commits.length > 0
-      ? "success"
-      : "empty";
+  const commitsStatus = !repo && !owner ? "idle" : commits && commits.length === 0 ? "empty" : _commitsStatus;
 
-  const pullsStatus =
-    !owner || !repo
-      ? "idle"
-      : isLoadingPulls
-      ? "loading"
-      : pulls && pulls.length > 0
-      ? "success"
-      : "empty";
+  const pullsStatus = !repo && !owner ? "idle" : pulls && pulls.length === 0 ? "empty" : _pullsStatus;
 
   return {
     commits,

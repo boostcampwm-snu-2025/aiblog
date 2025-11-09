@@ -71,7 +71,7 @@ function App() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {commitsStatus === "loading" && (
+              {commitsStatus === "pending" && (
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div
@@ -95,6 +95,11 @@ function App() {
               {commitsStatus === "empty" && (
                 <div className="text-sm text-gray-500">No commits found</div>
               )}
+              {commitsStatus === "error" && (
+                <div className="text-sm text-red-600">
+                  <p className="font-semibold mb-1">Failed to load commits</p>
+                </div>
+              )}
               {commitsStatus === "idle" && (
                 <div className="text-sm text-gray-500">
                   Enter a repository to view commits
@@ -113,7 +118,7 @@ function App() {
               <CardDescription>Open pull requests</CardDescription>
             </CardHeader>
             <CardContent>
-              {pullsStatus === "loading" && (
+              {pullsStatus === "pending" && (
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div
@@ -139,6 +144,11 @@ function App() {
               {pullsStatus === "empty" && (
                 <div className="text-sm text-gray-500">
                   No pull requests found
+                </div>
+              )}
+              {pullsStatus === "error" && (
+                <div className="text-sm text-red-600">
+                  <p className="font-semibold mb-1">Failed to load pull requests</p>
                 </div>
               )}
               {pullsStatus === "idle" && (
