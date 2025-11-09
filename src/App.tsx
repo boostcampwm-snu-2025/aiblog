@@ -41,14 +41,15 @@ export default function App() {
         </span>
       </div>
 
-      {/* ActivityList를 항상 렌더링하되, 조건에 따라 보이거나 숨김 */}
+      {/* RepositoryList: repo가 없거나 ActivityList 로딩 중일 때 표시 */}
+      <div style={{ display: !showActivityList ? 'block' : 'none' }}>
+        <RepositoryList owner={owner} onSelectRepo={(selectedRepo) => setRepo(selectedRepo)} onLoadingChange={handleLoadingChange} />
+      </div>
+
+      {/* ActivityList: repo가 있고 데이터 로드 완료 시 표시 */}
       <div style={{ display: showActivityList ? 'block' : 'none' }}>
         {repo && <ActivityList owner={owner} repo={repo} onLoadingChange={handleLoadingChange} />}
       </div>
-
-      {!showActivityList && (
-        <RepositoryList owner={owner} onSelectRepo={(selectedRepo) => setRepo(selectedRepo)} onLoadingChange={handleLoadingChange} />
-      )}
     </div>
   );
 }

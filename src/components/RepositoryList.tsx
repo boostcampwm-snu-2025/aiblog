@@ -75,6 +75,6 @@ export default function RepositoryList({ owner, onSelectRepo, onLoadingChange }:
 
   if (loading) return default_list;
   if (error) return <div style={{ color: 'crimson' }}>에러: {error}</div>;
-  if (repos.length === 0) return <div>Repository가 없습니다.</div>;
+  // if (repos.length === 0) return <div>Repository가 없습니다.</div>;
   return default_list;
 }
