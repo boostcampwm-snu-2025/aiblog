@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import SearchOffIcon from '@mui/icons-material/SearchOff'; // 아이콘 추가로 시인성 개선
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 
 export function NoDataState({ message = 'Please fetch data to see recent activity.' }) {
   return (

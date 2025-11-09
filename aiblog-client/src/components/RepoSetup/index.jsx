@@ -6,10 +6,10 @@ import {
 } from '@mui/material';
 import { InputArea } from './InputArea';
 import { FilterArea } from './FilterArea';
-import { useAppContext } from '@/contexts/AppContext';
+import { useMainPageContext } from '@/contexts/MainPageContext';
 
 export function RepoSetup() {
-  const { repoName } = useAppContext();
+  const { repoName } = useMainPageContext();
 
   return (
     <Card>

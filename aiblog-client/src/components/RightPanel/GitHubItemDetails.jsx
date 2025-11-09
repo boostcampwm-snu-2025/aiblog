@@ -1,4 +1,4 @@
-import { Box, Typography, Link, Divider } from '@mui/material';
+import { Box, Typography, Link } from '@mui/material';
 import CommitIcon from '@mui/icons-material/Commit';
 import PullRequestIcon from '@mui/icons-material/AltRoute';
 

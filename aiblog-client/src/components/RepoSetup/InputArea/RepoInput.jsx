@@ -1,9 +1,9 @@
 import { TextField, InputAdornment, IconButton } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
-import { useAppContext } from '@/contexts/AppContext';
+import { useMainPageContext } from '@/contexts/MainPageContext';
 
 export function RepoInput() {
-  const { repoName, setRepoName, isLoading } = useAppContext();
+  const { repoName, setRepoName, isLoading } = useMainPageContext();
 
   return (
     <TextField

@@ -1,26 +1,34 @@
-import {
-  Box,
-  Grid,
-} from '@mui/material';
+import { Grid, Box } from '@mui/material';
 import { RepoSetup } from '@/components/RepoSetup';
 import { LeftPanel } from '@/components/LeftPanel';
 import { RightPanel } from '@/components/RightPanel';
-import { useAppContext } from '@/contexts/AppContext';
+import { MainPageProvider, useMainPageContext } from '@/contexts/MainPageContext';
 
-export function MainPage() {
-  const { handleSubmit } = useAppContext();
+function MainPageContent() {
+  const { githubData, apiError } = useMainPageContext();
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{ display: 'flex', flexDirection: 'column', gap: 3, p: 3 }}
-    >
+    <Box sx={{ flexGrow: 1, p: 3 }}>
       <RepoSetup />
-      <Grid container spacing={3}>
-        <LeftPanel />
-        <RightPanel />
-      </Grid>
+
+      {(githubData || apiError) && (
+        <Grid container spacing={3} sx={{ mt: 3 }}>
+          <Grid item xs={12} md={6}>
+            <LeftPanel />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <RightPanel />
+          </Grid>
+        </Grid>
+      )}
     </Box>
+  );
+}
+
+export function MainPage() {
+  return (
+    <MainPageProvider>
+      <MainPageContent />
+    </MainPageProvider>
   );
 }

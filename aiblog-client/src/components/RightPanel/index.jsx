@@ -1,7 +1,7 @@
 import { Paper, Box } from '@mui/material';
 import { useCommitNotes } from '@/hooks/useCommitNotes';
 import { EmptySelectionState } from './EmptySelectionState';
-import { GithubItemDetails } from './GithubItemDetails';
+import { GitHubItemDetails } from './GitHubItemDetails';
 import { CommitNoteInput } from './CommitNoteInput';
 import { GenerateButton } from './GenerateButton';
 
@@ -22,7 +22,7 @@ export function RightPanel() {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
         {/* Section 1: Item Details */}
-        <GithubItemDetails activeItem={activeCommit} />
+        <GitHubItemDetails activeItem={activeCommit} />
 
         {/* Section 2: AI Notes Input */}
         <CommitNoteInput

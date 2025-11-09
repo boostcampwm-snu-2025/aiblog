@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from 'react';
-import { useAppContext } from '@/contexts/AppContext';
+import { useMainPageContext } from '@/contexts/MainPageContext';
 
 // Helper to get the unique ID for an item
 const getItemId = (item) => item.oid || item.id;
@@ -16,7 +16,7 @@ export function useGitHubDataList() {
     setCheckedCommits,
     activeCommit,
     setActiveCommit,
-  } = useAppContext();
+  } = useMainPageContext();
 
   // 1. Parse and merge data based on filterType
   const items = useMemo(() => {

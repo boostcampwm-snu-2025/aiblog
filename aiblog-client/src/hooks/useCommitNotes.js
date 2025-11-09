@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useAppContext } from '@/contexts/AppContext';
+import { useMainPageContext } from '@/contexts/MainPageContext';
 
 // Helper to get the unique ID for an item
 const getItemId = (item) => item.oid || item.id;
@@ -8,7 +8,7 @@ const getItemId = (item) => item.oid || item.id;
  * Custom hook to manage commit notes logic.
  */
 export function useCommitNotes() {
-  const { activeCommit, commitNotes, setCommitNotes } = useAppContext();
+  const { activeCommit, commitNotes, setCommitNotes } = useMainPageContext();
 
   /**
    * Handles changes to the notes textarea.

@@ -1,5 +1,5 @@
 import { Box, Typography, List } from '@mui/material';
-import { useAppContext } from '@/contexts/AppContext';
+import { useMainPageContext } from '@/contexts/MainPageContext';
 import { useGitHubDataList } from '@/hooks/useGitHubDataList';
 import { LoadingState } from './LoadingState';
 import { ErrorState } from './ErrorState';
@@ -11,7 +11,7 @@ import { GitHubDataItem } from './GitHubDataItem';
 const getItemId = (item) => item.oid || item.id;
 
 export function LeftPanel() {
-  const { isLoading, apiError, githubData } = useAppContext();
+  const { isLoading, apiError, githubData } = useMainPageContext();
   const {
     items,
     checkboxState,

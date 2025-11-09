@@ -1,9 +1,9 @@
 import { Button } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { useAppContext } from '@/contexts/AppContext';
+import { useMainPageContext } from '@/contexts/MainPageContext';
 
 export function GenerateButton({ fullWidth = false }) {
-  const { checkedCommits } = useAppContext();
+  const { checkedCommits } = useMainPageContext();
   const count = checkedCommits.size;
 
   return (

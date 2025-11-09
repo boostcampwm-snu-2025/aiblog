@@ -6,10 +6,10 @@ import {
   FormControl,
   FormLabel,
 } from '@mui/material';
-import { useAppContext } from '@/contexts/AppContext';
+import { useMainPageContext } from '@/contexts/MainPageContext';
 
 export function FilterArea() {
-  const { filterType, setFilterType, isLoading } = useAppContext();
+  const { filterType, setFilterType, isLoading } = useMainPageContext();
 
   const handleChange = (event) => {
     setFilterType(event.target.value);
