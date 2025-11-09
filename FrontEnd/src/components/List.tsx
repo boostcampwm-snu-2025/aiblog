@@ -32,7 +32,6 @@ export default function List({
   type,
   isAuthenticated,
   selectedRepository,
-  repositoryName,
   commits = [],
   pullRequests = []
 }: ListProps) {

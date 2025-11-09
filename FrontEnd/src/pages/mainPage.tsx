@@ -3,7 +3,7 @@ import LoginButton from '@/components/LoginButton'
 import SearchBar from '@/components/SearchBar'
 import List from '@/components/List'
 import type { CommitData, PullRequestData } from '@/components/List'
-import { getRepositories, getCommits, getPullRequests, getCurrentUser } from '@/services/githubApi'
+import { getRepositories, getCommits, getPullRequests} from '@/services/githubApi'
 
 interface Repository {
   id: string
@@ -21,8 +21,6 @@ export default function MainPage() {
   const [commits, setCommits] = useState<CommitData[]>([])
   const [pullRequests, setPullRequests] = useState<PullRequestData[]>([])
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [currentUser, setCurrentUser] = useState<{ login: string } | null>(null)
   const resetSearchRef = useRef<(() => void) | null>(null)
 
   // GitHub OAuth 콜백 처리
@@ -67,16 +65,10 @@ export default function MainPage() {
   const fetchRepositories = async () => {
     try {
       setLoading(true)
-      setError(null)
-      const user = await getCurrentUser()
-      if (user) {
-        setCurrentUser(user)
-      }
       const data = await getRepositories()
       setRepositories(data)
     } catch (err) {
       console.error('Failed to fetch repositories:', err)
-      setError('저장소를 불러올 수 없습니다')
     } finally {
       setLoading(false)
     }
@@ -85,7 +77,6 @@ export default function MainPage() {
   const fetchCommitsAndPRs = async () => {
     try {
       setLoading(true)
-      setError(null)
 
       if (!repositoryName || !repositoryOwner) {
         return
@@ -98,7 +89,6 @@ export default function MainPage() {
       setPullRequests(prsData)
     } catch (err) {
       console.error('Failed to fetch commits and PRs:', err)
-      setError('데이터를 불러올 수 없습니다')
     } finally {
       setLoading(false)
     }
