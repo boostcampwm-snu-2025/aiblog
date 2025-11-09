@@ -3,14 +3,13 @@ import Box from '@mui/material/Box'
 import Header from './components/Header'
 import { useAppContext } from './contexts/Appcontext'
 import RepoPage from './components/Repo/RepoPage';
-import PostPage from './pages/PostPage';
+import PostPage from './components/Post/PostPage';
 import { CallbackHandler } from './components/Login/CallbackHandler';
 
 function App() {
 
   const { currentTab, setCurrentTab } = useAppContext();
 
-  // Check if this is a callback from GitHub OAuth
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');

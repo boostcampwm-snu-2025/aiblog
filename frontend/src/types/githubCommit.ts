@@ -1,11 +1,8 @@
-export interface CommitAuthor {
-  login: string;
-  avatar_url: string;
-}
-
 export interface CommitItem {
+  sha: string;
   html_url: string;
   message: string;
   date: string;
-  author: CommitAuthor;
+  owner_login: string;
+  owner_avatar_url: string;
 }

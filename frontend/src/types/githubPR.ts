@@ -1,17 +1,13 @@
-export interface PRAuthor {
-  login: string;
-  avatar_url: string;
-}
-
 export interface PRItem {
     id: number;
     number: number;
     title: string;
     body: string;
-    state: string;
+    state: 'open' | 'closed' | 'merged';
     created_at: string;
     updated_at: string;
     merged_at: string | null;
-    author: PRAuthor;
+    author_login: string;
+    author_avatar_url: string;
     html_url: string;
 }

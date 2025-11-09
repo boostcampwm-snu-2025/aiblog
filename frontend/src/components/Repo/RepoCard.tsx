@@ -9,6 +9,8 @@ import type { RepoItem } from '../../types/githubRepo';
 import { useRepoContext } from '../../contexts/Repocontext';
 import { formatDateTime } from '../../utils/date';
 import { grey } from '@mui/material/colors';
+import CommitList from '../Commit/CommitList';
+import PullRequest from '../PullRequest/PullRequestList';
 
 type FeedType = 'commits' | 'pullRequests';
 
@@ -17,7 +19,11 @@ const FEED_LABELS: Record<FeedType, string> = {
     pullRequests: 'PRs',
 };
 
-const RepoCard: React.FC<{ repo: RepoItem }> = ({ repo }) => {
+interface RepoCardProps {
+    repo: RepoItem;
+}
+
+const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
     const {
         selectedRepo,
         selectRepo,
@@ -30,6 +36,9 @@ const RepoCard: React.FC<{ repo: RepoItem }> = ({ repo }) => {
     const isActive = selectedRepo?.id === repo.id;
 
     const handleCardClick = () => {
+        if (selectedRepo?.id === repo.id) {
+            return;
+        }
         selectRepo(repo.id);
     };
 
@@ -37,8 +46,6 @@ const RepoCard: React.FC<{ repo: RepoItem }> = ({ repo }) => {
         event.stopPropagation();
         if (selectedRepo?.id !== repo.id) {
             selectRepo(repo.id);
-            setSelectedFeed(feed);
-            return;
         }
         setSelectedFeed(feed);
         if (feed === 'commits') {
@@ -150,6 +157,18 @@ const RepoCard: React.FC<{ repo: RepoItem }> = ({ repo }) => {
                     }}
                 />
             </Stack>
+
+            {isActive && selectedFeed === 'commits' && (
+                <Box sx={{ pt: 1 }}>
+                    <CommitList />
+                </Box>
+            )}
+
+            {isActive && selectedFeed === 'pullRequests' && (
+                <Box sx={{ pt: 1 }}>
+                    <PullRequest />
+                </Box>
+            )}
         </Box>
     );
 };

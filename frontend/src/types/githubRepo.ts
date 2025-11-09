@@ -1,6 +1,7 @@
 export interface RepoItem {
     id: number;
     full_name: string;
+    name: string;
     html_url: string;
     description: string | null;
     default_branch: string | null;

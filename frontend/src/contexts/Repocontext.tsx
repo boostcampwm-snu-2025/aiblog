@@ -3,7 +3,9 @@ import type { RepoItem } from '../types/githubRepo';
 import type { CommitItem } from '../types/githubCommit';
 import type { PRItem } from '../types/githubPR';
 import { reposApi } from '../api/repos';
+import { commitsApi } from '../api/commits';
 import { useAppContext } from './Appcontext';
+import { pullRequestsApi } from '../api/pullRequests';
 
 type FeedType = 'commits' | 'pullRequests';
 
@@ -13,8 +15,8 @@ interface RepoContextType {
     selectedRepo: RepoItem | null;
     setSelectedRepo: (repo: RepoItem | null) => void;
     selectRepo: (repoId: number) => void;
-    selectedFeed: FeedType;
-    setSelectedFeed: (feed: FeedType) => void;
+    selectedFeed: FeedType | null;
+    setSelectedFeed: (feed: FeedType | null) => void;
     commits: CommitItem[];
     setCommits: (commits: CommitItem[]) => void;
     pullRequests: PRItem[];
@@ -30,19 +32,32 @@ const RepoContext = createContext<RepoContextType | undefined>(undefined);
 
 export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [repos, setRepos] = useState<RepoItem[]>([]);
-    const [selectedRepo, setSelectedRepo] = useState<RepoItem | null>(null);
-    const [selectedFeed, setSelectedFeed] = useState<FeedType>('commits');
+    const [selectedRepo, setSelectedRepoState] = useState<RepoItem | null>(null);
+    const [selectedFeed, setSelectedFeed] = useState<FeedType | null>(null);
     const [commits, setCommits] = useState<CommitItem[]>([]);
     const [pullRequests, setPullRequests] = useState<PRItem[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const { setIsLoggedIn } = useAppContext();
 
+    const setSelectedRepo = (repo: RepoItem | null) => {
+        setSelectedRepoState(repo);
+        if (!repo) {
+            setSelectedFeed(null);
+        }
+    };
+
     const selectRepo = (repoId: number) => {
         const repo = repos.find(r => r.id === repoId);
-        if (repo) {
-            setSelectedRepo(repo);
+        if (!repo) {
+            return;
         }
+
+        if (selectedRepo?.id !== repo.id) {
+            setSelectedFeed(null);
+        }
+
+        setSelectedRepoState(repo);
     };
 
     const fetchRepos = async () => {
@@ -71,15 +86,47 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const fetchRepoCommits = async (repo: RepoItem) => {
-        // TODO: Implement commit fetching
-        console.log('Fetching commits for repo:', repo.full_name);
-        setCommits([]);
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            setError('No access token found');
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const commitsData = await commitsApi.getCommits(accessToken, repo.owner_login, repo.name);
+            setCommits(commitsData);
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to fetch commits';
+            setError(errorMessage);
+            console.error('Error fetching commits:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const fetchRepoPullRequests = async (repo: RepoItem) => {
-        // TODO: Implement PR fetching
-        console.log('Fetching PRs for repo:', repo.full_name);
-        setPullRequests([]);
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            setError('No access token found');
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const prsData = await pullRequestsApi.getPullRequests(accessToken, repo.owner_login, repo.name);
+            setPullRequests(prsData);
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to fetch pull requests';
+            setError(errorMessage);
+            console.error('Error fetching pull requests:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
