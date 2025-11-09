@@ -1,35 +1,53 @@
-import { Container } from '@mui/material';
+import { ThemeProvider, CssBaseline, Box } from '@mui/material';
+import theme from '@/theme'; 
 import { useAppContext } from '@/contexts/AppContext';
-
-// Import components
 import { Header } from '@/components/Header';
-
-// Import pages
 import { MainPage } from '@/pages/MainPage';
 import { SavedPostsPage } from '@/pages/SavedPostsPage';
 import { SettingsPage } from '@/pages/SettingsPage';
 
-function App() {
+function AppContent() {
   const { page } = useAppContext();
 
-  // Helper function to render the correct page
   const renderPage = () => {
     switch (page) {
+      case 'main':
+        return <MainPage />;
       case 'saved':
         return <SavedPostsPage />;
       case 'settings':
         return <SettingsPage />;
-      case 'main':
       default:
         return <MainPage />;
     }
   };
 
   return (
-    <Container maxWidth="lg">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100vw',
+        minHeight: '100vh',
+        bgcolor: 'background.default', // Use theme background color
+        color: 'text.primary', // Use theme text color
+      }}
+    >
       <Header />
-      {renderPage()}
-    </Container>
+      {/* Main content area with top padding for fixed header */}
+      <Box component="main" sx={{ flexGrow: 1, pt: '64px' }}>
+        {renderPage()}
+      </Box>
+    </Box>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline /> {/* Normalize styles and apply background color */}
+      <AppContent />
+    </ThemeProvider>
   );
 }
 

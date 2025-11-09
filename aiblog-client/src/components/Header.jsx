@@ -5,7 +5,7 @@ export function Header() {
   const { setPage } = useAppContext();
 
   return (
-    <AppBar position="static" sx={{ mb: 4, borderRadius: '4px' }}>
+    <AppBar position="static" sx={{ borderRadius: '4px' }}>
       <Toolbar>
         <Typography
           variant="h6"

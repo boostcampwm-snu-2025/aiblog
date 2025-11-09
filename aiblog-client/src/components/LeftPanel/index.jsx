@@ -61,7 +61,7 @@ export function LeftPanel() {
         border: (theme) => `1px solid ${theme.palette.divider}`,
         borderRadius: 2,
         height: '100%',
-        minHeight: '200px',
+        minHeight: { xs: '300px', md: '70vh' },
         overflow: 'hidden',
       }}
     >
