@@ -87,13 +87,12 @@ npm run dev
 ### 완료
 - ✅ 프로젝트 구조 설정 (Monorepo with workspaces)
 - ✅ Express 서버 구축 (TypeScript)
-- ✅ GitHub API 엔드포인트 설계 (Mock data)
+- ✅ GitHub GraphQL API 연동
 - ✅ CORS 설정
 - ✅ 환경 변수 관리 (.env)
 - ✅ 에러 핸들링 미들웨어
 
 ### 진행 중
-- 🔄 GitHub 실제 API 연동
 - 🔄 LLM API 연동
 - 🔄 React Frontend 구축
 
@@ -108,6 +107,7 @@ npm run dev
 ### Backend
 - Express.js - 웹 프레임워크
 - TypeScript - 타입 안정성
+- GitHub GraphQL API - 데이터 수집
 - dotenv - 환경 변수 관리
 - cors - CORS 설정
 - helmet - 보안 미들웨어
