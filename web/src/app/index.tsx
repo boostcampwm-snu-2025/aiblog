@@ -1,8 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import { GitCommit, GitPullRequest, Search } from "lucide-react";
-import { type FormEvent, useState } from "react";
 
-import { readCommits, readPulls } from "~/api/github";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -10,32 +7,20 @@ import { Skeleton } from "~/components/ui/skeleton";
 
 import CommitCard from "./commit-card";
 import PrCard from "./pr-card";
+import { useGithubRepository } from "./service";
 
 function App() {
-  const [owner, setOwner] = useState("");
-  const [repo, setRepo] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const handleSearch = (e: FormEvent) => {
-    e.preventDefault();
-    const [ownerInput, repoInput] = searchQuery.split("/").map(s => s.trim());
-    if (ownerInput && repoInput) {
-      setOwner(ownerInput);
-      setRepo(repoInput);
-    }
-  };
-
-  const { data: commits, isLoading: isLoadingCommits } = useQuery({
-    enabled: !!owner && !!repo,
-    queryFn: () => readCommits(owner, repo),
-    queryKey: ["commits", owner, repo],
-  });
-
-  const { data: pulls, isLoading: isLoadingPulls } = useQuery({
-    enabled: !!owner && !!repo,
-    queryFn: () => readPulls(owner, repo),
-    queryKey: ["pulls", owner, repo],
-  });
+  const {
+    commits,
+    handleSearch,
+    isLoadingCommits,
+    isLoadingPulls,
+    owner,
+    pulls,
+    repo,
+    searchQuery,
+    setSearchQuery,
+  } = useGithubRepository();
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
