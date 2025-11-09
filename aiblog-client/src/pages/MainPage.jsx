@@ -8,7 +8,7 @@ import { RightPanel } from '@/components/RightPanel';
 import { useAppContext } from '@/contexts/AppContext';
 
 export function MainPage() {
-  const { handleSubmit, repoName } = useAppContext();
+  const { handleSubmit } = useAppContext();
 
   return (
     <Box

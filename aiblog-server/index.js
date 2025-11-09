@@ -220,6 +220,7 @@ app.get('/api/github/data', async (req, res) => {
 
     // Step 5: Success - return the data to the client
     res.status(200).json(data);
+    
   } catch (error) {
     // Step 6: Handle network or other fetch errors
     console.error('Server fetch error:', error);
