@@ -115,6 +115,7 @@ export const EditPage = () => {
   const [selectedCommit, setSelectedCommit] = useState<string>("");
   const [details, setDetails] = useState<CommitDetails | null>(null);
   const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
+  const [detailsOpen, setDetailsOpen] = useState<boolean>(true);
 
   // Editor state
   const [title, setTitle] = useState<string>("");
@@ -405,9 +406,14 @@ export const EditPage = () => {
         </div>
       </div>
 
-      {/* Collapsible commit details */}
-      <details className="bg-white rounded-xl shadow-sm border border-gray-100" open>
-        <summary className="p-4 cursor-pointer font-medium text-gray-900 list-none">
+      {/* Collapsible commit details with smooth animation */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div
+          className="p-4 cursor-pointer font-medium text-gray-900"
+          role="button"
+          aria-expanded={detailsOpen}
+          onClick={() => setDetailsOpen((v) => !v)}
+        >
           <div className="flex justify-between items-center">
             <span>
               {selectedCommit && details
@@ -416,40 +422,47 @@ export const EditPage = () => {
             </span>
             <span className="text-sm text-gray-500">(Click to expand/collapse)</span>
           </div>
-        </summary>
-        <div className="border-t border-gray-200 p-4">
-          {!selectedCommit ? (
-            <div className="text-gray-600">Select a commit to view details.</div>
-          ) : detailsLoading ? (
-            <div className="space-y-2">
-              <Skeleton width={240} />
-              <Skeleton count={3} />
-              <Skeleton width={240} />
-              <Skeleton count={5} />
-            </div>
-          ) : details ? (
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Commit Message</h3>
-              <div className="p-3 bg-gray-50 rounded-md text-gray-800 mb-6 whitespace-pre-wrap">
-                {details.message}
-              </div>
-
-              <h3 className="text-lg font-semibold mb-2">
-                File Changes ({details.files?.length ?? 0})
-              </h3>
-              <div>
-                {details.files && details.files.length > 0 ? (
-                  details.files.map((f) => <FileDiff key={f.filename} file={f} />)
-                ) : (
-                  <div className="text-gray-600">No file changes found.</div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="text-gray-600">Failed to load details.</div>
-          )}
         </div>
-      </details>
+        {/* Animate using grid-rows from 0fr -> 1fr when open */}
+        <div
+          className={`border-t border-gray-200 grid transition-[grid-template-rows] duration-300 ease-in-out ${
+            detailsOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          }`}
+        >
+          <div className="overflow-hidden p-4">
+            {!selectedCommit ? (
+              <div className="text-gray-600">Select a commit to view details.</div>
+            ) : detailsLoading ? (
+              <div className="space-y-2">
+                <Skeleton width={240} />
+                <Skeleton count={3} />
+                <Skeleton width={240} />
+                <Skeleton count={5} />
+              </div>
+            ) : details ? (
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Commit Message</h3>
+                <div className="p-3 bg-gray-50 rounded-md text-gray-800 mb-6 whitespace-pre-wrap">
+                  {details.message}
+                </div>
+
+                <h3 className="text-lg font-semibold mb-2">
+                  File Changes ({details.files?.length ?? 0})
+                </h3>
+                <div>
+                  {details.files && details.files.length > 0 ? (
+                    details.files.map((f) => <FileDiff key={f.filename} file={f} />)
+                  ) : (
+                    <div className="text-gray-600">No file changes found.</div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-600">Failed to load details.</div>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Generate button */}
       <div className="flex justify-center pb-1">
@@ -516,8 +529,13 @@ export const EditPage = () => {
 
           <label className="block text-sm font-medium text-gray-700 mb-1">Markdown Editor</label>
           <div className={`${generating ? "pointer-events-none opacity-70" : ""}`}>
-            <MDEditor value={content} onChange={(val) => setContent(val ?? "") as any} height={400} />
-          </div>
+            <MDEditor
+              value={content}
+              onChange={(val) => setContent(val ?? "") as any}
+              height={400}
+              preview="edit"
+            />
+         </div>
         </div>
 
         <div>
