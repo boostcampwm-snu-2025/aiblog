@@ -1,6 +1,6 @@
 import { TextInput } from "../../../shared";
 import { useRepoUrlForm } from "../model/useRepoUrlForm";
-import { useCommits } from "../../../shared/hooks";
+import { useCommits } from "../model/useCommits";
 
 export function RepoSearchForm() {
   const { repoUrl, setRepoUrl, submittedRepoUrl, onSubmitUrl } =
