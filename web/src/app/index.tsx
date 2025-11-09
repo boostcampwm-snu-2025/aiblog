@@ -12,11 +12,11 @@ import { useGithubRepository } from "./service";
 function App() {
   const {
     commits,
+    commitsStatus,
     handleSearch,
-    isLoadingCommits,
-    isLoadingPulls,
     owner,
     pulls,
+    pullsStatus,
     repo,
     searchQuery,
     setSearchQuery,
@@ -42,7 +42,7 @@ function App() {
           </form>
         </div>
 
-        {owner && repo && (
+        {searchQuery && commitsStatus !== "idle" && (
           <div className="mb-4">
             <h2 className="text-2xl font-semibold">
               {owner}/{repo}
@@ -61,7 +61,7 @@ function App() {
               <CardDescription>Latest commits to the repository</CardDescription>
             </CardHeader>
             <CardContent>
-              {isLoadingCommits ? (
+              {commitsStatus === "loading" && (
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div className="border-l-2 border-blue-200 pl-4 py-2" key={i}>
@@ -71,15 +71,18 @@ function App() {
                     </div>
                   ))}
                 </div>
-              ) : commits && commits.length > 0 ? (
+              )}
+              {commitsStatus === "success" && (
                 <div className="space-y-4">
-                  {commits.slice(0, 10).map((commit) => (
+                  {commits?.slice(0, 10).map((commit) => (
                     <CommitCard commit={commit} key={commit.sha} />
                   ))}
                 </div>
-              ) : owner && repo ? (
+              )}
+              {commitsStatus === "empty" && (
                 <div className="text-sm text-gray-500">No commits found</div>
-              ) : (
+              )}
+              {commitsStatus === "idle" && (
                 <div className="text-sm text-gray-500">Enter a repository to view commits</div>
               )}
             </CardContent>
@@ -95,7 +98,7 @@ function App() {
               <CardDescription>Open pull requests</CardDescription>
             </CardHeader>
             <CardContent>
-              {isLoadingPulls ? (
+              {pullsStatus === "loading" && (
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div className="border-l-2 border-green-200 pl-4 py-2" key={i}>
@@ -107,15 +110,18 @@ function App() {
                     </div>
                   ))}
                 </div>
-              ) : pulls && pulls.length > 0 ? (
+              )}
+              {pullsStatus === "success" && (
                 <div className="space-y-4">
-                  {pulls.slice(0, 10).map((pr) => (
+                  {pulls?.slice(0, 10).map((pr) => (
                     <PrCard key={pr.id} pr={pr} />
                   ))}
                 </div>
-              ) : owner && repo ? (
+              )}
+              {pullsStatus === "empty" && (
                 <div className="text-sm text-gray-500">No pull requests found</div>
-              ) : (
+              )}
+              {pullsStatus === "idle" && (
                 <div className="text-sm text-gray-500">
                   Enter a repository to view pull requests
                 </div>

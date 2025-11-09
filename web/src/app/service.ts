@@ -29,13 +29,30 @@ export function useGithubRepository() {
     queryKey: ["pulls", owner, repo],
   });
 
+  // Derived states for clearer conditional rendering
+  const commitsStatus = !owner || !repo
+    ? "idle"
+    : isLoadingCommits
+      ? "loading"
+      : commits && commits.length > 0
+        ? "success"
+        : "empty";
+
+  const pullsStatus = !owner || !repo
+    ? "idle"
+    : isLoadingPulls
+      ? "loading"
+      : pulls && pulls.length > 0
+        ? "success"
+        : "empty";
+
   return {
     commits,
+    commitsStatus,
     handleSearch,
-    isLoadingCommits,
-    isLoadingPulls,
     owner,
     pulls,
+    pullsStatus,
     repo,
     searchQuery,
     setSearchQuery,
