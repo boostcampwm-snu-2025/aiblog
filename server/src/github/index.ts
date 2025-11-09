@@ -9,6 +9,26 @@ const octokit = new Octokit({
 	auth: env.GITHUB_TOKEN,
 });
 
+router.get("/repos/:owner/:repo/commits", async (req, res) => {
+	const schema = z.object({
+		owner: z.string(),
+		repo: z.string(),
+	});
+	const params = schema.parse(req.params);
+	const { data } = await octokit.rest.repos.listCommits(params);
+	res.json(data);
+});
+
+router.get("/repos/:owner/:repo/pulls", async (req, res) => {
+	const schema = z.object({
+		owner: z.string(),
+		repo: z.string(),
+	});
+	const params = schema.parse(req.params);
+	const { data } = await octokit.rest.pulls.list(params);
+	res.json(data);
+});
+
 router.get(
 	"/repos/:owner/:repo/pulls/:pull_number/commits",
 	async (req, res) => {
