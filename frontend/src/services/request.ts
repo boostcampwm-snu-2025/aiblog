@@ -1,8 +1,6 @@
-// src/services/request.ts
-
 import { HttpError } from "./error";
 
-const BASE_URL = "/api";
+const BASE_URL = "http://localhost:5000/api/github";
 
 const handleResponse = async <T>(response: Response): Promise<T> => {
   if (!response.ok) {

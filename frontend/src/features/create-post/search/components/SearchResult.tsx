@@ -1,6 +1,6 @@
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
-import type { PRStatus, PullRequest } from "@/types";
+import type { PRStatus, PullRequest } from "@/types/pullrequest";
 import { customConsole } from "@/utils/console";
 import { formatDate } from "@/utils/format";
 
@@ -35,7 +35,7 @@ function SearchResultItem({ pullRequest }: SearchResultItemProps) {
     <li className="flex justify-between rounded-lg border border-gray-200 p-6">
       <div className="flex-1">
         <div className="mb-3 flex items-center gap-3">
-          <PRStatusBadge status={pullRequest.state} />
+          <PRStatusBadge status={pullRequest.prStatus} />
           <span className="text-sm font-medium text-gray-500">#{pullRequest.id}</span>
         </div>
         <h3 className="mb-3 text-lg font-semibold text-gray-900">{pullRequest.title}</h3>
