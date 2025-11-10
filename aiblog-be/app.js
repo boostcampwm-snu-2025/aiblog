@@ -3,6 +3,7 @@ import cors from "cors";
 
 import testRoutes from "./routes/testRoutes.js";
 import githubDataRoutes from "./routes/githubDataRoutes.js";
+import aboutRoutes from "./routes/aboutRoutes.js";
 
 const app = express();
 
@@ -13,5 +14,6 @@ app.use(express.json());
 // routes
 app.use("/test", testRoutes);
 app.use("/github-data", githubDataRoutes);
+app.use("/about", aboutRoutes);
 
 export default app;
