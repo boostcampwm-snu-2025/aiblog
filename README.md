@@ -106,11 +106,11 @@ sh start-all.sh
 
 ## Developing Branch
 
-### Week1: `main` branch
+- Week1: `main` branch
 
-### Week2: `week2` branch
+- Week2: `week2` branch
 
-### Week3: `week3` branch
+- Week3: `week3` branch
 
 ## Directory Structure
 
@@ -160,7 +160,7 @@ GET /github-data/my-repos
 - Headers:
 
 ```plaintext
-Authorization: Bearer ghp_YOUR_TOKEN
+Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
 Content-Type: application/json
 ```
 
@@ -175,7 +175,7 @@ GET /github-data/recent-commits
 - Headers:
 
 ```plaintext
-Authorization: Bearer ghp_YOUR_TOKEN
+Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
 Content-Type: application/json
 ```
 
@@ -197,7 +197,7 @@ GET /github-data/my-pull-requests
 - Headers:
 
 ```plaintext
-Authorization: Bearer ghp_YOUR_TOKEN
+Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
 Content-Type: application/json
 ```
 
@@ -206,3 +206,23 @@ Content-Type: application/json
   - `state` (string, PR filter by PR state, optional): `open` / `closed` / `all`
   - `per_page` (number, number of PRs to fetch, optional): `20`
   - `page` (number, page number to fetch, optional): `1`
+
+### 'About' Page API
+
+API to generate the 'About' page content using my Github data and OpenAI API.
+
+```plaintext
+GET /about/generate
+```
+
+- Headers:
+
+```plaintext
+Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
+Content-Type: application/json
+```
+
+- Query Parameters:
+  - `github` (string, github link): `https://github.com/kimheonningg`
+  - `lang` (string, optional): `kr` / `en`
+  - `tone` (string, optional): `concise` / `friendly` / `formal`
