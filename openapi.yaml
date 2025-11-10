@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: Smart Blog API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5179
+paths:
+  /api/github/commits:
+    get:
+      summary: List recent commits
+      parameters:
+        - in: query
+          name: repo
+          required: true
+          schema: { type: string, example: "vercel/next.js" }
+      responses:
+        "200": { description: OK }
+  /api/github/pulls:
+    get:
+      summary: List recent pull requests
+      parameters:
+        - in: query
+          name: repo
+          required: true
+          schema: { type: string, example: "vercel/next.js" }
+      responses:
+        "200": { description: OK }
+  /api/github/summarize/commit:
+    post:
+      summary: Summarize a commit with LLM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, properties: { commit: { type: object } } }
+      responses: { "200": { description: OK } }
+  /api/github/summarize/pr:
+    post:
+      summary: Summarize a PR with LLM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, properties: { pr: { type: object } } }
+      responses: { "200": { description: OK } }
+  /api/posts:
+    get: { summary: List posts, responses: { "200": { description: OK } } }
+    post:
+      summary: Create post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, body]
+              properties:
+                title: { type: string }
+                body: { type: string }
+                sourceUrl: { type: string }
+                tags: { type: array, items: { type: string } }
+      responses: { "200": { description: OK } }
+  /api/posts/{id}:
+    delete:
+      summary: Delete post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses: { "200": { description: OK } }

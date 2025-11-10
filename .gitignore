@@ -1,0 +1,45 @@
+# --- 공통 노드/워크스페이스 ---
+node_modules/
+**/node_modules/
+
+# 빌드 산출물
+dist/
+**/dist/
+build/
+**/build/
+
+# 환경 변수 
+.env
+.env.*
+**/.env
+**/.env.*
+
+# 로그/캐시
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+logs/
+.pnpm-store/
+.cache/
+.eslintcache
+
+# 테스트/커버리지
+coverage/
+.nyc_output/
+
+# IDE/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 서버 로컬 데이터
+server/.data/
+**/.data/
+
+# 기타 도구
+.vercel/
+.netlify/
+.temp/

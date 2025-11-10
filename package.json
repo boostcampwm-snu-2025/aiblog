@@ -1,0 +1,12 @@
+{
+  "name": "ai-blog",
+  "private": true,
+  "scripts": {
+    "dev": "npm -w server run dev & npm -w client run dev",
+    "server": "npm -w server run dev",
+    "client": "npm -w client run dev",
+    "build": "npm -w client run build",
+    "start": "npm -w server run start"
+  },
+  "workspaces": ["server", "client"]
+}
