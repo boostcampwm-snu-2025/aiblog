@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    /* Base Options */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+
+    /* Module Options */
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    /* Build-time Options */
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src/**/*"], // Only compile files in the src folder
+  "exclude": ["node_modules"]
+}
