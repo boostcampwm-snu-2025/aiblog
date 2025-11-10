@@ -41,6 +41,7 @@
 
 - OpenAI API 연동
 - Blog contents 자동 생성하도록 OpenAI API 사용
+- About 글도 자동 생성하도록 OpenAI API 사용
 
 ### 3주차
 
@@ -74,6 +75,13 @@ This project will open at `http://localhost:5173`
 
 ### Express Backend
 
+First set up the `.env` file at backend root directory `aiblog-be/`:
+
+```bash
+# check .env.example
+cp .env.example .env
+```
+
 ```bash
 # move to the backend project directory
 cd aiblog-be
@@ -95,6 +103,14 @@ Or start this project using `start-all.sh`
 # at root directory, run
 sh start-all.sh
 ```
+
+## Developing Branch
+
+### Week1: `main` branch
+
+### Week2: `week2` branch
+
+### Week3: `week3` branch
 
 ## Directory Structure
 
