@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* GitHub-inspired global styles */
+body {
+  @apply bg-gh-canvas-default text-gh-fg-default;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+}
+
+#root {
+  @apply min-h-screen;
+}
+
+/* Custom scrollbar - GitHub style */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gh-canvas-default;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gh-border-default rounded-md;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gh-border-muted;
+}
