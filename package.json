@@ -1,0 +1,14 @@
+{
+  "name": "aiblog",
+  "private": true,
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run -w ./server dev\" \"npm run -w ./web dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

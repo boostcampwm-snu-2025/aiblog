@@ -1,0 +1,4 @@
+export function ErrorBanner({ msg }: { msg: string }) {
+    return <div className="error">{msg}</div>;
+  }
+  
