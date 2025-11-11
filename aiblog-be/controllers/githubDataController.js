@@ -33,10 +33,9 @@ export async function getMyRepos(req, res, next) {
 
 		if (result.meta) {
 			const { remaining, limit, reset } = result.meta;
-			if (remaining != null)
-				res.set("x-ratelimit-remaining", String(remaining));
-			if (limit != null) res.set("x-ratelimit-limit", String(limit));
-			if (reset != null) res.set("x-ratelimit-reset", String(reset));
+			if (!remaining) res.set("x-ratelimit-remaining", String(remaining));
+			if (!limit) res.set("x-ratelimit-limit", String(limit));
+			if (!reset) res.set("x-ratelimit-reset", String(reset));
 			if (result.link) res.set("link", result.link); // GitHub pagination Link header 그대로 전달(옵션)
 		}
 
