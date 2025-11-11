@@ -5,7 +5,7 @@ dotenv.config();
 
 const env = z
 	.object({
-		PORT: z.string().default("3001"),
+		PORT: z.coerce.number().default(3001),
 		GITHUB_TOKEN: z.string(),
 	})
 	.parse(process.env);
