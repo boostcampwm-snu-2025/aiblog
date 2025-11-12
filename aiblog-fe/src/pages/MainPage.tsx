@@ -5,6 +5,7 @@ import Header from "../ui/Header";
 import type { HeaderTabType } from "../types/headerTab";
 
 import GithubPage from "../ui/GithubPage/GithubPage";
+import PostsPage from "../ui/PostsPage/PostsPage";
 import AboutPage from "../ui/AboutPage/AboutPage";
 
 const mainPageStyles = {
@@ -22,6 +23,7 @@ const MainPage = () => {
 			<Header currentTab={currentTab} setCurrentTab={setCurrentTab} />
 
 			{currentTab === "github" && <GithubPage />}
+			{currentTab === "posts" && <PostsPage />}
 			{currentTab === "about" && <AboutPage />}
 		</div>
 	);
