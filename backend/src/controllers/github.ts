@@ -1,13 +1,13 @@
 import type { Request, Response } from "express";
 import { fetchGithubData } from "../utils/githubApi.js";
-
-// PR 상태 상수
-const PR_STATUS = {
-  DRAFT: "draft",
-  OPEN: "open",
-  MERGED: "merged",
-  CLOSED: "closed",
-} as const;
+import {
+  GitHubCommit,
+  GitHubPullRequest,
+  PRStatus,
+  SimplifiedCommit,
+  SimplifiedPullRequest,
+  SimplifiedPullRequestDetail,
+} from "./github.type.js";
 
 // PR 상태 판별 함수
 const getPRStatus = (
@@ -15,13 +15,18 @@ const getPRStatus = (
   draft: boolean,
   mergedAt: string | null
 ) => {
-  if (draft) return PR_STATUS.DRAFT;
-  if (state === "open") return PR_STATUS.OPEN;
-  if (mergedAt) return PR_STATUS.MERGED;
-  return PR_STATUS.CLOSED;
+  switch (true) {
+    case draft === true:
+      return PRStatus.DRAFT;
+    case state === "open":
+      return PRStatus.OPEN;
+    case mergedAt !== null:
+      return PRStatus.MERGED;
+    default:
+      return PRStatus.CLOSED;
+  }
 };
 
-// 타입 정의
 type GetPRListParams = {
   owner: string;
   repo: string;
@@ -40,11 +45,11 @@ export const getPRList = async (
     const { owner, repo } = req.params;
     const { state = "all" } = req.query;
 
-    const data = await fetchGithubData(
+    const data = await fetchGithubData<GitHubPullRequest[]>(
       `/repos/${owner}/${repo}/pulls?state=${state}&per_page=10`
     );
 
-    const simplified = data.map((pr: any) => ({
+    const simplified: SimplifiedPullRequest[] = data.map((pr) => ({
       id: pr.id,
       number: pr.number,
       title: pr.title,
@@ -79,11 +84,11 @@ export const getPRDetail = async (
   try {
     const { owner, repo, pull_number } = req.params;
 
-    const pr = await fetchGithubData(
+    const pr = await fetchGithubData<GitHubPullRequest>(
       `/repos/${owner}/${repo}/pulls/${pull_number}`
     );
 
-    const simplified = {
+    const simplified: SimplifiedPullRequestDetail = {
       id: pr.id,
       number: pr.number,
       title: pr.title,
@@ -120,11 +125,11 @@ export const getPRCommits = async (
   try {
     const { owner, repo, pull_number } = req.params;
 
-    const data = await fetchGithubData(
+    const data = await fetchGithubData<GitHubCommit[]>(
       `/repos/${owner}/${repo}/pulls/${pull_number}/commits`
     );
 
-    const simplified = data.map((commit: any) => ({
+    const simplified: SimplifiedCommit[] = data.map((commit) => ({
       sha: commit.sha,
       message: commit.commit.message,
       author: {
