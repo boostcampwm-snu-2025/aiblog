@@ -76,6 +76,7 @@ export function validateRecentCommitsQuery(query) {
 		until: query.until ? new Date(query.until).toISOString() : undefined,
 		per_page: query.per_page ? Number(query.per_page) : 20,
 		page: query.page ? Number(query.page) : 1,
+		sha: query.sha ? String(query.sha).trim() : undefined,
 	};
 
 	if (!out.repo || !out.repo.includes("/")) {
@@ -96,6 +97,8 @@ export function validateRecentCommitsQuery(query) {
 		err.status = 400;
 		throw err;
 	}
+
+	if (out.sha === "") out.sha = undefined;
 
 	return out;
 }

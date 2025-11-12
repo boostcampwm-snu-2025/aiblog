@@ -90,6 +90,7 @@ export async function getRecentCommits(req, res, next) {
 			until: req.query.until,
 			per_page: req.query.per_page,
 			page: req.query.page,
+			sha: req.query.sha,
 		});
 
 		const [owner, name] = query.repo.split("/");
@@ -102,6 +103,7 @@ export async function getRecentCommits(req, res, next) {
 			until: query.until,
 			per_page: query.per_page,
 			page: query.page,
+			sha: query.sha,
 		});
 
 		if (result.meta) {

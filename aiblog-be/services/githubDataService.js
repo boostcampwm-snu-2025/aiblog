@@ -43,7 +43,7 @@ export async function listRepoBranchesService(params) {
 }
 
 export async function listRecentCommitsService(params) {
-	const { token, owner, name, since, until, per_page, page } = params;
+	const { token, owner, name, since, until, per_page, page, sha } = params;
 
 	const { commits, meta } = await listRecentCommitsRepo({
 		token,
@@ -53,6 +53,7 @@ export async function listRecentCommitsService(params) {
 		until,
 		per_page,
 		page,
+		sha,
 	});
 
 	const items = normalizeCommitItems(commits);

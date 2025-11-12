@@ -56,6 +56,7 @@ export async function listRecentCommitsRepo({
 	until,
 	per_page = 20,
 	page = 1,
+	sha,
 }) {
 	const octokit = makeOctokit(token);
 
@@ -66,9 +67,9 @@ export async function listRecentCommitsRepo({
 		until, // ISO 8601 (optional)
 		per_page: clamp(per_page, 1, 100),
 		page,
+		sha, // Branch name (optional)
 	});
 
-	// rate limit info
 	const rateLimit = res.headers || {};
 	const meta = {
 		remaining: Number(rateLimit["x-ratelimit-remaining"]),
