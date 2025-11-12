@@ -8,6 +8,7 @@ import LanguageSelectBox from "../SelectBox/LanguageSelectBox";
 import ToneSelectBox from "../SelectBox/ToneSelectBox";
 
 import { fetchMyPublicRepos } from "../../utils/api/githubRepo";
+import { fetchRepoBranches } from "../../utils/api/githubBranch";
 import { fetchRecentCommits } from "../../utils/api/githubCommit";
 import { fetchMyPullRequests } from "../../utils/api/githubPR";
 
@@ -15,6 +16,8 @@ interface PostFormProps {
 	onSubmit: (data: PostGenerateRequest) => void;
 	loading: boolean;
 }
+
+type RepoLite = { full_name: string; default_branch?: string };
 
 const postFormStyles: Record<string, CSSProperties> = {
 	wrap: {
@@ -35,17 +38,24 @@ const postFormStyles: Record<string, CSSProperties> = {
 	},
 	selectBoxes: { display: "flex", gap: 20, marginTop: 20 },
 	btn: { marginTop: 12 },
+	hint: { fontSize: 13, color: "var(--gray-600)" },
 };
 
 const PostForm = ({ onSubmit, loading }: PostFormProps) => {
-	const [repos, setRepos] = useState<{ full_name: string }[]>([]);
-	const [selectedRepo, setSelectedRepo] = useState(
+	const [repos, setRepos] = useState<RepoLite[]>([]);
+	const [selectedRepo, setSelectedRepo] = useState<string>(
 		"boostcampwm-snu-2025/aiblog"
 	);
+
+	const [branches, setBranches] = useState<{ name: string }[]>([]);
+	const [selectedBranch, setSelectedBranch] = useState<string>("");
+
 	const [commits, setCommits] = useState<{ id: string; title: string }[]>([]);
 	const [prs, setPrs] = useState<{ id: string | number; title: string }[]>([]);
-	const [selectedCommit, setSelectedCommit] = useState("");
-	const [selectedPR, setSelectedPR] = useState("");
+
+	const [selectedCommit, setSelectedCommit] = useState<string>("");
+	const [selectedPR, setSelectedPR] = useState<string>("");
+
 	const [lang, setLang] = useState<PromptLang>("ko");
 	const [tone, setTone] = useState<PromptTone>("concise");
 
@@ -53,7 +63,15 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 		(async () => {
 			try {
 				const res = await fetchMyPublicRepos();
-				setRepos(res.items || []);
+				const items: RepoLite[] = (res.items || []).map((r: any) => ({
+					full_name: r.full_name,
+					default_branch: r.default_branch,
+				}));
+				setRepos(items);
+				const found = items.find((repo) => repo.full_name === selectedRepo);
+				if (found?.default_branch && !selectedBranch) {
+					setSelectedBranch(found.default_branch);
+				}
 			} catch (e) {
 				console.error("Failed to fetch repos:", e);
 			}
@@ -65,24 +83,64 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 
 		(async () => {
 			try {
-				const commitsRes = await fetchRecentCommits(selectedRepo);
+				// Reset choices
+				setSelectedCommit("");
+				setSelectedPR("");
+				setCommits([]);
+				setPrs([]);
+				setBranches([]);
+
+				// Branch list
+				const branchRes = await fetchRepoBranches({
+					repoFullName: selectedRepo,
+				});
+				const list = branchRes.items || [];
+				setBranches(list);
+
+				const defaultBranch =
+					repos.find((repo) => repo.full_name === selectedRepo)
+						?.default_branch ||
+					list[0]?.name ||
+					"";
+				setSelectedBranch(defaultBranch);
+
+				// PR is not related to branch- fetch all PRs
 				const prsRes = await fetchMyPullRequests({
 					repoFullName: selectedRepo,
 					state: "all",
 				});
-
-				setCommits(commitsRes.items || []);
 				setPrs(
-					(prsRes.items || []).map((pr) => ({
+					(prsRes.items || []).map((pr: any) => ({
 						id: typeof pr.id === "string" ? pr.id : Number(pr.id),
 						title: pr.title || pr.body || `PR #${pr.number ?? pr.id}`,
 					}))
 				);
 			} catch (e) {
-				console.error("Failed to fetch repo data:", e);
+				console.error("Failed on repo change:", e);
 			}
 		})();
-	}, [selectedRepo]);
+	}, [selectedRepo, repos]);
+
+	// Only load the commits of the selected branch
+	useEffect(() => {
+		if (!selectedRepo || !selectedBranch) return;
+
+		(async () => {
+			try {
+				setSelectedCommit("");
+				setCommits([]);
+
+				const commitsRes = await fetchRecentCommits(
+					selectedRepo,
+					30,
+					selectedBranch
+				);
+				setCommits(commitsRes.items || []);
+			} catch (e) {
+				console.error("Failed to fetch commits:", e);
+			}
+		})();
+	}, [selectedRepo, selectedBranch]);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -111,8 +169,32 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 						</option>
 					))}
 				</select>
+				<span style={postFormStyles.hint}>
+					기본 브랜치:{" "}
+					{repos.find((r) => r.full_name === selectedRepo)?.default_branch ??
+						"-"}
+				</span>
 			</div>
 
+			{/* Branch (Only influences commits) */}
+			<div style={postFormStyles.row}>
+				<label style={postFormStyles.label}>Select Branch</label>
+				<select
+					style={postFormStyles.select}
+					value={selectedBranch}
+					onChange={(e) => setSelectedBranch(e.target.value)}
+					disabled={!branches.length}
+				>
+					{!branches.length && <option value="">No branches available</option>}
+					{branches.map((branch) => (
+						<option key={branch.name} value={branch.name}>
+							{branch.name}
+						</option>
+					))}
+				</select>
+			</div>
+
+			{/* Commit (Influenced by selected branch) */}
 			<div style={postFormStyles.row}>
 				<label style={postFormStyles.label}>Select Commit</label>
 				<select
@@ -132,6 +214,7 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 				</select>
 			</div>
 
+			{/* PR (All PRs from the repo) */}
 			<div style={postFormStyles.row}>
 				<label style={postFormStyles.label}>Select Pull Request</label>
 				<select
@@ -144,13 +227,14 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 						{prs.length ? "-- Choose PR --" : "No pull requests available"}
 					</option>
 					{prs.map((pr) => (
-						<option key={pr.id} value={pr.id}>
+						<option key={pr.id} value={String(pr.id)}>
 							{pr.title || `PR #${pr.id}`}
 						</option>
 					))}
 				</select>
 			</div>
 
+			{/* Lang/Tone Selection */}
 			<div style={postFormStyles.selectBoxes}>
 				<LanguageSelectBox value={lang} onChange={setLang} />
 				<ToneSelectBox value={tone} onChange={setTone} />
