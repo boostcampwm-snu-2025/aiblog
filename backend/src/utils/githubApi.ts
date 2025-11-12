@@ -11,7 +11,7 @@ export const fetchGithubData = async <T = unknown>(
     },
   });
 
-  if (!response.ok) {
+  if (response.status !== 200) {
     throw new Error(`GitHub API error: ${response.status}`);
   }
 
