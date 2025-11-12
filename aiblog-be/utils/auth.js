@@ -1,5 +1,5 @@
 export function getBearerToken(req) {
-	const header = req.header("authorization") || req.header("Authorization");
+	const header = req.get("authorization");
 	if (!header || !header.startsWith("Bearer ")) {
 		const err = new Error("Missing Authorization: Bearer <token> header");
 		err.status = 401;
