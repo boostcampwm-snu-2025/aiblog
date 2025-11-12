@@ -1,10 +1,8 @@
 import type { CSSProperties } from "react";
 import { useState } from "react";
-import type {
-	PostGenerateRequest,
-	PostLang,
-	PostTone,
-} from "../../types/githubPostData";
+
+import type { PostGenerateRequest } from "../../types/githubPostData";
+import type { PromptLang, PromptTone } from "../../types/promptSettings";
 
 interface PostFormProps {
 	onSubmit: (data: PostGenerateRequest) => void;
@@ -40,8 +38,8 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 	const [repo, setRepo] = useState("kimheonningg/aiblog");
 	const [commits, setCommits] = useState("");
 	const [prs, setPrs] = useState("");
-	const [lang, setLang] = useState<PostLang>("ko");
-	const [tone, setTone] = useState<PostTone>("concise");
+	const [lang, setLang] = useState<PromptLang>("ko");
+	const [tone, setTone] = useState<PromptTone>("concise");
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();

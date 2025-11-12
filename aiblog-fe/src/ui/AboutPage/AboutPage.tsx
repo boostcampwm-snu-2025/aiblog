@@ -3,7 +3,8 @@ import type { CSSProperties } from "react";
 
 import { MY_GITHUB_URL } from "../../constants/url";
 
-import type { AboutResponse, AboutLang, AboutTone } from "../../types/about";
+import type { AboutResponse } from "../../types/about";
+import type { PromptLang, PromptTone } from "../../types/promptSettings";
 import { fetchAbout } from "../../utils/api/about";
 
 import AboutCard from "./AboutCard";
@@ -67,8 +68,8 @@ const aboutPageStyles: {
 
 const AboutPage = () => {
 	const githubUrl = MY_GITHUB_URL;
-	const [lang, setLang] = useState<AboutLang>("ko");
-	const [tone, setTone] = useState<AboutTone>("concise");
+	const [lang, setLang] = useState<PromptLang>("ko");
+	const [tone, setTone] = useState<PromptTone>("concise");
 
 	const [data, setData] = useState<AboutResponse | null>(null);
 	const [loading, setLoading] = useState<boolean>(false);

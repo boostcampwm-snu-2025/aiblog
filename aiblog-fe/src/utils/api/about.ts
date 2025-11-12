@@ -1,10 +1,11 @@
 import { ABOUTS_GENERATE_API } from "../../constants/api";
-import type { AboutResponse, AboutLang, AboutTone } from "../../types/about";
+import type { AboutResponse } from "../../types/about";
+import type { PromptLang, PromptTone } from "../../types/promptSettings";
 
 export async function fetchAbout(params: {
 	githubUrl: string;
-	lang?: AboutLang;
-	tone?: AboutTone;
+	lang?: PromptLang;
+	tone?: PromptTone;
 }): Promise<AboutResponse> {
 	const token = import.meta.env.VITE_GITHUB_TOKEN;
 	if (!token || token.trim() === "") {

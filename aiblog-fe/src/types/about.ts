@@ -18,6 +18,3 @@ export interface AboutResponse {
 		github?: AboutGithubSource;
 	};
 }
-
-export type AboutLang = "ko" | "en";
-export type AboutTone = "concise" | "friendly" | "formal";

@@ -1,13 +1,10 @@
-export type PostLang = "ko" | "en";
-export type PostTone = "concise" | "friendly" | "formal";
-// TODO: AboutLang & AboutTone과 합치기?
-
+import type { PromptLang, PromptTone } from "./promptSettings";
 export interface PostGenerateRequest {
 	repo: string;
 	commits?: string[];
 	prs?: number[];
-	lang?: PostLang;
-	tone?: PostTone;
+	lang?: PromptLang;
+	tone?: PromptTone;
 }
 
 export interface PostSourceCommit {
