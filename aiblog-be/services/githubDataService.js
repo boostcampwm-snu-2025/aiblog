@@ -2,11 +2,13 @@ import {
 	listRecentCommitsRepo,
 	listMyReposRepo,
 	listPullRequestsRepo,
+	listRepoBranchesRepo,
 } from "../repositories/githubRepository.js";
 import {
 	normalizeCommitItems,
 	normalizeRepoItems,
 	normalizePrItems,
+	normalizeBranchItems,
 } from "../models/githubModels.js";
 
 export async function listMyReposService(params) {
@@ -23,6 +25,21 @@ export async function listMyReposService(params) {
 
 	const items = normalizeRepoItems(repos);
 	return { items };
+}
+
+export async function listRepoBranchesService(params) {
+	const { token, owner, name, per_page, page } = params;
+
+	const { branches, meta } = await listRepoBranchesRepo({
+		token,
+		owner,
+		name,
+		per_page,
+		page,
+	});
+
+	const items = normalizeBranchItems(branches);
+	return { items, meta };
 }
 
 export async function listRecentCommitsService(params) {

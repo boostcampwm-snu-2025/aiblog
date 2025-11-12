@@ -2,11 +2,13 @@ import {
 	listMyReposService,
 	listRecentCommitsService,
 	listMyPullRequestsService,
+	listRepoBranchesService,
 } from "../services/githubDataService.js";
 import {
 	validateRecentCommitsQuery,
 	validateMyReposQuery,
 	validateMyPullRequestsQuery,
+	validateBranchesQuery,
 } from "../models/githubModels.js";
 import { getBearerToken } from "../utils/auth.js";
 
@@ -38,6 +40,39 @@ export async function getMyRepos(req, res, next) {
 			if (limit != null) res.set("x-ratelimit-limit", String(limit));
 			if (reset != null) res.set("x-ratelimit-reset", String(reset));
 			if (result.link) res.set("link", result.link); // GitHub pagination Link header 그대로 전달(옵션)
+		}
+
+		res.json({ items: result.items });
+	} catch (err) {
+		next(err);
+	}
+}
+
+export async function getRepoBranches(req, res, next) {
+	try {
+		const token = getBearerToken(req);
+		const query = validateBranchesQuery({
+			repo: req.query.repo,
+			per_page: req.query.per_page,
+			page: req.query.page,
+		});
+
+		const [owner, name] = query.repo.split("/");
+
+		const result = await listRepoBranchesService({
+			token,
+			owner,
+			name,
+			per_page: query.per_page,
+			page: query.page,
+		});
+
+		if (result.meta) {
+			const { remaining, limit, reset } = result.meta;
+			if (remaining != null)
+				res.set("x-ratelimit-remaining", String(remaining));
+			if (limit != null) res.set("x-ratelimit-limit", String(limit));
+			if (reset != null) res.set("x-ratelimit-reset", String(reset));
 		}
 
 		res.json({ items: result.items });

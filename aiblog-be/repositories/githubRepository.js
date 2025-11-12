@@ -22,6 +22,32 @@ export async function listMyReposRepo({
 	return { repos: res.data ?? [] };
 }
 
+export async function listRepoBranchesRepo({
+	token,
+	owner,
+	name,
+	per_page = 100,
+	page = 1,
+}) {
+	const octokit = makeOctokit(token);
+
+	const res = await octokit.repos.listBranches({
+		owner,
+		repo: name,
+		per_page: clamp(per_page, 1, 100),
+		page,
+	});
+
+	const rateLimit = res.headers || {};
+	const meta = {
+		remaining: Number(rateLimit["x-ratelimit-remaining"]),
+		limit: Number(rateLimit["x-ratelimit-limit"]),
+		reset: Number(rateLimit["x-ratelimit-reset"]),
+	};
+
+	return { branches: res.data ?? [], meta };
+}
+
 export async function listRecentCommitsRepo({
 	token,
 	owner,
