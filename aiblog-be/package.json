@@ -1,0 +1,17 @@
+{
+	"name": "aiblog-be",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "nodemon server.js",
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"@octokit/rest": "^22.0.1",
+		"cors": "^2.8.5",
+		"express": "^4.21.2"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.10"
+	}
+}
