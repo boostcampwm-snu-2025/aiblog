@@ -1,5 +1,6 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import type { PromptLang } from "../../types/promptSettings";
+import { boxStyles } from "./boxStyles";
 
 type LanguageSelectBoxProps = {
 	value: PromptLang;
@@ -8,7 +9,7 @@ type LanguageSelectBoxProps = {
 
 const LanguageSelectBox = ({ value, onChange }: LanguageSelectBoxProps) => {
 	return (
-		<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+		<Box sx={boxStyles}>
 			<FormControl size="small" sx={{ minWidth: 160 }}>
 				<InputLabel id="lang-label">Language</InputLabel>
 				<Select
@@ -17,18 +18,18 @@ const LanguageSelectBox = ({ value, onChange }: LanguageSelectBoxProps) => {
 					value={value}
 					onChange={(e) => onChange(e.target.value as PromptLang)}
 					renderValue={(v) => (
-						<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+						<Box sx={boxStyles}>
 							<span>{v === "ko" ? "Korean" : "English"}</span>
 						</Box>
 					)}
 				>
 					<MenuItem value="ko">
-						<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+						<Box sx={boxStyles}>
 							<span>Korean</span>
 						</Box>
 					</MenuItem>
 					<MenuItem value="en">
-						<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+						<Box sx={boxStyles}>
 							<span>English</span>
 						</Box>
 					</MenuItem>

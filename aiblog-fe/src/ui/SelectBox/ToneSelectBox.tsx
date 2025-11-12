@@ -1,5 +1,6 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import type { PromptTone } from "../../types/promptSettings";
+import { boxStyles } from "./boxStyles";
 
 type ToneSelectBoxProps = {
 	value: PromptTone;
@@ -11,7 +12,7 @@ const ToneSelectBox = ({ value, onChange }: ToneSelectBoxProps) => {
 		t === "concise" ? "Concise" : t === "friendly" ? "Friendly" : "Formal";
 
 	return (
-		<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+		<Box sx={boxStyles}>
 			<FormControl size="small" sx={{ minWidth: 160 }}>
 				<InputLabel id="tone-label">Tone</InputLabel>
 				<Select
@@ -20,23 +21,23 @@ const ToneSelectBox = ({ value, onChange }: ToneSelectBoxProps) => {
 					value={value}
 					onChange={(e) => onChange(e.target.value as PromptTone)}
 					renderValue={(v) => (
-						<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+						<Box sx={boxStyles}>
 							<span>{toneLabel(v as PromptTone)}</span>
 						</Box>
 					)}
 				>
 					<MenuItem value="concise">
-						<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+						<Box sx={boxStyles}>
 							<span>Concise</span>
 						</Box>
 					</MenuItem>
 					<MenuItem value="friendly">
-						<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+						<Box sx={boxStyles}>
 							<span>Friendly</span>
 						</Box>
 					</MenuItem>
 					<MenuItem value="formal">
-						<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+						<Box sx={boxStyles}>
 							<span>Formal</span>
 						</Box>
 					</MenuItem>
