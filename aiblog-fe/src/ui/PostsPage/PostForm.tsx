@@ -38,7 +38,7 @@ const formStyles: { [key: string]: CSSProperties } = {
 };
 
 const PostForm = ({ onSubmit, loading }: PostFormProps) => {
-	const [repo, setRepo] = useState("kimheonningg/aiblog");
+	const [repo, setRepo] = useState("boostcampwm-snu-2025/aiblog");
 	const [commits, setCommits] = useState("");
 	const [prs, setPrs] = useState("");
 	const [lang, setLang] = useState<PromptLang>("ko");
@@ -68,7 +68,7 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 				/>
 			</div>
 			<div style={formStyles.row}>
-				<label style={formStyles.label}>Commit SHAs (comma separated)</label>
+				<label style={formStyles.label}>Commit SHA(s) (comma separated)</label>
 				<input
 					style={formStyles.input}
 					value={commits}
@@ -76,7 +76,7 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 				/>
 			</div>
 			<div style={formStyles.row}>
-				<label style={formStyles.label}>PR Numbers (comma separated)</label>
+				<label style={formStyles.label}>PR Number(s) (comma separated)</label>
 				<input
 					style={formStyles.input}
 					value={prs}
