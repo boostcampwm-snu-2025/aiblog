@@ -28,7 +28,7 @@ type SearchResultItemProps = {
 
 function SearchResultItem({ pullRequest }: SearchResultItemProps) {
   const handleButtonClick = () => {
-    customConsole.log(`PR #${pullRequest.id}로 글쓰기 버튼 클릭됨`);
+    customConsole.log(`PR #${pullRequest.number}로 글쓰기 버튼 클릭됨`);
   };
 
   return (

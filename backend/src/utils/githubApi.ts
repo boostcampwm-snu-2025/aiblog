@@ -1,0 +1,17 @@
+const GITHUB_API_URL = "https://api.github.com";
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+
+export const fetchGithubData = async (endpoint: string) => {
+  const response = await fetch(`${GITHUB_API_URL}${endpoint}`, {
+    headers: {
+      Authorization: `token ${GITHUB_TOKEN}`,
+      Accept: "application/vnd.github.v3+json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`GitHub API error: ${response.status}`);
+  }
+
+  return response.json();
+};
