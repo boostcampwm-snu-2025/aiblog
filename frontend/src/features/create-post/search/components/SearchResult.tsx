@@ -15,7 +15,7 @@ export default function SearchResult({ repositoryName, pullRequests }: SearchRes
       <Badge bgColor="bg-gray-200">{repositoryName}</Badge>
       <ul className="mt-5 space-y-4">
         {pullRequests.map((pr) => (
-          <SearchResultItem key={pr.id} pullRequest={pr} />
+          <SearchResultItem key={pr.number} pullRequest={pr} />
         ))}
       </ul>
     </section>
@@ -36,7 +36,7 @@ function SearchResultItem({ pullRequest }: SearchResultItemProps) {
       <div className="flex-1">
         <div className="mb-3 flex items-center gap-3">
           <PRStatusBadge status={pullRequest.prStatus} />
-          <span className="text-sm font-medium text-gray-500">#{pullRequest.id}</span>
+          <span className="text-sm font-medium text-gray-500">#{pullRequest.number}</span>
         </div>
         <h3 className="mb-3 text-lg font-semibold text-gray-900">{pullRequest.title}</h3>
         <div className="flex items-center gap-4 text-sm text-gray-600">

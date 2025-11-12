@@ -69,6 +69,8 @@
 - [ ] clsx 사용해서 클래스명 조건분기 (Divider 등)
 - [ ] ts-pattern 도입 (https://github.com/boostcampwm-snu-2025/aiblog/pull/16#discussion_r2514199564)4
 - [ ] cva 사용하여 컴포넌트 조건부 스타일링 (Button 등)
+- [ ] Icon 컴포넌트 구현
+- [ ] 프로젝트 구조 개선
 
 ---
 
