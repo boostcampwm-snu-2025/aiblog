@@ -63,6 +63,13 @@
 - [ ] "AI로 초안 생성" 버튼 (PR 정보 있을 때만)
 - [ ] 생성된 콘텐츠 에디터 삽입
 
+### 코드 개선
+
+- [ ] zod 사용해서 런타임 유효성 검사 로직 구현
+- [ ] clsx 사용해서 클래스명 조건분기 (Divider 등)
+- [ ] ts-pattern 도입 (https://github.com/boostcampwm-snu-2025/aiblog/pull/16#discussion_r2514199564)4
+- [ ] cva 사용하여 컴포넌트 조건부 스타일링 (Button 등)
+
 ---
 
 ## 3주차 체크리스트
