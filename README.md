@@ -195,6 +195,26 @@ Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
 Content-Type: application/json
 ```
 
+#### Repo Branches
+
+API to fetch branch data from a specific Github repository.
+
+```plaintext
+GET /github-data/branches
+```
+
+- Headers:
+
+```plaintext
+Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
+Content-Type: application/json
+```
+
+- Query Parameters:
+  - `repo` (string): `kimheonningg/REPO_NAME`
+  - `per_page` (number, number of branches to fetch, optional): `100`
+  - `page` (number, page number to fetch, optional): `1`
+
 #### Recent Commits
 
 API to fetch recent commit data from a specific Github repository.
@@ -212,6 +232,7 @@ Content-Type: application/json
 
 - Query Parameters:
   - `repo` (string): `kimheonningg/REPO_NAME`
+  - `sha` (string, branch name or commit SHA for filtering, optional): `main`
   - `since` (string (ISO 8601), optional): `2025-11-01T00:00:00Z`
   - `until` (string (ISO 8601), optional): `2025-11-02T00:00:00Z`
   - `per_page` (number, number of commits to fetch, optional): `20`
