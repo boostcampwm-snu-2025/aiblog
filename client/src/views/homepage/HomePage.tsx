@@ -4,7 +4,22 @@ import axios from "axios";
 import RepoForm from "./RepoForm";
 import CommitListSection from "./CommitListSection";
 import SummarySection from "./SummarySection";
-import { type CommitNode } from "../../libs/types";
+import PromptModal from "./PromptModal";
+import { type CommitNode, type GitHubApiResponse } from "../../libs/types";
+
+// 개발 환경(DEV)에서는 Vite 프록시를 사용하므로 상대 경로('')를 사용합니다.
+// 프로덕션 빌드(PROD) 시에만 .env의 실제 API 주소를 사용합니다.
+const API_BASE_URL =
+    import.meta.env.PROD && import.meta.env.VITE_API_BASE_URL
+        ? import.meta.env.VITE_API_BASE_URL
+        : ""; // 개발 환경에서는 빈 문자열 (상대 경로)
+
+// 기본 프롬프트
+const DEFAULT_PROMPT = `
+You are a helpful programming assistant.
+Summarize the following GitHub commit message concisely, focusing on the main action and purpose.
+Respond in 1-2 sentences. Keep the summary technical but clear.
+`.trim();
 
 const HomePage: React.FC = () => {
     const [owner, setOwner] = useState<string>("");
@@ -19,6 +34,9 @@ const HomePage: React.FC = () => {
     const [aiSummary, setAiSummary] = useState<string>("");
     const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
 
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [customPrompt, setCustomPrompt] = useState<string>(DEFAULT_PROMPT);
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         setLoading(true);
@@ -28,10 +46,18 @@ const HomePage: React.FC = () => {
         setAiSummary("");
 
         try {
-            const response = await axios.post(
-                "http://localhost:8000/api/github",
-                { owner, repo }
+            const response = await axios.post<GitHubApiResponse>(
+                `${API_BASE_URL}/api/github`,
+                {
+                    owner,
+                    repo,
+                }
             );
+
+            if (response.data.errors) {
+                throw new Error(response.data.errors[0].message);
+            }
+
             const data =
                 response.data?.data?.repository?.defaultBranchRef?.target
                     ?.history?.edges;
@@ -52,21 +78,40 @@ const HomePage: React.FC = () => {
         }
     };
 
-    const handleGenerateSummary = (commit: CommitNode) => {
+    const handleGenerateSummary = async (commit: CommitNode) => {
         setSelectedCommit(commit);
         setIsAiLoading(true);
         setAiSummary("");
 
-        setTimeout(() => {
-            setAiSummary(
-                `This is a mock AI summary for the commit: "${commit.node.messageHeadline}". Real summary will be fetched from Gemini API.`
-            );
+        try {
+            const response = await axios.post(`${API_BASE_URL}/api/summarize`, {
+                commitMessage: commit.node.messageHeadline,
+                customPrompt: customPrompt, //  현재 state의 커스텀 프롬프트 전달
+            });
+
+            setAiSummary(response.data.summary);
+        } catch (err) {
+            console.error("Failed to generate summary:", err);
+            setAiSummary("Error: Failed to generate summary.");
+        } finally {
             setIsAiLoading(false);
-        }, 1500);
+        }
     };
 
     const handleSavePost = () => {
         alert("Blog post saved!");
+    };
+
+    // 커밋을 선택하고, 기존 AI 요약 내용과 로딩 상태를 초기화합니다.
+    const handleSelectCommit = (commit: CommitNode) => {
+        setSelectedCommit(commit);
+        setAiSummary("");
+        setIsAiLoading(false);
+    };
+
+    // 모달 저장 핸들러
+    const handleSavePrompt = (newPrompt: string) => {
+        setCustomPrompt(newPrompt);
     };
 
     return (
@@ -87,7 +132,8 @@ const HomePage: React.FC = () => {
                     commits={commits}
                     selectedCommit={selectedCommit}
                     onGenerateSummary={handleGenerateSummary}
-                    onSelect={setSelectedCommit}
+                    onSelect={handleSelectCommit}
+                    onOpenPromptModal={() => setIsModalOpen(true)}
                 />
 
                 <SummarySection
@@ -97,6 +143,12 @@ const HomePage: React.FC = () => {
                     onSavePost={handleSavePost}
                 />
             </div>
+            <PromptModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={handleSavePrompt}
+                currentPrompt={customPrompt}
+            />
         </>
     );
 };

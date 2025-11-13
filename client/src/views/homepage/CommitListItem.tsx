@@ -46,7 +46,7 @@ const CommitListItem: React.FC<CommitListItemProps> = ({
                     <Typography
                         as="h3"
                         variant="body"
-                        className="font-semibold text-gray-900 truncate"
+                        className="font-semibold text-gray-900 dark:text-gray-900 truncate"
                     >
                         {messageHeadline}
                     </Typography>

@@ -3,6 +3,7 @@ import { type CommitNode } from "../../libs/types";
 import SectionTitle from "../../components/SectionTitle";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import Typography from "../../components/Typography";
+import Button from "../../components/Button";
 import CommitListItem from "./CommitListItem";
 
 interface CommitListSectionProps {
@@ -12,6 +13,7 @@ interface CommitListSectionProps {
     selectedCommit: CommitNode | null;
     onGenerateSummary: (commit: CommitNode) => void;
     onSelect: (commit: CommitNode) => void;
+    onOpenPromptModal: () => void;
 }
 
 const CommitListSection: React.FC<CommitListSectionProps> = ({
@@ -21,10 +23,20 @@ const CommitListSection: React.FC<CommitListSectionProps> = ({
     selectedCommit,
     onGenerateSummary,
     onSelect,
+    onOpenPromptModal,
 }) => {
     return (
         <section className="px-8 w-[600px] flex-shrink-0">
-            <SectionTitle>Recent Commits</SectionTitle>
+            <div className="flex justify-between items-center mb-3">
+                <SectionTitle className="mb-0">Recent Commits</SectionTitle>
+                <Button
+                    variant="secondary"
+                    size="small"
+                    onClick={onOpenPromptModal}
+                >
+                    Edit Prompt
+                </Button>
+            </div>
             {loading && (
                 <div className="flex justify-center items-center h-64">
                     <LoadingSpinner theme="primary" size="large" />
@@ -41,9 +53,9 @@ const CommitListSection: React.FC<CommitListSectionProps> = ({
                 </Typography>
             )}
             <div className="space-y-4">
-                {commits.map((commit, index) => (
+                {commits.map((commit) => (
                     <CommitListItem
-                        key={index}
+                        key={commit.node.oid}
                         commit={commit}
                         onGenerateSummary={onGenerateSummary}
                         onSelect={onSelect}
