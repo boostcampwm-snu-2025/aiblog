@@ -125,30 +125,28 @@ app.post("/api/summarize", async (req: Request, res: Response) => {
         }
 
         // 2. 프롬프트 엔지니어링
-        const prompt =
+        const promptTemplate =
             customPrompt ||
             `
       You are a helpful programming assistant.
       Summarize the following GitHub commit message concisely, focusing on the main action and purpose.
       Respond in 1-2 sentences. Keep the summary technical but clear.
-      
-      Commit Message:
+    `.trim();
+
+        // 만약 커스텀 프롬프트가 있다면, 커밋 메시지를 변수처럼 주입합니다.
+        const finalPrompt = `
+      ${promptTemplate}
+
+      Commit Message to summarize:
       """
       ${commitMessage}
       """
-      
-      Summary:
     `;
-
-        // 만약 커스텀 프롬프트가 있다면, 커밋 메시지를 변수처럼 주입합니다.
-        const finalPrompt = customPrompt
-            ? `${customPrompt}\n\nCommit Message to summarize:\n"""${commitMessage}"""`
-            : prompt;
 
         console.log("[Server] /api/summarize: Gemini API 요청 중...");
 
         // 3. Gemini API 호출
-        const result = await model.generateContent(prompt);
+        const result = await model.generateContent(finalPrompt);
         const response = result.response;
         const summary = response.text();
 
