@@ -20,7 +20,7 @@
 
 ## 2주차: LLM 연동 및 블로그 콘텐츠 생성
 
--   [ ] AI 요약 기능 연동 및 UI 고도화
+-   [x] AI 요약 기능 연동 및 UI 고도화
 
     -   Client (Vite + React + TypeScript)
         -   [x] AI 요약 요청: 목록에서 특정 항목 클릭 시, 'AI 요약' 버튼으로 서버에 요약 요청 (POST /api/summarize)
@@ -34,13 +34,13 @@
         -   [x] AI 응답: 정제된 요약 텍스트를 Client로 전달
         -   [x] 프롬프트도 전달할 수 있게 기능 추가
 
--   [ ] 1주차 피드백 반영
+-   [x] 1주차 피드백 반영
     -   [x] 라이브러리를 package.json에 포함시켜서 의존성 문제 해결
     -   [x] API URL 환경 변수 처리
     -   [x] API 응답 타입 정의 및 옵셔널 체이닝 해결
     -   [x] map()에서 index 대신 고유 key 사용 (React 성능 최적화)
-    -   [ ] CORS 대신 Vite 프록시 사용
-    -   [ ] Husky/Lefthook 설정
+    -   [x] CORS 대신 Vite 프록시 사용
+    -   [x] Husky/Lefthook 설정
 
 ## 3주차: 콘텐츠 저장 및 관리 (LocalStorage)
 

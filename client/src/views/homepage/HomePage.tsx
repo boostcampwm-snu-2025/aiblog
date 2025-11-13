@@ -7,8 +7,12 @@ import SummarySection from "./SummarySection";
 import PromptModal from "./PromptModal";
 import { type CommitNode, type GitHubApiResponse } from "../../libs/types";
 
+// 개발 환경(DEV)에서는 Vite 프록시를 사용하므로 상대 경로('')를 사용합니다.
+// 프로덕션 빌드(PROD) 시에만 .env의 실제 API 주소를 사용합니다.
 const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+    import.meta.env.PROD && import.meta.env.VITE_API_BASE_URL
+        ? import.meta.env.VITE_API_BASE_URL
+        : ""; // 개발 환경에서는 빈 문자열 (상대 경로)
 
 // 기본 프롬프트
 const DEFAULT_PROMPT = `

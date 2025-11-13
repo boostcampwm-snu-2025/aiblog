@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import cors from "cors";
 import dotenv from "dotenv";
 import axios from "axios";
 
@@ -8,21 +7,6 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8000;
-const allowedOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
-
-app.use(
-    cors({
-        origin: function (origin, callback) {
-            if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-                callback(null, true);
-            } else {
-                callback(new Error("Not allowed by CORS"));
-            }
-        },
-        methods: ["GET", "POST", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
-);
 
 app.use(express.json());
 
