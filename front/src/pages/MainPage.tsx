@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { getApiBase } from "../utils";
 
 interface PostSummary {
   id: string;
@@ -25,14 +26,7 @@ export const MainPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const apiBase = useMemo(() => {
-    const envBase = (import.meta as any)?.env?.VITE_API_BASE_URL as
-      | string
-      | undefined;
-    return envBase && envBase.length > 0
-      ? envBase.replace(/\/$/, "")
-      : "http://0.0.0.0:11111/api";
-  }, []);
+  const apiBase = getApiBase();
 
   useEffect(() => {
     const controller = new AbortController();
