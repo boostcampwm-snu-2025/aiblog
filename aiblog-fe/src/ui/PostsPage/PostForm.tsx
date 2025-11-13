@@ -140,11 +140,13 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 				const list = branchRes.items || [];
 				setBranches(list);
 
-				const defaultBranch =
+				const repoDefaultBranch =
 					repos.find((repo) => repo.full_name === selectedRepo)
-						?.default_branch ||
-					list[0]?.name ||
+						?.default_branch || "";
+				const availableDefaultBranch =
+					list.find((branch: any) => branch.name === repoDefaultBranch)?.name ||
 					"";
+				const defaultBranch = availableDefaultBranch || list[0]?.name || "";
 				setSelectedBranch(defaultBranch);
 
 				// PR is not related to branch- fetch all PRs
@@ -154,7 +156,7 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 				});
 				setPrs(
 					(prsRes.items || []).map((pr: any) => ({
-						id: typeof pr.id === "string" ? pr.id : Number(pr.id),
+						id: pr.number,
 						title: pr.title || pr.body || `PR #${pr.number ?? pr.id}`,
 					}))
 				);
