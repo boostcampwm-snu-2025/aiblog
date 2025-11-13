@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import ReactMarkdown from "react-markdown";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { getApiBase } from "../utils";
 
 interface PostDetail {
   id: string;
@@ -29,14 +30,7 @@ export const PostPage = () => {
   const [post, setPost] = useState<PostDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const apiBase = useMemo(() => {
-    const envBase = (import.meta as any)?.env?.VITE_API_BASE_URL as
-      | string
-      | undefined;
-    return envBase && envBase.length > 0
-      ? envBase.replace(/\/$/, "")
-      : "http://0.0.0.0:11111/api";
-  }, []);
+  const apiBase = getApiBase();
 
   useEffect(() => {
     if (!id) {
@@ -48,10 +42,9 @@ export const PostPage = () => {
     const load = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          `${apiBase}/posts/${encodeURIComponent(id)}`,
-          { signal: controller.signal }
-        );
+        const res = await fetch(`${apiBase}/posts/${encodeURIComponent(id)}`, {
+          signal: controller.signal,
+        });
         if (!res.ok) {
           navigate("/", { replace: true });
           return;
@@ -126,27 +119,48 @@ export const PostPage = () => {
                     <a
                       {...props}
                       className="text-blue-600 hover:underline"
-                      target={props.href?.startsWith("http") ? "_blank" : undefined}
-                      rel={props.href?.startsWith("http") ? "noopener noreferrer" : undefined}
+                      target={
+                        props.href?.startsWith("http") ? "_blank" : undefined
+                      }
+                      rel={
+                        props.href?.startsWith("http")
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
                     />
                   ),
                   h1: ({ node, ...props }) => (
-                    <h1 {...props} className="text-3xl lg:text-4xl font-bold text-gray-900 !mt-10 mb-4" />
+                    <h1
+                      {...props}
+                      className="text-3xl lg:text-4xl font-bold text-gray-900 !mt-10 mb-4"
+                    />
                   ),
                   h2: ({ node, ...props }) => (
-                    <h2 {...props} className="text-2xl font-semibold text-gray-900 !mt-10 mb-4" />
+                    <h2
+                      {...props}
+                      className="text-2xl font-semibold text-gray-900 !mt-10 mb-4"
+                    />
                   ),
                   h3: ({ node, ...props }) => (
-                    <h3 {...props} className="text-xl font-semibold text-gray-900 !mt-10 mb-4" />
+                    <h3
+                      {...props}
+                      className="text-xl font-semibold text-gray-900 !mt-10 mb-4"
+                    />
                   ),
                   p: ({ node, ...props }) => (
                     <p {...props} className="text-gray-700 leading-relaxed" />
                   ),
                   ul: ({ node, ...props }) => (
-                    <ul {...props} className="list-disc list-outside space-y-2 pl-6" />
+                    <ul
+                      {...props}
+                      className="list-disc list-outside space-y-2 pl-6"
+                    />
                   ),
                   ol: ({ node, ...props }) => (
-                    <ol {...props} className="list-decimal list-outside space-y-2 pl-6" />
+                    <ol
+                      {...props}
+                      className="list-decimal list-outside space-y-2 pl-6"
+                    />
                   ),
                   blockquote: ({ node, ...props }) => (
                     <blockquote
@@ -163,9 +177,8 @@ export const PostPage = () => {
                   code: ({ node, inline, className, ...props }: any) => (
                     <code
                       {...props}
-                      className={`font-mono ${inline ? "bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded" : ""} ${
-                        className ?? ""
-                      }`}
+                      className={`font-mono ${inline ? "bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded" : ""} ${className ?? ""
+                        }`}
                     />
                   ),
                   hr: ({ node, ...props }) => (
