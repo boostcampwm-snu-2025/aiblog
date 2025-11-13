@@ -4,7 +4,8 @@ import { RECENT_COMMITS_API } from "../../constants/api";
 
 export async function fetchRecentCommits(
 	repoFullName: string,
-	perPage = 30
+	perPage = 30,
+	sha?: string
 ): Promise<CommitListResponse> {
 	const token = import.meta.env.VITE_GITHUB_TOKEN;
 	if (!token || token.trim() === "") {
@@ -15,7 +16,7 @@ export async function fetchRecentCommits(
 
 	const endpoint = `${RECENT_COMMITS_API}?repo=${encodeURIComponent(
 		repoFullName
-	)}&per_page=${perPage}`;
+	)}&per_page=${perPage}${sha ? `&sha=${encodeURIComponent(sha)}` : ""}`;
 
 	const res = await fetch(endpoint, {
 		headers: {

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { HeaderTabType } from "../types/headerTab";
 
 interface HeaderProps {
@@ -5,7 +6,7 @@ interface HeaderProps {
 	setCurrentTab: (tab: HeaderTabType) => void;
 }
 
-const headerStyles = {
+const headerStyles: Record<string, CSSProperties> = {
 	container: {
 		display: "flex",
 		alignItems: "center",
