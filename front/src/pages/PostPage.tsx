@@ -1,67 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import ReactMarkdown from "react-markdown";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { getApiBase } from "../utils";
-
-interface PostDetail {
-  id: string;
-  title: string;
-  content: string;
-  tags: string[];
-  date: string; // ISO string
-}
-
-const formatDate = (iso: string) => {
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "2-digit",
-  });
-};
+import { type PostDetail } from "../types/post";
+import { formatDate } from "../utils/date";
+import { useFetchJson } from "../hooks/useFetchJson";
 
 export const PostPage = () => {
   const navigate = useNavigate();
   const [search] = useSearchParams();
   const id = search.get("id");
 
-  const [post, setPost] = useState<PostDetail | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-
   const apiBase = getApiBase();
+  const url = id ? `${apiBase}/posts/${encodeURIComponent(id)}` : null;
+  const { data: post, loading, error } = useFetchJson<PostDetail>(url);
 
   useEffect(() => {
     if (!id) {
       navigate("/", { replace: true });
-      return;
     }
+  }, [id, navigate]);
 
-    const controller = new AbortController();
-    const load = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`${apiBase}/posts/${encodeURIComponent(id)}`, {
-          signal: controller.signal,
-        });
-        if (!res.ok) {
-          navigate("/", { replace: true });
-          return;
-        }
-        const data = (await res.json()) as PostDetail;
-        setPost(data);
-      } catch (e: any) {
-        if (e?.name !== "AbortError") {
-          navigate("/", { replace: true });
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-    return () => controller.abort();
-  }, [id, apiBase, navigate]);
+  useEffect(() => {
+    if (error) {
+      navigate("/", { replace: true });
+    }
+  }, [error, navigate]);
 
   return (
     <div className="space-y-6">
@@ -177,8 +143,9 @@ export const PostPage = () => {
                   code: ({ node, inline, className, ...props }: any) => (
                     <code
                       {...props}
-                      className={`font-mono ${inline ? "bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded" : ""} ${className ?? ""
-                        }`}
+                      className={`font-mono ${inline ? "bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded" : ""} ${
+                        className ?? ""
+                      }`}
                     />
                   ),
                   hr: ({ node, ...props }) => (

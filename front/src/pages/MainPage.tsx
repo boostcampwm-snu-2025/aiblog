@@ -1,61 +1,22 @@
-import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { getApiBase } from "../utils";
-
-interface PostSummary {
-  id: string;
-  title: string;
-  tags: string[];
-  date: string; // ISO string
-}
-
-const formatDate = (iso: string) => {
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "2-digit",
-  });
-};
+import { type PostSummary } from "../types/post";
+import { formatDate } from "../utils/date";
+import { postHref } from "../utils/routes";
+import { useFetchJson } from "../hooks/useFetchJson";
 
 export const MainPage = () => {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState<PostSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const apiBase = getApiBase();
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const res = await fetch(`${apiBase}/posts`, {
-          signal: controller.signal,
-        });
-        if (!res.ok) {
-          throw new Error(`Failed to load posts (${res.status})`);
-        }
-        const data = (await res.json()) as PostSummary[];
-        setPosts(Array.isArray(data) ? data : []);
-      } catch (e: any) {
-        if (e?.name !== "AbortError") {
-          setError(e?.message || "Failed to load posts");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-    return () => controller.abort();
-  }, [apiBase]);
+  const { data, loading, error } = useFetchJson<PostSummary[]>(
+    `${apiBase}/posts`,
+  );
+  const posts = Array.isArray(data) ? data : [];
 
   const handleOpen = (id: string) => {
-    navigate(`/post?id=${encodeURIComponent(id)}`);
+    navigate(postHref(id));
   };
 
   if (loading) {
@@ -87,7 +48,7 @@ export const MainPage = () => {
       <div className="space-y-4">
         <div className="bg-white p-6 rounded-xl border border-red-200">
           <div className="text-red-700 font-semibold mb-1">Failed to load</div>
-          <div className="text-sm text-red-600">{error}</div>
+          <div className="text-sm text-red-600">{error.message}</div>
         </div>
       </div>
     );
@@ -113,7 +74,7 @@ export const MainPage = () => {
         >
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             <Link
-              to={`/post?id=${encodeURIComponent(post.id)}`}
+              to={postHref(post.id)}
               className="hover:text-blue-600 transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
@@ -132,7 +93,7 @@ export const MainPage = () => {
           </p>
 
           <Link
-            to={`/post?id=${encodeURIComponent(post.id)}`}
+            to={postHref(post.id)}
             className="text-blue-600 font-medium hover:underline inline-flex items-center"
             onClick={(e) => e.stopPropagation()}
             aria-label={`Read more about ${post.title}`}
