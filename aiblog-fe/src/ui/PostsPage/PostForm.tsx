@@ -18,6 +18,7 @@ interface PostFormProps {
 }
 
 type RepoLite = { full_name: string; default_branch?: string };
+type CommitLite = { id: string; title: string };
 
 const postFormStyles: Record<string, CSSProperties> = {
 	wrap: {
@@ -39,6 +40,49 @@ const postFormStyles: Record<string, CSSProperties> = {
 	selectBoxes: { display: "flex", gap: 20, marginTop: 20 },
 	btn: { marginTop: 12 },
 	hint: { fontSize: 13, color: "var(--gray-600)" },
+
+	checklistWrap: {
+		display: "grid",
+		gap: 8,
+		maxHeight: 280,
+		overflow: "auto",
+		border: "1px solid var(--gray-200)",
+		borderRadius: 10,
+		padding: 10,
+		background: "var(--gray-50)",
+	},
+	checklistHeader: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "space-between",
+	},
+	checklistToolbar: { display: "flex", gap: 8, alignItems: "center" },
+	pillBtn: {
+		padding: "4px 10px",
+		fontSize: 12,
+		borderRadius: 999,
+		border: "1px solid var(--pink-300)",
+		background: "var(--pink-50)",
+		color: "var(--pink-700)",
+		cursor: "pointer",
+	},
+	commitItemRow: {
+		display: "grid",
+		gridTemplateColumns: "auto 1fr",
+		gap: 10,
+		alignItems: "start",
+		background: "var(--white)",
+		border: "1px solid var(--gray-200)",
+		borderRadius: 8,
+		padding: 8,
+	},
+	commitTitle: {
+		margin: 0,
+		fontWeight: 600,
+		color: "var(--gray-900)",
+		wordBreak: "break-word",
+	},
+	commitMeta: { fontSize: 12, color: "var(--gray-700)" },
 };
 
 const PostForm = ({ onSubmit, loading }: PostFormProps) => {
@@ -50,10 +94,9 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 	const [branches, setBranches] = useState<{ name: string }[]>([]);
 	const [selectedBranch, setSelectedBranch] = useState<string>("");
 
-	const [commits, setCommits] = useState<{ id: string; title: string }[]>([]);
+	const [commits, setCommits] = useState<CommitLite[]>([]);
+	const [selectedCommits, setSelectedCommits] = useState<string[]>([]); // Selecting multiple commits are allowed
 	const [prs, setPrs] = useState<{ id: string | number; title: string }[]>([]);
-
-	const [selectedCommit, setSelectedCommit] = useState<string>("");
 	const [selectedPR, setSelectedPR] = useState<string>("");
 
 	const [lang, setLang] = useState<PromptLang>("ko");
@@ -84,13 +127,13 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 		(async () => {
 			try {
 				// Reset choices
-				setSelectedCommit("");
-				setSelectedPR("");
+				setSelectedBranch("");
 				setCommits([]);
+				setSelectedCommits([]);
 				setPrs([]);
+				setSelectedPR("");
 				setBranches([]);
 
-				// Branch list
 				const branchRes = await fetchRepoBranches({
 					repoFullName: selectedRepo,
 				});
@@ -127,26 +170,47 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 
 		(async () => {
 			try {
-				setSelectedCommit("");
 				setCommits([]);
+				setSelectedCommits([]);
 
 				const commitsRes = await fetchRecentCommits(
 					selectedRepo,
 					30,
 					selectedBranch
 				);
-				setCommits(commitsRes.items || []);
+				const items: CommitLite[] = (commitsRes.items || []).map(
+					(commit: any) => ({
+						id: commit.id,
+						title: commit.title || commit.id,
+					})
+				);
+				setCommits(items);
 			} catch (e) {
 				console.error("Failed to fetch commits:", e);
 			}
 		})();
 	}, [selectedRepo, selectedBranch]);
 
+	// Toggle checkbox
+	const toggleCommit = (sha: string) => {
+		setSelectedCommits((prev) =>
+			prev.includes(sha) ? prev.filter((x) => x !== sha) : [...prev, sha]
+		);
+	};
+
+	const selectAllCommits = () => {
+		setSelectedCommits(commits.map((commit) => commit.id));
+	};
+
+	const clearAllCommits = () => {
+		setSelectedCommits([]);
+	};
+
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		const data: PostGenerateRequest = {
 			repo: selectedRepo,
-			commits: selectedCommit ? [selectedCommit] : [],
+			commits: selectedCommits, // Multiple commits
 			prs: selectedPR ? [Number(selectedPR)] : [],
 			lang,
 			tone,
@@ -194,24 +258,54 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 				</select>
 			</div>
 
-			{/* Commit (Influenced by selected branch) */}
+			{/* Commit (Influenced by selected branch, multi select is allowed) */}
 			<div style={postFormStyles.row}>
-				<label style={postFormStyles.label}>Select Commit</label>
-				<select
-					style={postFormStyles.select}
-					value={selectedCommit}
-					onChange={(e) => setSelectedCommit(e.target.value)}
-					disabled={!commits.length}
-				>
-					<option value="">
-						{commits.length ? "-- Choose commit --" : "No commits available"}
-					</option>
-					{commits.map((commit) => (
-						<option key={commit.id} value={commit.id}>
-							{commit.title || commit.id}
-						</option>
-					))}
-				</select>
+				<div style={postFormStyles.checklistHeader}>
+					<label style={postFormStyles.label}>
+						Select Commits ({selectedCommits.length} / {commits.length})
+					</label>
+					<div style={postFormStyles.checklistToolbar}>
+						<button
+							type="button"
+							style={postFormStyles.pillBtn}
+							onClick={selectAllCommits}
+							disabled={!commits.length}
+						>
+							Select All
+						</button>
+						<button
+							type="button"
+							style={postFormStyles.pillBtn}
+							onClick={clearAllCommits}
+							disabled={!selectedCommits.length}
+						>
+							Clear
+						</button>
+					</div>
+				</div>
+
+				<div style={postFormStyles.checklistWrap} aria-live="polite">
+					{!commits.length ? (
+						<div style={{ color: "var(--gray-700)" }}>No commits available</div>
+					) : (
+						commits.map((commit) => (
+							<label key={commit.id} style={postFormStyles.commitItemRow}>
+								<input
+									type="checkbox"
+									checked={selectedCommits.includes(commit.id)}
+									onChange={() => toggleCommit(commit.id)}
+									aria-label={`select commit ${commit.id}`}
+								/>
+								<div>
+									<p style={postFormStyles.commitTitle}>{commit.title}</p>
+									<div style={postFormStyles.commitMeta}>
+										{commit.id?.slice(0, 7) ?? ""}
+									</div>
+								</div>
+							</label>
+						))
+					)}
+				</div>
 			</div>
 
 			{/* PR (All PRs from the repo) */}
