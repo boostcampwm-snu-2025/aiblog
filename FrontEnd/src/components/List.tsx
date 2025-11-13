@@ -26,6 +26,8 @@ interface ListProps {
   repositoryName?: string
   commits?: CommitData[]
   pullRequests?: PullRequestData[]
+  onItemSelect?: (data: CommitData | PullRequestData, type: 'commit' | 'pr') => void
+  onGenerateSummary?: (data: CommitData | PullRequestData, type: 'commit' | 'pr') => void
 }
 
 export default function List({
@@ -33,7 +35,9 @@ export default function List({
   isAuthenticated,
   selectedRepository,
   commits = [],
-  pullRequests = []
+  pullRequests = [],
+  onItemSelect,
+  onGenerateSummary
 }: ListProps) {
   const data = type === 'commit' ? commits : pullRequests
   const isEmpty = data.length === 0
@@ -61,10 +65,24 @@ export default function List({
       <div className="w-full flex flex-col gap-[15px]">
         {type === 'commit'
           ? (commits as CommitData[]).map((commit) => (
-              <Commit key={commit.id} data={commit} />
+              <Commit
+                key={commit.id}
+                data={commit}
+                onGenerateSummary={() => {
+                  onItemSelect?.(commit, 'commit')
+                  onGenerateSummary?.(commit, 'commit')
+                }}
+              />
             ))
           : (pullRequests as PullRequestData[]).map((pr) => (
-              <PR key={pr.id} data={pr} />
+              <PR
+                key={pr.id}
+                data={pr}
+                onGenerateSummary={() => {
+                  onItemSelect?.(pr, 'pr')
+                  onGenerateSummary?.(pr, 'pr')
+                }}
+              />
             ))}
       </div>
     )

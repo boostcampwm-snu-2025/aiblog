@@ -6,6 +6,7 @@
     "start": "node src/server.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@octokit/core": "^5.0.0",
     "axios": "^1.6.0",
     "cors": "^2.8.5",
