@@ -5,8 +5,8 @@ import { cn } from "../libs/utils";
 const typographyVariants = cva("text-left", {
     variants: {
         variant: {
-            body: "text-base text-gray-300",
-            meta: "text-sm text-gray-400",
+            body: "text-base text-gray-700 dark:text-gray-300",
+            meta: "text-sm text-gray-500 dark:text-gray-400",
         },
     },
     defaultVariants: {

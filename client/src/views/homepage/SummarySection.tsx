@@ -5,6 +5,7 @@ import Card from "../../components/Card";
 import Typography from "../../components/Typography";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import Button from "../../components/Button";
+import { cn } from "../../libs/utils";
 
 interface SummarySectionProps {
     selectedCommit: CommitNode | null;
@@ -19,7 +20,8 @@ const SummarySection: React.FC<SummarySectionProps> = ({
     isAiLoading,
     onSavePost,
 }) => {
-    const isSaveDisabled = isAiLoading || !aiSummary;
+    const isSaveDisabled =
+        isAiLoading || !aiSummary || aiSummary.startsWith("Error:");
 
     return (
         <section className="px-8 w-full">
@@ -37,7 +39,7 @@ const SummarySection: React.FC<SummarySectionProps> = ({
                             <Typography
                                 as="h3"
                                 variant="body"
-                                className="font-semibold text-gray-900 truncate"
+                                className="font-semibold text-gray-900 dark:text-gray-900 truncate"
                             >
                                 {selectedCommit.node.messageHeadline}
                             </Typography>
@@ -49,17 +51,13 @@ const SummarySection: React.FC<SummarySectionProps> = ({
                             </Typography>
                         </div>
 
-                        <hr className="dark:border-gray-700" />
+                        <hr className="border-gray-700" />
 
                         {/* AI 요약 섹션 */}
                         <div>
-                            <Typography
-                                as="h3"
-                                variant="body"
-                                className="font-semibold text-gray-900 mb-3 text-left"
-                            >
+                            <SectionTitle className="text-gray-900 dark:text-gray-900">
                                 AI Summary
-                            </Typography>
+                            </SectionTitle>
                             {isAiLoading && (
                                 <div className="flex justify-center items-center py-4">
                                     <LoadingSpinner
@@ -68,10 +66,20 @@ const SummarySection: React.FC<SummarySectionProps> = ({
                                     />
                                 </div>
                             )}
+                            {/* 요약 전/에러 시 (meta), 요약 성공 시 (body) */}
                             {!isAiLoading && aiSummary && (
                                 <Typography
-                                    variant="body"
-                                    className="leading-relaxed"
+                                    variant={
+                                        aiSummary.startsWith("Error:")
+                                            ? "meta"
+                                            : "body"
+                                    }
+                                    className={cn(
+                                        "leading-relaxed",
+                                        aiSummary.startsWith("Error:")
+                                            ? "text-red-400" // 에러는 빨간색
+                                            : "text-gray-900 dark:text-gray-900" // 성공시 검정색
+                                    )}
                                 >
                                     {aiSummary}
                                 </Typography>
