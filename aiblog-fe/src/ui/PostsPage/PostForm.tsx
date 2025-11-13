@@ -300,9 +300,9 @@ const PostForm = ({ onSubmit, loading }: PostFormProps) => {
 								/>
 								<div>
 									<p style={postFormStyles.commitTitle}>{commit.title}</p>
-									<div style={postFormStyles.commitMeta}>
+									{/* <div style={postFormStyles.commitMeta}>
 										{commit.id?.slice(0, 7) ?? ""}
-									</div>
+									</div> */}
 								</div>
 							</label>
 						))
