@@ -4,7 +4,10 @@ import axios from "axios";
 import RepoForm from "./RepoForm";
 import CommitListSection from "./CommitListSection";
 import SummarySection from "./SummarySection";
-import { type CommitNode } from "../../libs/types";
+import { type CommitNode, type GitHubApiResponse } from "../../libs/types";
+
+const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 const HomePage: React.FC = () => {
     const [owner, setOwner] = useState<string>("");
@@ -28,10 +31,18 @@ const HomePage: React.FC = () => {
         setAiSummary("");
 
         try {
-            const response = await axios.post(
-                "http://localhost:8000/api/github",
-                { owner, repo }
+            const response = await axios.post<GitHubApiResponse>(
+                `${API_BASE_URL}/api/github`,
+                {
+                    owner,
+                    repo,
+                }
             );
+
+            if (response.data.errors) {
+                throw new Error(response.data.errors[0].message);
+            }
+
             const data =
                 response.data?.data?.repository?.defaultBranchRef?.target
                     ?.history?.edges;
@@ -59,12 +70,9 @@ const HomePage: React.FC = () => {
 
         try {
             // 1. 백엔드 서버의 /api/summarize로 커밋 메시지를 보냄
-            const response = await axios.post(
-                "http://localhost:8000/api/summarize",
-                {
-                    commitMessage: commit.node.messageHeadline, // 요약할 텍스트
-                }
-            );
+            const response = await axios.post(`${API_BASE_URL}/api/summarize`, {
+                commitMessage: commit.node.messageHeadline, // 요약할 텍스트
+            });
 
             // 2. 백엔드로부터 받은 요약 텍스트를 state에 저장
             setAiSummary(response.data.summary);
