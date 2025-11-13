@@ -117,7 +117,7 @@ app.post("/api/github", async (req: Request, res: Response) => {
 const geminiApiKey = process.env.GEMINI_API_KEY || "";
 if (!geminiApiKey) {
     console.warn(
-        "[Server] ⚠️ GEMINI_API_KEY가 .env 파일에 설정되지 않았습니다. /api/summarize 엔드포인트가 작동하지 않습니다."
+        "[Server] GEMINI_API_KEY가 .env 파일에 설정되지 않았습니다. /api/summarize 엔드포인트가 작동하지 않습니다."
     );
 }
 const genAI = new GoogleGenerativeAI(geminiApiKey);
@@ -131,8 +131,8 @@ app.post("/api/summarize", async (req: Request, res: Response) => {
     }
 
     try {
-        // 1. React가 보낸 커밋 메시지를 받습니다.
-        const { commitMessage } = req.body;
+        // 1. React가 보낸 커밋 메시지, 커스텀 프롬프트를 받습니다.
+        const { commitMessage, customPrompt } = req.body;
 
         if (!commitMessage) {
             return res
@@ -141,7 +141,9 @@ app.post("/api/summarize", async (req: Request, res: Response) => {
         }
 
         // 2. 프롬프트 엔지니어링
-        const prompt = `
+        const prompt =
+            customPrompt ||
+            `
       You are a helpful programming assistant.
       Summarize the following GitHub commit message concisely, focusing on the main action and purpose.
       Respond in 1-2 sentences. Keep the summary technical but clear.
@@ -153,6 +155,11 @@ app.post("/api/summarize", async (req: Request, res: Response) => {
       
       Summary:
     `;
+
+        // 만약 커스텀 프롬프트가 있다면, 커밋 메시지를 변수처럼 주입합니다.
+        const finalPrompt = customPrompt
+            ? `${customPrompt}\n\nCommit Message to summarize:\n"""${commitMessage}"""`
+            : prompt;
 
         console.log("[Server] /api/summarize: Gemini API 요청 중...");
 

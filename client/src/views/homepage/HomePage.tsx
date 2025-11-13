@@ -4,10 +4,18 @@ import axios from "axios";
 import RepoForm from "./RepoForm";
 import CommitListSection from "./CommitListSection";
 import SummarySection from "./SummarySection";
+import PromptModal from "./PromptModal";
 import { type CommitNode, type GitHubApiResponse } from "../../libs/types";
 
 const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+
+// 기본 프롬프트
+const DEFAULT_PROMPT = `
+You are a helpful programming assistant.
+Summarize the following GitHub commit message concisely, focusing on the main action and purpose.
+Respond in 1-2 sentences. Keep the summary technical but clear.
+`.trim();
 
 const HomePage: React.FC = () => {
     const [owner, setOwner] = useState<string>("");
@@ -21,6 +29,9 @@ const HomePage: React.FC = () => {
     );
     const [aiSummary, setAiSummary] = useState<string>("");
     const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
+
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [customPrompt, setCustomPrompt] = useState<string>(DEFAULT_PROMPT);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -64,17 +75,16 @@ const HomePage: React.FC = () => {
     };
 
     const handleGenerateSummary = async (commit: CommitNode) => {
-        setSelectedCommit(commit); // 요약할 커밋을 선택
+        setSelectedCommit(commit);
         setIsAiLoading(true);
         setAiSummary("");
 
         try {
-            // 1. 백엔드 서버의 /api/summarize로 커밋 메시지를 보냄
             const response = await axios.post(`${API_BASE_URL}/api/summarize`, {
-                commitMessage: commit.node.messageHeadline, // 요약할 텍스트
+                commitMessage: commit.node.messageHeadline,
+                customPrompt: customPrompt, //  현재 state의 커스텀 프롬프트 전달
             });
 
-            // 2. 백엔드로부터 받은 요약 텍스트를 state에 저장
             setAiSummary(response.data.summary);
         } catch (err) {
             console.error("Failed to generate summary:", err);
@@ -93,6 +103,11 @@ const HomePage: React.FC = () => {
         setSelectedCommit(commit);
         setAiSummary("");
         setIsAiLoading(false);
+    };
+
+    // 모달 저장 핸들러
+    const handleSavePrompt = (newPrompt: string) => {
+        setCustomPrompt(newPrompt);
     };
 
     return (
@@ -114,6 +129,7 @@ const HomePage: React.FC = () => {
                     selectedCommit={selectedCommit}
                     onGenerateSummary={handleGenerateSummary}
                     onSelect={handleSelectCommit}
+                    onOpenPromptModal={() => setIsModalOpen(true)}
                 />
 
                 <SummarySection
@@ -123,6 +139,12 @@ const HomePage: React.FC = () => {
                     onSavePost={handleSavePost}
                 />
             </div>
+            <PromptModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={handleSavePrompt}
+                currentPrompt={customPrompt}
+            />
         </>
     );
 };

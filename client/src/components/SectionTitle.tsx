@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../libs/utils";
 
 const sectionTitleVariants = cva(
-    "text-xl font-semibold text-white text-left mb-3"
+    "text-xl font-semibold text-gray-900 dark:text-white text-left mb-3"
 );
 
 export interface SectionTitleProps
