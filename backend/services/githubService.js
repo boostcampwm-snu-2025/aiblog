@@ -1,40 +1,37 @@
-import axios from "axios";
+async function githubFetch(path, params = {}) {
+  const query = Object.keys(params).length
+    ? "?" + new URLSearchParams(params).toString()
+    : "";
 
-const headers = {
-  Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-  "User-Agent": "SmartBlog-App",
-};
+  const url = `https://api.github.com${path}${query}`;
 
-// 공통 요청 함수
-export const githubAPI = axios.create({ headers });
-
-export const fetchCommits = async ({ owner, repo, per_page, page }) => {
-  const { data } = await githubAPI.get(
-    `https://api.github.com/repos/${owner}/${repo}/commits`,
-    { params: { per_page, page } }
-  );
-  return data;
-};
-
-export const fetchPRs = async ({ owner, repo, per_page, page, state }) => {
-  const { data } = await githubAPI.get(
-    `https://api.github.com/repos/${owner}/${repo}/pulls`,
-    { params: { per_page, page, state } }
-  );
-  return data;
-};
-
-export const fetchMyRepos = async () => {
-  const { data } = await githubAPI.get("https://api.github.com/user/repos", {
-    params: { per_page: 30, sort: "updated" },
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+      "User-Agent": "SmartBlog-App",
+    },
   });
-  return data;
-};
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || `GitHub API error: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+export const fetchCommits = ({ owner, repo, per_page, page }) =>
+  githubFetch(`/repos/${owner}/${repo}/commits`, { per_page, page });
+
+export const fetchPRs = ({ owner, repo, per_page, page, state }) =>
+  githubFetch(`/repos/${owner}/${repo}/pulls`, { per_page, page, state });
+
+export const fetchMyRepos = () =>
+  githubFetch(`/user/repos`, { per_page: 30, sort: "updated" });
 
 export const fetchPRDetail = async ({ owner, repo, number }) => {
-  const { data } = await githubAPI.get(
-    `https://api.github.com/repos/${owner}/${repo}/pulls/${number}`
-  );
+  const data = await githubFetch(`/repos/${owner}/${repo}/pulls/${number}`);
+
   return {
     number: data.number,
     title: data.title,

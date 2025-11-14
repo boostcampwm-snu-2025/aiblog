@@ -1,5 +1,3 @@
-import axios from "axios";
-
 export interface Commit {
   sha: string;
   html_url: string;
@@ -44,17 +42,40 @@ export interface SimplePRDetail {
   merged: boolean;
 }
 
-const api = axios.create({
-  baseURL: "/api/github",
-});
+const BASE_URL = "/api/github";
+
+async function apiFetch<T>(
+  path: string,
+  params?: Record<string, any>
+): Promise<T> {
+  const query = params
+    ? "?" +
+      Object.entries(params)
+        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+        .join("&")
+    : "";
+
+  const res = await fetch(`${BASE_URL}${path}${query}`);
+
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(msg || `API Error: ${res.status}`);
+  }
+
+  return res.json() as Promise<T>;
+}
 
 export const getCommits = async (
   owner: string,
   repo: string,
   page = 1
 ): Promise<Commit[]> => {
-  const res = await api.get("/commits", { params: { owner, repo, page, per_page: 10 } });
-  return res.data;
+  return apiFetch<Commit[]>("/commits", {
+    owner,
+    repo,
+    page,
+    per_page: 10,
+  });
 };
 
 export const getPRs = async (
@@ -62,13 +83,16 @@ export const getPRs = async (
   repo: string,
   page = 1
 ): Promise<PullRequest[]> => {
-  const res = await api.get("/prs", { params: { owner, repo, page, per_page: 10 } });
-  return res.data;
+  return apiFetch<PullRequest[]>("/prs", {
+    owner,
+    repo,
+    page,
+    per_page: 10,
+  });
 };
 
 export const getMyRepos = async (): Promise<Repo[]> => {
-  const res = await api.get("/repos"); 
-  return res.data;
+  return apiFetch<Repo[]>("/repos");
 };
 
 export const getSimplePRDetail = async (
@@ -76,6 +100,8 @@ export const getSimplePRDetail = async (
   repo: string,
   number: number
 ): Promise<SimplePRDetail> => {
-  const res = await api.get(`/pr-detail/${number}`, { params: { owner, repo } });
-  return res.data;
+  return apiFetch<SimplePRDetail>(`/pr-detail/${number}`, {
+    owner,
+    repo,
+  });
 };
