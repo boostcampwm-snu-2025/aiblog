@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import githubRouter from "./routes/github.js";
+import aiRouter from "./routes/ai.js";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/github", githubRouter);
+app.use("/api/ai", aiRouter);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
