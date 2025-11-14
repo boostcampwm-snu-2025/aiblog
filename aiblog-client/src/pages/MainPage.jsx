@@ -3,6 +3,7 @@ import { RepoSetup } from '@/components/RepoSetup';
 import { LeftPanel } from '@/components/LeftPanel';
 import { RightPanel } from '@/components/RightPanel';
 import { GenerateButton } from '@/components/GenerateButton';
+import { BlogResultModal } from '@/components/BlogResultModal';
 import { MainPageProvider, useMainPageContext } from '@/contexts/MainPageContext';
 
 function MainPageContent() {
@@ -55,6 +56,7 @@ function MainPageContent() {
           </Box>
         </>
       )}
+      <BlogResultModal />
     </Container>
   );
 }
