@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { fetchGithubData } from "../utils/githubApi.js";
+import { fetchGithubData } from "../services/githubApi.js";
 import {
   GitHubCommit,
   GitHubPullRequest,
@@ -7,7 +7,7 @@ import {
   SimplifiedCommit,
   SimplifiedPullRequest,
   SimplifiedPullRequestDetail,
-} from "./github.type.js";
+} from "../types/github.js";
 
 // PR 상태 판별 함수
 const getPRStatus = (
