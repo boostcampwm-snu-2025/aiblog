@@ -4,7 +4,7 @@ import {
   getPRs,
   getMyRepos,
   getPRDetail,
-} from "../controllers/githubController.js";
+} from "./github.controller.js";
 
 const router = express.Router();
 

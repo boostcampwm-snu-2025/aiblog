@@ -3,7 +3,7 @@ import {
   fetchPRs,
   fetchMyRepos,
   fetchPRDetail,
-} from "../services/githubService.js";
+} from "./github.service.js";
 
 // ----------------------
 // Commits
