@@ -58,7 +58,7 @@ const prFields = `
  * @param {'all' | 'commits' | 'prs'} filterType
  * @returns {string} The GraphQL query string
  */
-const getGraphQLQuery = (filterType) => {
+export function getGraphQLQuery(filterType) {
   // Query for Commits only
   if (filterType === 'commits') {
     return `
