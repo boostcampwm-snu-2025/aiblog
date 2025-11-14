@@ -68,7 +68,7 @@ export default function GithubPage() {
     if (detailOpen && selectedPR != null && owner && repo) {
       prDetailFetch.fetchData(owner, repo, selectedPR);
     }
-  }, [detailOpen, selectedPR, owner, repo]);
+  }, [detailOpen, selectedPR, owner, repo, prDetailFetch.fetchData]);
 
   const handleLoadMoreCommits = async () => {
     const nextPage = commitPage + 1;
