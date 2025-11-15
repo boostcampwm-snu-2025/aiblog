@@ -1,29 +1,36 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
-export async function createBlogPost(title, content) {
+export async function createBlogPost({ title, content }) {
   const prompt = `
-    다음은 GitHub에서 작성한 작업 내용입니다.
+    다음 GitHub 작업 내용을 기반으로 간단한 개발 블로그 글을 작성해 주세요.
 
-    [제목] ${title || "제목 없음"}
-    [내용]
+    조건:
+    - 한국어로 작성
+    - 섹션을 나누고, 소제목(h2 수준) 포함
+    - 커밋/PR에서 바뀐 것, 도입한 기술, 변경사항, 배운 점 등을 종합적으로 정리
+    - 너무 장황한 서술 금지
+
+    제목: ${title}
+
+    원본 내용:
     ${content}
+  `.trim();
 
-    이 내용을 기반으로 개발자 블로그용 글을 작성해주세요.
-    요구사항:
-    - 자연스럽고 논리적인 한국어 문장
-    - 핵심 기술 요약, 문제 해결 과정, 배운 점, 느낀 점 포함
-    - 마크다운 형식으로 작성 (제목, 코드블럭, 리스트 등 사용)
-    - 너무 길지 않게 800~1200자 내외
-    `;
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o", 
-    messages: [{ role: "user", content: prompt }],
-  });
-
-  return response.choices[0].message.content;
+    console.log("=== Gemini response ===", response);
+    const text = response.text;
+    return text;
+  } catch (err) {
+    console.error("Gemini API Error:", err);
+    throw new Error("Failed to generate summary");
+  }
 }
