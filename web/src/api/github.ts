@@ -97,9 +97,12 @@ export function readPulls(owner: string, repo: string) {
 export function readRepository(owner: string, repo: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
-      const response = await fetch(`${baseUrl}/api/github/repos/${owner}/${repo}`, {
-        signal,
-      });
+      const response = await fetch(
+        `${baseUrl}/api/github/repos/${owner}/${repo}`,
+        {
+          signal,
+        },
+      );
       if (!response.ok) {
         throw new Error(response.statusText);
       }
