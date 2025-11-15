@@ -47,13 +47,13 @@ function BranchesPage() {
         params: { owner, repo },
         search: { branch: selectedBranch },
         to: "/repos/$owner/$repo/branches",
-      }).catch(() => {});
+      }).catch(console.error);
     } else {
       navigate({
         params: { owner, repo },
         search: {},
         to: "/repos/$owner/$repo/branches",
-      }).catch(() => {});
+      }).catch(console.error);
     }
   };
 

@@ -50,13 +50,13 @@ function PullRequestsPage() {
         params: { owner, repo },
         search: { pullNumber: Number(selectedPullNumber) },
         to: "/repos/$owner/$repo/pull-requests",
-      });
+      }).catch(console.error);
     } else {
       navigate({
         params: { owner, repo },
         search: {},
         to: "/repos/$owner/$repo/pull-requests",
-      });
+      }).catch(console.error);
     }
   };
 

@@ -20,7 +20,7 @@ function IndexPage() {
       navigate({
         params: { owner: ownerInput, repo: repoInput },
         to: "/repos/$owner/$repo",
-      });
+      }).catch(console.error);
     }
   };
 
