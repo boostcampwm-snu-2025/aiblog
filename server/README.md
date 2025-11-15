@@ -1,6 +1,7 @@
-# Server - Backend API
+# Server - Backend API (2주차: LLM 연동)
 
-Smart Blog의 백엔드 API 서버입니다. Express.js와 TypeScript로 구축되었으며, GitHub API 통합 및 AI 요약 기능을 제공합니다.
+Smart Blog의 백엔드 API 서버입니다. Express.js와 TypeScript로 구축되었으며, GitHub API 통합 및 **LLM 기반 블로그 요약 생성** 기능을 제공합니다.  
+프론트엔드에서 선택한 커밋/PR 정보로 AI 블로그 글을 만들고, 이를 로컬 JSON 스토리지에 포스트로 저장합니다.
 
 ## 디렉토리 구조
 
@@ -33,9 +34,10 @@ getRecentActivities 함수는 다음과 같이 동작합니다:
 
 ETag를 활용한 캐싱으로 GitHub API 호출을 최적화합니다.
 
-### AI 요약
+### AI 요약 / 블로그 생성
 
-summarize.ts 모듈은 OpenAI API를 사용하여 선택한 GitHub 활동들을 분석하고 블로그 포스트 형식으로 요약합니다. 다양한 언어와 톤을 지원합니다.
+`summarize.ts` 모듈은 OpenAI Chat Completions API를 사용하여 **선택한 GitHub 활동(커밋/PR)** 을 분석하고, 블로그 포스트 형식의 마크다운을 생성합니다.  
+Smart Blog UI에서 *Generate Summary* 버튼을 클릭하면 이 엔드포인트가 호출되고, 생성된 마크다운은 웹에서 미리보기 후 *Save as Blog Post* 로 저장할 수 있습니다.
 
 ### 포스트 관리
 
@@ -43,7 +45,7 @@ posts.ts 모듈은 JSON 파일 기반의 간단한 데이터베이스를 사용�
 
 ## 환경 변수
 
-프로젝트 루트(server 디렉토리)에 .env 파일을 생성하세요:
+프로젝트 루트(server 디렉토리)에 `.env` 파일을 생성하세요:
 
 ```
 GITHUB_TOKEN=ghp_your_github_personal_access_token
@@ -54,8 +56,8 @@ CORS_ORIGIN=http://localhost:5173
 
 환경 변수 설명:
 
-- GITHUB_TOKEN: GitHub Personal Access Token (repo 권한 필요)
-- OPENAI_API_KEY: OpenAI API 키
+- GITHUB_TOKEN: GitHub Personal Access Token (repo 권한 필요, 없으면 제한된 비인증 호출로 동작)
+- OPENAI_API_KEY: OpenAI API 키 (LLM 요약 기능에 필수)
 - PORT: 서버 포트 (기본값: 8080)
 - CORS_ORIGIN: CORS 허용 오리진 (쉼표로 구분하여 여러 개 지정 가능)
 
@@ -197,4 +199,5 @@ cache.ts는 메모리 기반의 간단한 캐싱을 제공합니다. GitHub API 
 ### 에러 처리
 
 각 브랜치의 커밋을 조회할 때 특정 브랜치에서 에러가 발생하더라도 다른 브랜치는 정상적으로 처리됩니다. 이를 통해 일부 브랜치에 접근 권한이 없거나 문제가 있어도 전체 요청이 실패하지 않습니다.
+
 
