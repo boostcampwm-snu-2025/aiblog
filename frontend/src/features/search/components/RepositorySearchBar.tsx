@@ -20,7 +20,12 @@ export default function RepositorySearchBar({ initValues, onSearch }: Repository
   };
 
   return (
-    <form className="flex items-end justify-center gap-4">
+    <form
+      className="flex items-end justify-center gap-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+      }}
+    >
       <fieldset className="flex gap-4">
         <TextInput label="Owner" value={owner} onChange={(e) => setOwner(e.target.value)} />
         <TextInput label="Repository" value={repository} onChange={(e) => setRepository(e.target.value)} />

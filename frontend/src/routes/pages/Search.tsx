@@ -2,10 +2,9 @@ import { useSearchParams } from "react-router";
 
 import Divider from "@/components/ui/Divider";
 import { ErrorFallback, LoadingFallback } from "@/components/ui/Fallback";
-import CreatePostHeader from "@/features/create-post/components/CreatePostHeader";
-import { usePullRequests } from "@/features/create-post/search/api/get-pullrequests";
-import RepositorySearchBar from "@/features/create-post/search/components/RepositorySearchBar";
-import SearchResult from "@/features/create-post/search/components/SearchResult";
+import { usePullRequests } from "@/features/search/api/get-pullrequests";
+import RepositorySearchBar from "@/features/search/components/RepositorySearchBar";
+import SearchResult from "@/features/search/components/SearchResult";
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,12 +31,11 @@ export default function SearchPage() {
 
   return (
     <div className="p-8">
-      <CreatePostHeader />
-      <div className="space-y-8 rounded-md border border-gray-300 p-10">
+      <div className="space-y-8 p-10">
         <RepositorySearchBar initValues={{ owner, repository }} onSearch={handleSearch} />
+        <Divider />
         {hasSearchParams ? (
           <>
-            <Divider />
             {status === "pending" && <LoadingFallback message="PR 목록을 불러오는 중..." />}
             {status === "error" && <ErrorFallback />}
             {status === "success" && (

@@ -5,7 +5,7 @@ export default function Button({ text, ...props }: ButtonProps) {
     <button
       {...props}
       className="flex h-10 cursor-pointer items-center justify-center rounded-md bg-blue-600 px-5 text-white"
-      type="button"
+      // type="button"
     >
       {text}
     </button>
