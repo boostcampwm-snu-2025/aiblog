@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { GitPullRequest } from "lucide-react";
-import { useState } from "react";
 
 import { readPullCommits, readPulls } from "~/api/github";
 import {
@@ -14,15 +13,23 @@ import {
 } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
 
-export const Route = createFileRoute("/$owner/$repo/pull-requests")({
+type PullRequestsSearch = {
+  pullNumber?: number;
+};
+
+export const Route = createFileRoute("/repos/$owner/$repo/pull-requests")({
   component: PullRequestsPage,
+  validateSearch: (search: Record<string, unknown>): PullRequestsSearch => {
+    return {
+      pullNumber: search.pullNumber ? Number(search.pullNumber) : undefined,
+    };
+  },
 });
 
 function PullRequestsPage() {
   const { owner, repo } = Route.useParams();
-  const [selectedPullNumber, setSelectedPullNumber] = useState<null | number>(
-    null,
-  );
+  const { pullNumber } = Route.useSearch();
+  const navigate = useNavigate();
 
   // Fetch pull requests
   const { data: pulls, status: pullsStatus } = useQuery({
@@ -32,17 +39,37 @@ function PullRequestsPage() {
 
   // Fetch commits for selected PR
   const { data: commits, status: commitsStatus } = useQuery({
-    enabled: selectedPullNumber !== null,
-    queryFn: () => readPullCommits(owner, repo, selectedPullNumber!),
-    queryKey: ["pull-commits", owner, repo, selectedPullNumber],
+    enabled: pullNumber !== undefined,
+    queryFn: () => readPullCommits(owner, repo, pullNumber!),
+    queryKey: ["pull-commits", owner, repo, pullNumber],
   });
+
+  const handlePullRequestChange = (selectedPullNumber: string) => {
+    if (selectedPullNumber) {
+      navigate({
+        params: { owner, repo },
+        search: { pullNumber: Number(selectedPullNumber) },
+        to: "/repos/$owner/$repo/pull-requests",
+      });
+    } else {
+      navigate({
+        params: { owner, repo },
+        search: {},
+        to: "/repos/$owner/$repo/pull-requests",
+      });
+    }
+  };
 
   return (
     <div className="p-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6">
-          <Link className="text-blue-600 hover:underline" to="/">
-            ← Back to Search
+          <Link
+            className="text-blue-600 hover:underline"
+            params={{ owner, repo }}
+            to="/repos/$owner/$repo"
+          >
+            ← Back to Repository
           </Link>
         </div>
 
@@ -60,12 +87,8 @@ function PullRequestsPage() {
           <select
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
             id="pull-request"
-            onChange={(e) =>
-              setSelectedPullNumber(
-                e.target.value ? Number(e.target.value) : null,
-              )
-            }
-            value={selectedPullNumber ?? ""}
+            onChange={(e) => handlePullRequestChange(e.target.value)}
+            value={pullNumber ?? ""}
           >
             <option value="">-- Select a pull request --</option>
             {pullsStatus === "success" &&
@@ -81,12 +104,12 @@ function PullRequestsPage() {
           <div className="text-gray-600">Loading pull requests...</div>
         )}
 
-        {selectedPullNumber !== null && (
+        {pullNumber !== undefined && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <GitPullRequest className="h-5 w-5" />
-                Commits in PR #{selectedPullNumber}
+                Commits in PR #{pullNumber}
               </CardTitle>
               <CardDescription>
                 Click on a commit to view details
@@ -114,7 +137,7 @@ function PullRequestsPage() {
                       className="block border-l-2 border-green-500 py-2 pl-4 transition-colors hover:bg-gray-50"
                       key={commit.sha}
                       params={{ owner, ref: commit.sha, repo }}
-                      to="/$owner/$repo/commits/$ref"
+                      to="/repos/$owner/$repo/commits/$ref"
                     >
                       <div className="mb-1 text-sm font-medium">
                         {commit.commit.message.split("\n")[0]}

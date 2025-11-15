@@ -57,10 +57,10 @@ export default defineConfig([
             {
               from: "package",
               name: "Redirect",
-              package: "@tanstack/router-core"
-            }
-          ]
-        }
+              package: "@tanstack/router-core",
+            },
+          ],
+        },
       ],
       "no-unused-vars": "off",
     },

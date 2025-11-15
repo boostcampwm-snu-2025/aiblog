@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { GitCommit } from "lucide-react";
-import { useState } from "react";
+import z from "zod";
 
 import { readBranchCommits, readBranches } from "~/api/github";
 import {
@@ -14,13 +14,19 @@ import {
 } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
 
-export const Route = createFileRoute("/$owner/$repo/branches")({
+const searchSchema = z.object({
+  branch: z.string().optional(),
+});
+
+export const Route = createFileRoute("/repos/$owner/$repo/branches")({
   component: BranchesPage,
+  validateSearch: searchSchema,
 });
 
 function BranchesPage() {
   const { owner, repo } = Route.useParams();
-  const [selectedBranch, setSelectedBranch] = useState<string>("");
+  const { branch } = Route.useSearch();
+  const navigate = useNavigate();
 
   // Fetch branches
   const { data: branches, status: branchesStatus } = useQuery({
@@ -30,18 +36,37 @@ function BranchesPage() {
 
   // Fetch commits for selected branch
   const { data: commits, status: commitsStatus } = useQuery({
-    enabled: !!selectedBranch,
-    queryFn: ({ signal }) =>
-      readBranchCommits(owner, repo, selectedBranch, signal),
-    queryKey: ["branch-commits", owner, repo, selectedBranch],
+    enabled: !!branch,
+    queryFn: ({ signal }) => readBranchCommits(owner, repo, branch!, signal),
+    queryKey: ["branch-commits", owner, repo, branch],
   });
+
+  const handleBranchChange = (selectedBranch: string) => {
+    if (selectedBranch) {
+      navigate({
+        params: { owner, repo },
+        search: { branch: selectedBranch },
+        to: "/repos/$owner/$repo/branches",
+      }).catch(() => {});
+    } else {
+      navigate({
+        params: { owner, repo },
+        search: {},
+        to: "/repos/$owner/$repo/branches",
+      }).catch(() => {});
+    }
+  };
 
   return (
     <div className="p-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6">
-          <Link className="text-blue-600 hover:underline" to="/">
-            ← Back to Search
+          <Link
+            className="text-blue-600 hover:underline"
+            params={{ owner, repo }}
+            to="/repos/$owner/$repo"
+          >
+            ← Back to Repository
           </Link>
         </div>
 
@@ -56,14 +81,16 @@ function BranchesPage() {
           <select
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
             id="branch"
-            onChange={(e) => setSelectedBranch(e.target.value)}
-            value={selectedBranch}
+            onChange={(e) => {
+              handleBranchChange(e.target.value);
+            }}
+            value={branch || ""}
           >
             <option value="">-- Select a branch --</option>
             {branchesStatus === "success" &&
-              branches?.map((branch) => (
-                <option key={branch.name} value={branch.name}>
-                  {branch.name}
+              branches?.map((b) => (
+                <option key={b.name} value={b.name}>
+                  {b.name}
                 </option>
               ))}
           </select>
@@ -73,12 +100,12 @@ function BranchesPage() {
           <div className="text-gray-600">Loading branches...</div>
         )}
 
-        {selectedBranch && (
+        {branch && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <GitCommit className="h-5 w-5" />
-                Commits on {selectedBranch}
+                Commits on {branch}
               </CardTitle>
               <CardDescription>
                 Click on a commit to view details
@@ -106,7 +133,7 @@ function BranchesPage() {
                       className="block border-l-2 border-blue-500 py-2 pl-4 transition-colors hover:bg-gray-50"
                       key={commit.sha}
                       params={{ owner, ref: commit.sha, repo }}
-                      to="/$owner/$repo/commits/$ref"
+                      to="/repos/$owner/$repo/commits/$ref"
                     >
                       <div className="mb-1 text-sm font-medium">
                         {commit.commit.message.split("\n")[0]}

@@ -16,7 +16,7 @@ import {
 } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
 
-export const Route = createFileRoute("/$owner/$repo/commits/$ref")({
+export const Route = createFileRoute("/repos/$owner/$repo/commits/$ref")({
   component: CommitDetailPage,
 });
 
