@@ -184,14 +184,15 @@ PUT    /api/posts/:id    # 포스트 수정
 DELETE /api/posts/:id    # 포스트 삭제
 ```
 
-## 사용 방법
+## 사용 방법 (Smart Blog 플로우)
 
-1. 웹 애플리케이션에 접속합니다
-2. GitHub 저장소의 owner와 repo 이름을 입력합니다
-3. 검색 버튼을 클릭하면 모든 브랜치의 최근 활동이 표시됩니다
-4. 각 활동에는 브랜치명이 함께 표시되어 어느 브랜치의 작업인지 확인할 수 있습니다
-5. 원하는 활동들을 선택하여 AI 요약을 생성할 수 있습니다
-6. 생성된 콘텐츠를 포스트로 저장하여 관리합니다
+1. 웹 애플리케이션(`http://localhost:5173`)에 접속합니다.
+2. 상단 입력창에 `owner/repo` 형식으로 GitHub 저장소를 입력합니다.  
+   - 예: `joosung03/netflix-clone`
+3. 조회 기간(14일, 30일, 90일 등)을 선택한 뒤 **최근 커밋 보기** 버튼을 클릭합니다.
+4. 좌측 **Recent Commits** 카드 목록에서 원하는 커밋/PR의 **Generate Summary** 버튼을 클릭합니다.
+5. 우측 **Selected Commit** 패널의 *AI Summary* 영역에 LLM(OpenAI API)이 생성한 블로그 스타일 마크다운이 표시됩니다.
+6. 내용이 마음에 들면 **Save as Blog Post** 버튼을 눌러 서버의 `/api/posts`에 포스트로 저장합니다.
 
 ## 최근 업데이트
 
@@ -210,6 +211,13 @@ DELETE /api/posts/:id    # 포스트 삭제
 - 초기 로딩 화면에서 불필요한 empty 메시지 제거
 - 실제로 검색을 실행한 후에만 "활동이 없습니다" 메시지 표시
 
+### LLM 기반 블로그 생성 및 Smart Blog UI (2주차)
+
+- OpenAI Chat Completions API를 사용하는 `/api/summarize` 엔드포인트를 구현하여, 선택한 커밋/PR에 대한 **블로그 형식 AI 요약**을 생성
+- 프론트엔드에서 카드 형태의 **Recent Commits** 리스트와 **Selected Commit / AI Summary** 패널로 구성된 Smart Blog 레이아웃 구현
+- 각 활동별 **Generate Summary** 버튼을 통해 단일 커밋/PR에 대한 요약을 트리거
+- 생성된 마크다운을 미리보기로 보여주고, **Save as Blog Post** 버튼으로 `/api/posts`에 저장하는 플로우 완성
+
 ## 개발 진행 상황
 
 ### 1주차
@@ -219,4 +227,11 @@ DELETE /api/posts/:id    # 포스트 삭제
 - GitHub 데이터 가져와서 렌더링
 - 멀티 브랜치 지원 구현
 - 브랜치명 표시 기능 추가
+
+### 2주차
+
+- OpenAI API 연동을 통한 LLM 요약 기능 구현
+- GitHub 최근 커밋/PR 별 **Generate Summary** 버튼으로 블로그 글 자동 생성
+- Selected Commit 패널에서 AI Summary 표시 및 **Save as Blog Post** 기능 구현
+- Smart Blog 스타일의 헤더/2열 레이아웃 및 카드 기반 UI 적용
 

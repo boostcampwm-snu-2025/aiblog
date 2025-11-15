@@ -1,6 +1,7 @@
-# Web - Frontend Application
+# Web - Frontend Application (2주차: Smart Blog UI)
 
-Smart Blog의 프론트엔드 애플리케이션입니다. React와 TypeScript로 구축되었으며, Vite를 번들러로 사용합니다.
+Smart Blog의 프론트엔드 애플리케이션입니다. React와 TypeScript로 구축되었으며, Vite를 번들러로 사용합니다.  
+2주차 미션에서는 GitHub 활동에 대한 **LLM 블로그 요약**을 생성하고, 이를 **Selected Commit / AI Summary** 영역에서 확인·저장할 수 있는 Smart Blog 레이아웃을 구현했습니다.
 
 ## 디렉토리 구조
 
@@ -17,16 +18,17 @@ web/
 │   └── vite.svg
 └── src/
     ├── main.tsx                # React 앱 진입점
-    ├── App.tsx                 # 메인 애플리케이션 컴포넌트
-    ├── api.ts                  # 백엔드 API 클라이언트
-    ├── types.ts                # TypeScript 타입 정의
-    ├── styles.css              # 전역 CSS 스타일
+    ├── App.tsx                 # 메인 애플리케이션 컴포넌트 (Smart Blog 레이아웃)
+    ├── api.ts                  # 백엔드 API 클라이언트 (요약 생성, 포스트 저장 포함)
+    ├── api.types.ts            # API 결과 타입 정의 (Post 등)
+    ├── types.ts                # Activity 타입 정의
+    ├── styles.css              # 전역 CSS 스타일 (헤더, 2열 레이아웃, 카드 스타일)
     ├── assets/
     │   └── react.svg
     └── components/
-        ├── RepoForm.tsx        # GitHub 저장소 검색 폼
-        ├── ActivityList.tsx    # 활동 목록 표시 및 선택
-        ├── BlogPreview.tsx     # 블로그 포스트 미리보기
+        ├── RepoForm.tsx        # GitHub 저장소 검색 폼 (owner/repo + 기간)
+        ├── ActivityList.tsx    # 활동 목록 + Generate Summary 버튼
+        ├── BlogPreview.tsx     # AI 블로그 요약 미리보기
         ├── Loader.tsx          # 로딩 스피너
         └── ErrorBanner.tsx     # 에러 메시지 배너
 ```
@@ -35,33 +37,47 @@ web/
 
 ### App.tsx
 
-애플리케이션의 메인 컴포넌트입니다. 다음 상태를 관리합니다:
+애플리케이션의 메인 컴포넌트입니다. 상단 `Smart Blog` 헤더와, 좌측 **Recent Commits**, 우측 **Selected Commit / AI Summary** 의 2열 레이아웃을 구성합니다.  
+다음과 같은 상태를 관리합니다:
 
-- items: GitHub 활동 목록
-- loading: 로딩 상태
-- error: 에러 메시지
-- searched: 검색 실행 여부
+- `items`: GitHub 활동 목록
+- `loading`: GitHub 목록 로딩 상태
+- `error`: 목록 조회 에러 메시지
+- `searched`: 검색 실행 여부
+- `selected`: 선택된 커밋/PR
+- `summary`: LLM이 생성한 블로그 마크다운
+- `summaryLoadingId`: 요약 생성 중인 활동 ID
+- `summaryError`: 요약 생성 에러 메시지
+- `saving`: 포스트 저장 중 여부
+- `saveMessage`: 저장 결과 메시지
 
-검색을 실행하기 전에는 빈 화면을 보여주고, 검색 후 활동이 없을 때만 "활동이 없습니다" 메시지를 표시합니다.
+좌측 카드에서 **Generate Summary** 버튼을 클릭하면 `/api/summarize`를 통해 AI 요약을 생성하고, 우측 패널에 출력합니다.  
+요약이 생성된 상태에서는 **Save as Blog Post** 버튼으로 `/api/posts`에 저장할 수 있습니다.
 
 ### RepoForm.tsx
 
-GitHub 저장소를 검색하는 폼 컴포넌트입니다. owner와 repo 이름을 입력받아 onSearch 콜백을 호출합니다.
+GitHub 저장소를 검색하는 폼 컴포넌트입니다.
+
+- 하나의 입력창에 `owner/repo` 형식으로 저장소를 입력합니다. (예: `facebook/react`)
+- 드롭다운으로 조회 기간(14일, 30일, 90일 등)을 선택합니다.
+- 제출 시 `onSearch(owner, repo, sinceDays)` 콜백을 호출합니다.
 
 ### ActivityList.tsx
 
-GitHub 활동 목록을 표시하는 컴포넌트입니다. 각 활동 항목에는 다음 정보가 포함됩니다:
+GitHub 활동 목록을 카드 형태로 표시하는 컴포넌트입니다. 각 카드에는 다음 정보가 포함됩니다:
 
-- 체크박스: 다중 선택 지원
-- 타입 배지: COMMIT 또는 PR
-- 제목 링크: GitHub 페이지로 이동
-- 메타 정보: 작성 시간, 작성자, 브랜치명
+- 타입 배지: `COMMIT` 또는 `PR`
+- 제목 링크: 해당 GitHub 페이지로 이동
+- 메타 정보: 날짜, 작성자, 브랜치명
+- 오른쪽 버튼: **Generate Summary**
 
-브랜치명은 브랜치 아이콘과 함께 표시됩니다.
+버튼 클릭 시 상위에서 전달받은 `onGenerate(activity)` 콜백을 호출하여 AI 요약을 트리거합니다.  
+현재 선택된 커밋은 강조 테두리로 표시되고, 요약 생성 중일 때는 버튼 텍스트가 `요약 생성 중…` 으로 변경됩니다.
 
 ### BlogPreview.tsx
 
-생성된 블로그 포스트를 미리보기하는 컴포넌트입니다.
+생성된 블로그 포스트를 마크다운 문자열 그대로 미리보기하는 간단한 컴포넌트입니다.  
+현재는 `<pre>` 기반으로 표시하며, 필요 시 마크다운 렌더러로 확장할 수 있습니다.
 
 ### Loader.tsx
 
@@ -73,13 +89,19 @@ GitHub 활동 목록을 표시하는 컴포넌트입니다. 각 활동 항목에
 
 ## API 클라이언트
 
-api.ts는 백엔드 서버와 통신하는 함수들을 제공합니다:
+`api.ts`는 백엔드 서버와 통신하는 함수들을 제공합니다:
 
 ```typescript
-fetchRecent(owner: string, repo: string, sinceDays: number)
+fetchRecent(owner: string, repo: string, sinceDays?: number)
+summarizeActivities(items: Activity[], language?: 'ko' | 'en', tone?: 'blog' | 'concise')
+createPost(title: string, markdown: string, tags?: string[])
 ```
 
-GitHub 저장소의 최근 활동을 조회합니다. 기본 API 주소는 http://localhost:8080 이지만, 환경에 따라 변경할 수 있습니다.
+- **`fetchRecent`**: GitHub 저장소의 최근 활동(커밋/PR) 목록을 조회합니다.
+- **`summarizeActivities`**: 선택한 활동들을 서버 `/api/summarize` 엔드포인트에 전달하여 블로그 스타일의 마크다운을 생성합니다.
+- **`createPost`**: 생성된 마크다운을 서버 `/api/posts`에 저장하여 블로그 포스트로 관리합니다.
+
+기본 API 주소는 `http://localhost:8080` 이며, 필요 시 `VITE_API_BASE` 환경 변수로 변경할 수 있습니다.
 
 ## 타입 정의
 
@@ -141,17 +163,16 @@ npm run preview
 
 ## 스타일링
 
-styles.css에 전역 스타일이 정의되어 있습니다. 컴포넌트별 스타일은 className을 통해 적용됩니다.
+`styles.css`에 전역 스타일이 정의되어 있습니다.  
+2주차 미션에서는 Smart Blog 디자인에 맞춰 다음과 같은 구조를 사용합니다.
 
-주요 클래스:
+- `.app-root`, `.app-header`, `.app-main`: 전체 레이아웃 및 상단 헤더 영역
+- `.content-layout`: 좌측 Recent Commits / 우측 Selected Commit 의 2열 그리드
+- `.item-card`, `.item-card--selected`: 커밋/PR 카드
+- `.generate-btn`: Generate Summary 버튼
+- `.selected-card`, `.preview`, `.save-btn`: 우측 선택 영역 및 AI Summary / 저장 버튼
 
-- .container: 메인 컨테이너
-- .list: 활동 목록 컨테이너
-- .item: 개별 활동 항목
-- .badge: 타입 배지 (commit/pr)
-- .meta: 메타 정보 (시간, 작성자, 브랜치)
-- .empty: 빈 상태 메시지
-- .loader: 로딩 스피너
+반응형 레이아웃으로, 폭이 좁은 화면에서는 2열 그리드가 1열로 전환됩니다.
 
 ## 개발 참고사항
 
