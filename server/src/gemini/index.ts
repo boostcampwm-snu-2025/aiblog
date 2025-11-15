@@ -23,11 +23,11 @@ router.get("/summary/:owner/:repo/commits/:ref", async (req, res) => {
 	const commitMessage = commitResponse.data.commit.message;
 	const diffs = commitResponse.data.files?.map(file => file.patch).join("\n") || "";
 	const prompt = `Generate a concise summary of the following commit for a changelog.\n\nCommit Message:\n${commitMessage}\n\nDiffs:\n${diffs}\n\nChangelog Entry:`;
-	const { data } = await ai.models.generateContent({
+	const response = await ai.models.generateContent({
 		model: "gemini-2.5-pro",
 		contents: prompt,
 	});
-	res.send(data ?? '');
+	res.send(response.text);
 });
 
 export default router;
