@@ -1,23 +1,34 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+let genAI: GoogleGenerativeAI | null = null;
 
-if (!GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY is not defined in environment variables");
-}
+const getGeminiClient = () => {
+  if (!genAI) {
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+    if (!GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY is not defined in environment variables");
+    }
+
+    genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  }
+
+  return genAI;
+};
 
 export const generateContent = async (prompt: string): Promise<string> => {
-  const response = await ai.models.generateContent({
-    model: "gemini-2.0-flash-exp",
-    contents: prompt,
-    config: {
+  const client = getGeminiClient();
+
+  const model = client.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    generationConfig: {
       responseMimeType: "application/json",
     },
   });
 
-  const text = response.text;
+  const result = await model.generateContent(prompt);
+  const response = result.response;
+  const text = response.text();
 
   if (!text) {
     throw new Error("Gemini API returned empty response");
