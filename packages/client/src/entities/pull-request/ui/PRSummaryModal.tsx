@@ -27,8 +27,10 @@ export function PRSummaryModal({
   blogPostError,
   onGenerateBlogPost,
 }: PRSummaryModalProps) {
-  const modalTitle = blogPost ? "블로그 글" : "PR 요약";
-  const canShowBlogPostButton = summary !== null && blogPost === null;
+  const isShowingBlogPost = blogPost !== null || isLoadingBlogPost;
+  const modalTitle = isShowingBlogPost ? "블로그 글" : "PR 요약";
+  const canShowBlogPostButton =
+    summary !== null && blogPost === null && !isLoadingBlogPost;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-4xl">
@@ -41,7 +43,7 @@ export function PRSummaryModal({
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-4">
-          {blogPost ? (
+          {isShowingBlogPost ? (
             <BlogPostContent
               blogPost={blogPost}
               isLoading={isLoadingBlogPost}
