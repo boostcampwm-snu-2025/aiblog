@@ -34,6 +34,7 @@ function IndexPage() {
           <form className="flex gap-2" onSubmit={handleSearch}>
             <Input
               className="flex-1"
+              name="repository"
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="owner/repository (e.g., facebook/react)"
               type="text"
