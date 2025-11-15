@@ -1,6 +1,7 @@
 import { Card, CardTitle } from "../../../shared";
 import { Badge } from "../../../shared";
 import { Button } from "../../../shared";
+import { SHA_DISPLAY_LENGTH } from "../../../shared/lib/constants";
 import type { PullRequestInfo } from "../../../shared/api/types";
 
 type PullRequestCardProps = {
@@ -8,28 +9,27 @@ type PullRequestCardProps = {
   onGenerateSummary: (prNumber: number) => void;
 };
 
+const STATE_BADGE_VARIANT_MAP = {
+  open: "success",
+  closed: "default",
+} as const;
+
 export function PullRequestCard({
   pullRequest,
   onGenerateSummary,
 }: PullRequestCardProps) {
-  const getStateBadgeVariant = (state: "open" | "closed") => {
-    return state === "open" ? "success" : "default";
-  };
-
-  const getMergedBadgeVariant = () => {
-    return pullRequest.merged ? "info" : "default";
-  };
+  const stateBadgeVariant =
+    STATE_BADGE_VARIANT_MAP[pullRequest.state] ?? "default";
+  const mergedBadgeVariant = pullRequest.merged ? "info" : "default";
 
   return (
     <Card variant="default" padding="md" className="space-y-3">
       <div className="flex items-start justify-between gap-2">
         <CardTitle className="flex-1">{pullRequest.title}</CardTitle>
         <div className="flex gap-2 shrink-0">
-          <Badge variant={getStateBadgeVariant(pullRequest.state)}>
-            {pullRequest.state}
-          </Badge>
+          <Badge variant={stateBadgeVariant}>{pullRequest.state}</Badge>
           {pullRequest.merged && (
-            <Badge variant={getMergedBadgeVariant()}>merged</Badge>
+            <Badge variant={mergedBadgeVariant}>merged</Badge>
           )}
           {pullRequest.draft && <Badge variant="default">draft</Badge>}
         </div>
@@ -73,11 +73,11 @@ export function PullRequestCard({
       <div className="flex items-center gap-4 text-xs text-gray-400 pt-2 border-t">
         <span>
           <span className="font-medium">Head:</span> {pullRequest.headRef} (
-          {pullRequest.headSha.slice(0, 7)})
+          {pullRequest.headSha.slice(0, SHA_DISPLAY_LENGTH)})
         </span>
         <span>
           <span className="font-medium">Base:</span> {pullRequest.baseRef} (
-          {pullRequest.baseSha.slice(0, 7)})
+          {pullRequest.baseSha.slice(0, SHA_DISPLAY_LENGTH)})
         </span>
       </div>
 

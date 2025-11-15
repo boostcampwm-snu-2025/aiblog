@@ -1,6 +1,8 @@
 import { Modal } from "../../../shared/Modal";
 import { Button } from "../../../shared";
 import { Card } from "../../../shared";
+import { MODAL_MAX_HEIGHT_VH } from "../../../shared/lib/constants";
+import { parseMarkdownLine } from "../../../shared/lib/markdownUtils";
 
 type PRSummaryModalProps = {
   isOpen: boolean;
@@ -21,7 +23,10 @@ export function PRSummaryModal({
 }: PRSummaryModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-4xl">
-      <div className="flex flex-col h-full max-h-[90vh]">
+      <div
+        className="flex flex-col h-full"
+        style={{ maxHeight: `${MODAL_MAX_HEIGHT_VH}vh` }}
+      >
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">PR 요약</h2>
         </div>
@@ -66,41 +71,42 @@ export function PRSummaryModal({
             >
               <div className="prose prose-sm max-w-none text-gray-700">
                 {summary.split("\n").map((line, index) => {
-                  if (line.startsWith("## ")) {
-                    return (
-                      <h2
-                        key={index}
-                        className="text-lg font-semibold text-gray-900 mt-6 mb-3 first:mt-0"
-                      >
-                        {line.replace("## ", "")}
-                      </h2>
-                    );
+                  const parsed = parseMarkdownLine(line);
+
+                  switch (parsed.type) {
+                    case "h2":
+                      return (
+                        <h2
+                          key={index}
+                          className="text-lg font-semibold text-gray-900 mt-6 mb-3 first:mt-0"
+                        >
+                          {parsed.content}
+                        </h2>
+                      );
+                    case "h3":
+                      return (
+                        <h3
+                          key={index}
+                          className="text-base font-semibold text-gray-900 mt-4 mb-2"
+                        >
+                          {parsed.content}
+                        </h3>
+                      );
+                    case "list":
+                      return (
+                        <li key={index} className="ml-4 mb-1">
+                          {parsed.content}
+                        </li>
+                      );
+                    case "break":
+                      return <br key={index} />;
+                    case "paragraph":
+                      return (
+                        <p key={index} className="mb-2">
+                          {parsed.content}
+                        </p>
+                      );
                   }
-                  if (line.startsWith("### ")) {
-                    return (
-                      <h3
-                        key={index}
-                        className="text-base font-semibold text-gray-900 mt-4 mb-2"
-                      >
-                        {line.replace("### ", "")}
-                      </h3>
-                    );
-                  }
-                  if (line.trim().startsWith("- ")) {
-                    return (
-                      <li key={index} className="ml-4 mb-1">
-                        {line.replace("- ", "")}
-                      </li>
-                    );
-                  }
-                  if (line.trim() === "") {
-                    return <br key={index} />;
-                  }
-                  return (
-                    <p key={index} className="mb-2">
-                      {line}
-                    </p>
-                  );
                 })}
               </div>
             </Card>
