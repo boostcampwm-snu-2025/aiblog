@@ -1,16 +1,63 @@
+import { useState } from "react";
 import { useRepoUrlForm } from "../../features/repo-search/model/useRepoUrlForm";
 import { useCommits } from "../../features/repo-search/model/useCommits";
 import { usePullRequests } from "../../features/repo-search/model/usePullRequests";
+import { generatePRSummary } from "../../shared/api";
 
 import { RepoSearchForm } from "../../features/repo-search/ui/RepoSearchForm";
 import { CommitList } from "../../entities/commit/ui/CommitList";
-import { PullRequestList } from "../../entities/pull-request/ui";
+import {
+  PullRequestList,
+  PRSummaryModal,
+} from "../../entities/pull-request/ui";
 
 export function CommitBrowser() {
   const { repoUrl, setRepoUrl, submittedRepoUrl, onSubmitUrl } =
     useRepoUrlForm();
   const commitsQuery = useCommits(submittedRepoUrl);
   const pullRequestsQuery = usePullRequests(submittedRepoUrl);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [summary, setSummary] = useState<string | null>(null);
+  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGenerateSummary = async (prNumber: number) => {
+    if (!submittedRepoUrl) {
+      setError("레포지토리 URL이 필요합니다.");
+      return;
+    }
+
+    setIsModalOpen(true);
+    setIsLoadingSummary(true);
+    setError(null);
+    setSummary(null);
+
+    try {
+      const result = await generatePRSummary({
+        url: submittedRepoUrl,
+        pullNumber: prNumber,
+      });
+      setSummary(result.summary);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "요약 생성에 실패했습니다."
+      );
+    } finally {
+      setIsLoadingSummary(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSummary(null);
+    setError(null);
+  };
+
+  const handleGenerateBlogPost = () => {
+    // TODO: 블로그 글 생성 로직 구현
+    console.log("블로그 글 생성하기", summary);
+  };
 
   return (
     <div className="space-y-6">
@@ -67,11 +114,20 @@ export function CommitBrowser() {
           {pullRequestsQuery.data && (
             <PullRequestList
               pullRequests={pullRequestsQuery.data.pullRequests}
-              onGenerateSummary={() => {}}
+              onGenerateSummary={handleGenerateSummary}
             />
           )}
         </div>
       </div>
+
+      <PRSummaryModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        summary={summary}
+        isLoading={isLoadingSummary}
+        error={error}
+        onGenerateBlogPost={handleGenerateBlogPost}
+      />
     </div>
   );
 }

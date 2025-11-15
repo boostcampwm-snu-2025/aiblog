@@ -54,3 +54,14 @@ export type PullRequestsResponse = {
   count: number;
   pullRequests: PullRequestInfo[];
 };
+
+export type GeneratePRSummaryRequest = {
+  url: string;
+  pullNumber: number;
+};
+
+export type GeneratePRSummaryResponse = {
+  summary: string;
+  prNumber: number;
+  repository: string;
+};
