@@ -1,5 +1,5 @@
-import Badge from "@/components/ui/Badge";
-import type { PullRequest } from "@/types/pullrequest";
+import type { PullRequest } from "@/entities/pullrequest";
+import Badge from "@/shared/ui/Badge";
 
 import SearchResultItem from "./SearchResultItem";
 

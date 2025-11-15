@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-import Editor from "@/components/editor/Editor";
-import { useEditor } from "@/components/editor/useEditor";
-import Button from "@/components/ui/Button";
-import Label from "@/components/ui/Label";
-import TextInput from "@/components/ui/TextInput";
 import type { PostEditorData } from "@/entities/post";
+import Editor from "@/shared/editor/Editor";
+import { useEditor } from "@/shared/editor/useEditor";
+import Button from "@/shared/ui/Button";
+import Label from "@/shared/ui/Label";
+import TextInput from "@/shared/ui/TextInput";
 
 type PostEditorProps = {
   initValue?: PostEditorData;

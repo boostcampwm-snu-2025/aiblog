@@ -1,10 +1,10 @@
 import { useSearchParams } from "react-router";
 
-import Divider from "@/components/ui/Divider";
-import { ErrorFallback, LoadingFallback } from "@/components/ui/Fallback";
 import { usePullRequests } from "@/features/search/api/getPullRequests";
 import RepositorySearchBar from "@/features/search/components/RepositorySearchBar";
 import SearchResult from "@/features/search/components/SearchResult";
+import Divider from "@/shared/ui/Divider";
+import { ErrorFallback, LoadingFallback } from "@/shared/ui/Fallback";
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();

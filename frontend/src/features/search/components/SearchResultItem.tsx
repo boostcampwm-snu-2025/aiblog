@@ -1,9 +1,9 @@
 import { Link } from "react-router";
 
-import Badge from "@/components/ui/Badge";
-import Button from "@/components/ui/Button";
 import { PATHS } from "@/constants/path";
-import type { PRStatus, PullRequest } from "@/types/pullrequest";
+import type { PRStatus, PullRequest } from "@/entities/pullrequest";
+import Badge from "@/shared/ui/Badge";
+import Button from "@/shared/ui/Button";
 import { formatDate } from "@/utils/format";
 
 type SearchResultItemProps = {

@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 
-import Layout from "@/components/layout/Layout";
 import { PATHS } from "@/constants/path";
+import Layout from "@/shared/layout/Layout";
 
 import CreatePostPage from "./pages/CreatePostPage";
 import Home from "./pages/Home";

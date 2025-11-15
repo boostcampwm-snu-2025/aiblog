@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import Button from "@/components/ui/Button";
-import TextInput from "@/components/ui/TextInput";
+import Button from "@/shared/ui/Button";
+import TextInput from "@/shared/ui/TextInput";
 
 type RepositorySearchBarProps = {
   initValues: {

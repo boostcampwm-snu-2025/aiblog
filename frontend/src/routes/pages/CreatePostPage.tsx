@@ -1,10 +1,10 @@
 import { useSearchParams } from "react-router";
 
-import { ErrorFallback, LoadingFallback } from "@/components/ui/Fallback";
 import type { PostEditorData } from "@/entities/post";
 import { createPost } from "@/features/post/api/createPost";
 import { useAiPost } from "@/features/post/api/getAiPost";
 import PostEditor from "@/features/post/components/PostEditor";
+import { ErrorFallback, LoadingFallback } from "@/shared/ui/Fallback";
 
 export default function CreatePostPage() {
   const [searchParams] = useSearchParams();

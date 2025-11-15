@@ -14,5 +14,3 @@ export function useEditor() {
     getMarkdown,
   };
 }
-
-export type EditorRef = ReturnType<typeof useEditor>["editorRef"];
