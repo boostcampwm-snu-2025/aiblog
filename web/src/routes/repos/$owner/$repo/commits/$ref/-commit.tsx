@@ -42,7 +42,9 @@ function Commit({ owner, ref, repo }: Props) {
               {data.commit.author?.name || "Unknown"}
             </span>
             {" committed "}
-            {dayjs(data.commit.author?.date).format("MMM D, YYYY h:mm A")}
+            {data.commit.author
+              ? dayjs(data.commit.author.date).format("MMM D, YYYY h:mm A")
+              : "Unknown Date"}
             {" · "}
             <span className="font-mono text-sm">
               {data.sha.substring(0, 7)}

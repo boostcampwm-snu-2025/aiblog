@@ -24,7 +24,9 @@ function Commit({ commit, owner, repo }: Props) {
           {commit.commit.author?.name || "Unknown"}
         </span>
         {" · "}
-        {dayjs(commit.commit.author?.date).fromNow()}
+        {commit.commit.author
+          ? dayjs(commit.commit.author.date).fromNow()
+          : "Unknown Date"}
       </div>
       <div className="mt-1 font-mono text-xs text-gray-500">
         {commit.sha.substring(0, 7)}
