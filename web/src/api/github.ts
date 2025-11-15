@@ -107,3 +107,20 @@ export async function readPulls(
     (await response.json()) as Endpoints["GET /repos/{owner}/{repo}/pulls"]["response"]["data"];
   return data;
 }
+
+export async function readRepository(
+  owner: string,
+  repo: string,
+  signal?: AbortSignal | null,
+) {
+  const response = await fetch(
+    `${baseUrl}/api/github/repos/${owner}/${repo}`,
+    { signal },
+  );
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+  const data =
+    (await response.json()) as Endpoints["GET /repos/{owner}/{repo}"]["response"]["data"];
+  return data;
+}
