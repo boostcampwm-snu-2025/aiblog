@@ -34,7 +34,7 @@ router.get("/repos/:owner/:repo", asyncHandler(async (req, res) => {
 		"X-RateLimit-Reset": response.headers["x-ratelimit-reset"],
 	});
 
-	res.json(response.data);
+	res.status(response.status).json(response.data);
 }));
 
 router.get("/repos/:owner/:repo/branches", asyncHandler(async (req, res) => {
@@ -47,7 +47,7 @@ router.get("/repos/:owner/:repo/branches", asyncHandler(async (req, res) => {
 		"X-RateLimit-Reset": response.headers["x-ratelimit-reset"],
 	});
 
-	res.json(response.data);
+	res.status(response.status).json(response.data);
 }));
 
 router.get("/repos/:owner/:repo/branches/:branch/commits", asyncHandler(async (req, res) => {
@@ -64,7 +64,7 @@ router.get("/repos/:owner/:repo/branches/:branch/commits", asyncHandler(async (r
 		"X-RateLimit-Reset": response.headers["x-ratelimit-reset"],
 	});
 
-	res.json(response.data);
+	res.status(response.status).json(response.data);
 }));
 
 router.get("/repos/:owner/:repo/commits/:ref", asyncHandler(async (req, res) => {
@@ -77,7 +77,7 @@ router.get("/repos/:owner/:repo/commits/:ref", asyncHandler(async (req, res) => 
 		"X-RateLimit-Reset": response.headers["x-ratelimit-reset"],
 	});
 
-	res.json(response.data);
+	res.status(response.status).json(response.data);
 }));
 
 router.get("/repos/:owner/:repo/pulls", asyncHandler(async (req, res) => {
@@ -90,7 +90,7 @@ router.get("/repos/:owner/:repo/pulls", asyncHandler(async (req, res) => {
 		"X-RateLimit-Reset": response.headers["x-ratelimit-reset"],
 	});
 
-	res.json(response.data);
+	res.status(response.status).json(response.data);
 }));
 
 router.get(
@@ -105,7 +105,7 @@ router.get(
 			"X-RateLimit-Reset": response.headers["x-ratelimit-reset"],
 		});
 
-		res.json(response.data);
+		res.status(response.status).json(response.data);
 	}),
 );
 
