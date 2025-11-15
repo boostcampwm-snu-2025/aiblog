@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { generateSummary } from "../api/llm";
 
 interface SummaryButtonProps {
   title: string;
@@ -12,19 +13,10 @@ export default function SummaryButton({ title, content, onSummary }: SummaryButt
   const handleClick = async () => {
     setLoading(true);
 
-    try {
-      const res = await fetch("/api/llm/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content }),
-      });
-      const data = await res.json();
-      onSummary(title, data.result);
-    } catch (e) {
-      alert("요약 실패");
-    } finally {
-      setLoading(false);
-    }
+    const summary = await generateSummary(title, content);
+    onSummary(title, summary);
+
+    setLoading(false);
   };
 
   return (

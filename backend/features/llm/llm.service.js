@@ -4,15 +4,16 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-export async function createBlogPost({ title, content }) {
+export async function createBlogPost(title, content) {
   const prompt = `
     다음 GitHub 작업 내용을 기반으로 간단한 개발 블로그 글을 작성해 주세요.
 
     조건:
     - 한국어로 작성
     - 섹션을 나누고, 소제목(h2 수준) 포함
-    - 커밋/PR에서 바뀐 것, 도입한 기술, 변경사항, 배운 점 등을 종합적으로 정리
-    - 너무 장황한 서술 금지
+    - 커밋/PR에서 바뀐 것, 도입한 기술, 배운 점 등을 종합적으로 정리
+    - 너무 긴 문장 금지, 요약체로 서술
+    - 본문만 제공
 
     제목: ${title}
 
@@ -25,8 +26,7 @@ export async function createBlogPost({ title, content }) {
       model: "gemini-2.5-flash",
       contents: prompt,
     });
-
-    console.log("=== Gemini response ===", response);
+    
     const text = response.text;
     return text;
   } catch (err) {
