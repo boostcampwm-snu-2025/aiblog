@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { GitPullRequest } from "lucide-react";
+import { AlertCircle, GitPullRequest, Loader2 } from "lucide-react";
 
 import { readPullCommits, readPulls } from "~/api/github";
+import { Alert, AlertDescription } from "~/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -11,6 +12,13 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { Skeleton } from "~/components/ui/skeleton";
 
 type PullRequestsSearch = {
@@ -77,28 +85,32 @@ function PullRequestsPage() {
           {owner}/{repo} - Pull Requests
         </h1>
 
-        <label className="mb-6 block">
-          <span className="mb-2 block text-sm font-medium">
-            Select Pull Request
-          </span>
-          <select
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+        <div className="mb-6 space-y-2">
+          <label className="text-sm font-medium">Select Pull Request</label>
+          <Select
             name="pull-request"
-            onChange={(e) => handlePullRequestChange(e.target.value)}
-            value={pullNumber ?? ""}
+            onValueChange={(value) => handlePullRequestChange(value)}
+            value={pullNumber?.toString() ?? ""}
           >
-            <option value="">-- Select a pull request --</option>
-            {pullsStatus === "success" &&
-              pulls?.map((pr) => (
-                <option key={pr.number} value={pr.number}>
-                  #{pr.number} - {pr.title}
-                </option>
-              ))}
-          </select>
-        </label>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="-- Select a pull request --" />
+            </SelectTrigger>
+            <SelectContent>
+              {pullsStatus === "success" &&
+                pulls?.map((pr) => (
+                  <SelectItem key={pr.number} value={pr.number.toString()}>
+                    #{pr.number} - {pr.title}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         {pullsStatus === "pending" && (
-          <div className="text-gray-600">Loading pull requests...</div>
+          <Alert>
+            <Loader2 className="animate-spin" />
+            <AlertDescription>Loading pull requests...</AlertDescription>
+          </Alert>
         )}
 
         {pullNumber !== undefined && (
@@ -154,9 +166,10 @@ function PullRequestsPage() {
                 </div>
               )}
               {commitsStatus === "error" && (
-                <div className="text-sm text-red-600">
-                  Failed to load commits
-                </div>
+                <Alert variant="destructive">
+                  <AlertCircle />
+                  <AlertDescription>Failed to load commits</AlertDescription>
+                </Alert>
               )}
             </CardContent>
           </Card>

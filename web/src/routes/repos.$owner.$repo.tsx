@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 import { readBranches, readPulls } from "~/api/github";
+import { Alert, AlertDescription } from "~/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -46,13 +48,19 @@ function RepositoryDetailPage() {
         </h1>
 
         {isLoading && (
-          <div className="text-center text-gray-600">Loading repository...</div>
+          <Alert>
+            <Loader2 className="animate-spin" />
+            <AlertDescription>Loading repository...</AlertDescription>
+          </Alert>
         )}
 
         {isError && (
-          <div className="text-center text-red-600">
-            Failed to load repository. Please check the repository name.
-          </div>
+          <Alert variant="destructive">
+            <AlertCircle />
+            <AlertDescription>
+              Failed to load repository. Please check the repository name.
+            </AlertDescription>
+          </Alert>
         )}
 
         {branchesStatus === "success" && pullsStatus === "success" && (

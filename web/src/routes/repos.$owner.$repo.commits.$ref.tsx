@@ -1,11 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 import { summarizeCommit } from "~/api/gemini";
 import { readCommit } from "~/api/github";
+import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -60,7 +61,10 @@ function CommitDetailPage() {
         )}
 
         {commitStatus === "error" && (
-          <div className="text-red-600">Failed to load commit details</div>
+          <Alert variant="destructive">
+            <AlertCircle />
+            <AlertDescription>Failed to load commit details</AlertDescription>
+          </Alert>
         )}
 
         {commitStatus === "success" && commit && (
@@ -114,15 +118,20 @@ function CommitDetailPage() {
                 </Button>
 
                 {summarizeMutation.isError && (
-                  <div className="mt-4 text-sm text-red-600">
-                    Failed to generate summary
-                  </div>
+                  <Alert className="mt-4" variant="destructive">
+                    <AlertCircle />
+                    <AlertDescription>
+                      Failed to generate summary
+                    </AlertDescription>
+                  </Alert>
                 )}
 
                 {summary && (
-                  <div className="mt-4 rounded-md bg-gray-50 p-4">
-                    <div className="text-sm whitespace-pre-wrap">{summary}</div>
-                  </div>
+                  <Alert className="mt-4">
+                    <AlertDescription className="whitespace-pre-wrap">
+                      {summary}
+                    </AlertDescription>
+                  </Alert>
                 )}
               </CardContent>
             </Card>

@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { GitCommit } from "lucide-react";
+import { AlertCircle, GitCommit, Loader2 } from "lucide-react";
 import z from "zod";
 
 import { readBranchCommits, readBranches } from "~/api/github";
+import { Alert, AlertDescription } from "~/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -12,6 +13,13 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { Skeleton } from "~/components/ui/skeleton";
 
 const searchSchema = z.object({
@@ -74,28 +82,32 @@ function BranchesPage() {
           {owner}/{repo} - Branches
         </h1>
 
-        <label className="mb-6 block">
-          <span className="mb-2 block text-sm font-medium">Select Branch</span>
-          <select
-            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+        <div className="mb-6 space-y-2">
+          <label className="text-sm font-medium">Select Branch</label>
+          <Select
             name="branch"
-            onChange={(e) => {
-              handleBranchChange(e.target.value);
-            }}
+            onValueChange={(value) => handleBranchChange(value)}
             value={branch || ""}
           >
-            <option value="">-- Select a branch --</option>
-            {branchesStatus === "success" &&
-              branches?.map((b) => (
-                <option key={b.name} value={b.name}>
-                  {b.name}
-                </option>
-              ))}
-          </select>
-        </label>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="-- Select a branch --" />
+            </SelectTrigger>
+            <SelectContent>
+              {branchesStatus === "success" &&
+                branches?.map((b) => (
+                  <SelectItem key={b.name} value={b.name}>
+                    {b.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         {branchesStatus === "pending" && (
-          <div className="text-gray-600">Loading branches...</div>
+          <Alert>
+            <Loader2 className="animate-spin" />
+            <AlertDescription>Loading branches...</AlertDescription>
+          </Alert>
         )}
 
         {branch && (
@@ -151,9 +163,10 @@ function BranchesPage() {
                 </div>
               )}
               {commitsStatus === "error" && (
-                <div className="text-sm text-red-600">
-                  Failed to load commits
-                </div>
+                <Alert variant="destructive">
+                  <AlertCircle />
+                  <AlertDescription>Failed to load commits</AlertDescription>
+                </Alert>
               )}
             </CardContent>
           </Card>
