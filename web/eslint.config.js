@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import tanstackQuery from "@tanstack/eslint-plugin-query";
+import eslintConfigPrettier from "eslint-config-prettier/flat";
 import perfectionist from "eslint-plugin-perfectionist";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
@@ -17,6 +18,7 @@ export default defineConfig([
       reactRefresh.configs.vite,
       perfectionist.configs["recommended-natural"],
       tanstackQuery.configs["flat/recommended"],
+      eslintConfigPrettier,
     ],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
