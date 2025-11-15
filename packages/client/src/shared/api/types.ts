@@ -65,3 +65,15 @@ export type GeneratePRSummaryResponse = {
   prNumber: number;
   repository: string;
 };
+
+export type GenerateBlogPostRequest = {
+  url: string;
+  pullNumber: number;
+  summary: string;
+};
+
+export type GenerateBlogPostResponse = {
+  blogPost: string;
+  prNumber: number;
+  repository: string;
+};

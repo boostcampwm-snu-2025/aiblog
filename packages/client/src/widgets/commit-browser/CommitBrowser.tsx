@@ -25,8 +25,7 @@ export function CommitBrowser() {
   };
 
   const handleGenerateBlogPost = () => {
-    // TODO: 블로그 글 생성 로직 구현
-    console.log("블로그 글 생성하기", prSummaryModal.summary);
+    prSummaryModal.generateBlogPostContent();
   };
 
   const commitsError = commitsQuery.error
@@ -91,8 +90,11 @@ export function CommitBrowser() {
         isOpen={prSummaryModal.isOpen}
         onClose={prSummaryModal.closeModal}
         summary={prSummaryModal.summary}
+        blogPost={prSummaryModal.blogPost}
         isLoading={prSummaryModal.isLoading}
+        isLoadingBlogPost={prSummaryModal.isLoadingBlogPost}
         error={prSummaryModal.error}
+        blogPostError={prSummaryModal.blogPostError}
         onGenerateBlogPost={handleGenerateBlogPost}
       />
     </div>

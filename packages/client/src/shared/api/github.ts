@@ -4,6 +4,8 @@ import type {
   PullRequestsResponse,
   GeneratePRSummaryRequest,
   GeneratePRSummaryResponse,
+  GenerateBlogPostRequest,
+  GenerateBlogPostResponse,
 } from "./types";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -100,6 +102,34 @@ export async function generatePRSummary(
 
   if (!data.success) {
     throw new Error(data.error || "Failed to generate PR summary");
+  }
+
+  return data.data;
+}
+
+export async function generateBlogPost(
+  request: GenerateBlogPostRequest
+): Promise<GenerateBlogPostResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/repos/generate-blog-post`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({
+      status: "error",
+      message: "Failed to generate blog post",
+    }));
+    throw new Error(error.message || "Failed to generate blog post");
+  }
+
+  const data: ApiResponse<GenerateBlogPostResponse> = await response.json();
+
+  if (!data.success) {
+    throw new Error(data.error || "Failed to generate blog post");
   }
 
   return data.data;
