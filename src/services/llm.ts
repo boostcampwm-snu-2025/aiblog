@@ -1,8 +1,6 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export interface BlogGenerationRequest {
   commitMessage: string;
@@ -60,30 +58,30 @@ summary: [한 줄 요약]
 [본문 내용]`;
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'system',
-          content: '당신은 개발자의 커밋 내역을 분석하여 기술 블로그 글을 작성하는 전문 AI 어시스턴트입니다.',
-        },
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-      temperature: 0.7,
-      max_tokens: 2000,
-    });
+    // Gemini API 키 확인
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error('GEMINI_API_KEY가 설정되지 않았습니다. .env 파일을 확인해주세요.');
+    }
 
-    const generatedText = completion.choices[0]?.message?.content || '';
+    // Gemini 모델 가져오기
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+    // 프롬프트 생성
+    const fullPrompt = `당신은 개발자의 커밋 내역을 분석하여 기술 블로그 글을 작성하는 전문 AI 어시스턴트입니다.
+
+${prompt}`;
+
+    // Gemini API 호출
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+    const generatedText = response.text();
 
     // 생성된 텍스트에서 제목, 요약, 본문 파싱
     const parsed = parseBlogContent(generatedText);
 
     return parsed;
   } catch (error) {
-    console.error('OpenAI API 호출 실패:', error);
+    console.error('Gemini API 호출 실패:', error);
     throw new Error('블로그 생성 중 오류가 발생했습니다.');
   }
 }
