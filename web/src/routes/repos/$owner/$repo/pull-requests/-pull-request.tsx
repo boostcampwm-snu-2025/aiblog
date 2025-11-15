@@ -15,10 +15,10 @@ function PullRequest({ owner, pr, repo }: Props) {
       className="block rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
       params={{
         owner,
-        pullNumber: pr.number.toString(),
+        prNumber: pr.number.toString(),
         repo,
       }}
-      to="/repos/$owner/$repo/pull-requests/$pullNumber"
+      to="/repos/$owner/$repo/pull-requests/$prNumber"
     >
       <div className="mb-2 flex items-start justify-between">
         <div className="flex-1">
