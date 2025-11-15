@@ -23,3 +23,34 @@ export type CommitsResponse = {
   count: number;
   commits: CommitInfo[];
 };
+
+export type PullRequestInfo = {
+  id: number;
+  number: number;
+  state: "open" | "closed";
+  title: string;
+  body: string | null;
+  authorLogin: string | null;
+  authorAvatar: string | null;
+  createdAt: string;
+  updatedAt: string;
+  closedAt: string | null;
+  mergedAt: string | null;
+  headRef: string;
+  headSha: string;
+  baseRef: string;
+  baseSha: string;
+  merged: boolean;
+  mergeable: boolean | null;
+  draft: boolean;
+  htmlUrl: string;
+};
+
+export type PullRequestsResponse = {
+  repository: string;
+  page: number;
+  perPage: number;
+  state: "open" | "closed" | "all";
+  count: number;
+  pullRequests: PullRequestInfo[];
+};
