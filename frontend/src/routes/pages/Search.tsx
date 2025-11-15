@@ -38,9 +38,7 @@ export default function SearchPage() {
           <>
             {status === "pending" && <LoadingFallback message="PR 목록을 불러오는 중..." />}
             {status === "error" && <ErrorFallback />}
-            {status === "success" && (
-              <SearchResult repositoryName={`${owner}/${repository}`} pullRequests={pullRequests} />
-            )}
+            {status === "success" && <SearchResult owner={owner} repository={repository} pullRequests={pullRequests} />}
           </>
         ) : (
           <div>레포지토리를 검색해보세요.</div>

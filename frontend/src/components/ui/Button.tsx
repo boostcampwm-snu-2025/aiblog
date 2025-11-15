@@ -1,13 +1,12 @@
-type ButtonProps = { text: string } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type">;
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export default function Button({ text, ...props }: ButtonProps) {
+export default function Button({ ...props }: ButtonProps) {
   return (
     <button
       {...props}
       className="flex h-10 cursor-pointer items-center justify-center rounded-md bg-blue-600 px-5 text-white"
-      // type="button"
     >
-      {text}
+      {props.children}
     </button>
   );
 }
