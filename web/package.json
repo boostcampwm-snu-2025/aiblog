@@ -6,8 +6,9 @@
   "scripts": {
     "clean": "rm -rf dist node_modules",
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "pnpm run generate-routes && tsc -b && vite build",
     "format": "prettier --write \"**/*.{ts,tsx,ctx,mts}\"",
+    "generate-routes": "tsr generate",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -32,6 +33,7 @@
     "@octokit/types": "^16.0.0",
     "@tanstack/eslint-plugin-query": "^5.91.2",
     "@tanstack/eslint-plugin-router": "^1.133.19",
+    "@tanstack/router-cli": "^1.136.5",
     "@tanstack/router-plugin": "^1.135.2",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
