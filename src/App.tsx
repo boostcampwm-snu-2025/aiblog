@@ -5,8 +5,14 @@ import RepositoryList from './components/RepositoryList';
 import type { BlogGenerationResponse } from './lib/api';
 
 export default function App() {
+  // 실제 검색에 사용되는 상태
   const [owner, setOwner] = useState('dev-pyun');
   const [repo, setRepo] = useState('aiblog');
+
+  // 입력 필드의 임시 상태
+  const [inputOwner, setInputOwner] = useState('dev-pyun');
+  const [inputRepo, setInputRepo] = useState('aiblog');
+
   const [loading, setLoading] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [generatedBlog, setGeneratedBlog] = useState<BlogGenerationResponse['data'] | null>(null);
@@ -39,11 +45,16 @@ export default function App() {
 
       <div style={{ marginBottom:16, display:'flex', gap:12, alignItems:'center' }}>
         <RepoInput
-          owner={owner}
-          repo={repo}
-          onOwnerChange={setOwner}
-          onRepoChange={setRepo}
-          onSubmit={(o, r) => { setOwner(o); setRepo(r); }}
+          owner={inputOwner}
+          repo={inputRepo}
+          onOwnerChange={setInputOwner}
+          onRepoChange={setInputRepo}
+          onSubmit={(o, r) => {
+            // 불러오기 버튼 클릭 시에만 실제 검색 실행
+            setOwner(o);
+            setRepo(r);
+            setGeneratedBlog(null); // 새로 검색할 때 이전 블로그 초기화
+          }}
         />
         <span>현재: <b>{repo ? `${owner}/${repo}` : owner}</b></span>
         <span style={{ marginLeft:'auto' }}>
@@ -53,7 +64,14 @@ export default function App() {
 
       {/* RepositoryList: repo가 없거나 ActivityList 로딩 중일 때 표시 */}
       <div style={{ display: !showActivityList ? 'block' : 'none' }}>
-        <RepositoryList owner={owner} onSelectRepo={(selectedRepo) => setRepo(selectedRepo)} onLoadingChange={handleLoadingChange} />
+        <RepositoryList
+          owner={owner}
+          onSelectRepo={(selectedRepo) => {
+            setRepo(selectedRepo);
+            setInputRepo(selectedRepo); // 입력 필드도 동기화
+          }}
+          onLoadingChange={handleLoadingChange}
+        />
       </div>
 
       {/* ActivityList: repo가 있고 데이터 로드 완료 시 표시 */}

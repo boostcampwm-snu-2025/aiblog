@@ -61,7 +61,7 @@ GitHub 커밋 기록을 기반으로 LLM을 활용하여 자동으로 블로그 
 - **Runtime**: Node.js + Express
 - **언어**: TypeScript
 - **GitHub API**: @octokit/rest
-- **LLM API**: OpenAI API / Anthropic Claude API (선택)
+- **LLM API**: Google Gemini API (gemini-pro) ✅
 - **환경 변수**: dotenv
 
 ### Automation (선택)
@@ -169,32 +169,42 @@ useEffect(() => {
 
 ## 개발 단계
 
-### Phase 1: LLM 연동 기반 구축
+### Phase 1: LLM 연동 기반 구축 ✅ 완료
 **목표**: LLM API 연동 및 블로그 생성 기능 구현
 
 #### 백엔드 작업
-- [ ] LLM API 연동 모듈 작성
-  - OpenAI API 또는 Claude API 선택
-  - 환경 변수에 API 키 설정
+- [x] LLM API 연동 모듈 작성 ✅
+  - **Google Gemini API** (gemini-pro) 선택
+  - 환경 변수에 API 키 설정 (`GEMINI_API_KEY`)
   - 프롬프트 템플릿 작성 (커밋 정보 → 블로그 글)
+  - 파일: `src/services/llm.ts`
 
-- [ ] 블로그 생성 엔드포인트 개발
+- [x] 블로그 생성 엔드포인트 개발 ✅
   - `POST /api/blog/generate`
   - 요청: `{ owner, repo, commitSha }`
-  - 응답: `{ content: string, title: string }`
+  - 응답: `{ success, data: { title, content, summary, metadata } }`
+  - 파일: `src/routes/blog.ts`
 
-- [ ] 커밋 상세 정보 조회 API
+- [x] 커밋 상세 정보 조회 API ✅
   - GitHub API를 통해 커밋 diff, 파일 변경 내역 가져오기
   - LLM에 전달할 컨텍스트 생성
+  - 파일: `src/services/github.ts`
 
 #### 프론트엔드 작업
-- [ ] LLM API 호출 함수 작성 (`src/lib/api.ts`)
+- [x] LLM API 호출 함수 작성 (`src/lib/api.ts`) ✅
   - `generateBlog(owner, repo, commitSha)` 함수 추가
+  - TypeScript 타입 정의 완료
 
-- [ ] ActivityItem 컴포넌트 수정
+- [x] ActivityItem 컴포넌트 수정 ✅
   - "블로그 생성" 버튼 추가
-  - 로딩 상태 표시
+  - 로딩 상태 표시 (generating, error)
   - 에러 핸들링
+
+#### 추가 개선 사항
+- [x] RepoInput 최적화 ✅
+  - 타이핑 시마다 검색되는 문제 해결
+  - "불러오기" 버튼 클릭 시에만 검색 실행
+  - 입력 필드와 실제 검색 상태 분리
 
 ---
 
@@ -536,24 +546,38 @@ N8N_WEBHOOK_URL=http://localhost:5678/webhook/...
 
 ## 참고 자료
 
-- [OpenAI API Docs](https://platform.openai.com/docs)
-- [Anthropic Claude API](https://docs.anthropic.com/)
+- [Google Gemini API Docs](https://ai.google.dev/docs) ✅ 사용 중
 - [GitHub REST API - Commits](https://docs.github.com/en/rest/commits)
 - [react-markdown](https://github.com/remarkjs/react-markdown)
 - [n8n Documentation](https://docs.n8n.io/)
 
 ---
 
-## 다음 단계
+## 진행 상황 요약
 
-1. **LLM Provider 선택**: OpenAI vs Anthropic Claude 결정
-2. **API Key 발급**: 선택한 LLM 서비스의 API 키 준비
-3. **Phase 1 시작**: LLM 연동 모듈 개발부터 착수
-4. **프로토타입 테스트**: 간단한 커밋으로 블로그 생성 테스트
+### ✅ 완료된 단계
+- **Phase 1: LLM 연동 기반 구축** - 100% 완료
+  - Google Gemini API 연동 완료
+  - 커밋별 블로그 생성 기능 구현
+  - 프론트엔드 UI 개선 (RepoInput 최적화)
+
+### 🚀 다음 단계: Phase 2
+
+#### Phase 2: 투 페인 UI 구현 (예정)
+**목표**: 커밋 목록과 블로그 미리보기를 나란히 표시
+
+**작업 내용**:
+1. `react-markdown` 설치 및 설정
+2. `TwoColumnLayout` 컴포넌트 생성
+3. `BlogPreviewPanel` 컴포넌트 생성 (Markdown 렌더링)
+4. 왼쪽: 커밋 목록, 오른쪽: 블로그 미리보기 레이아웃
+5. 반응형 디자인 적용
+
+**예상 소요 시간**: 1-2일
 
 ---
 
-**문서 버전**: 1.1
+**문서 버전**: 1.2
 **작성일**: 2025-11-15
-**마지막 업데이트**: 2025-11-15
+**마지막 업데이트**: 2025-11-15 16:40 KST
 **참고 이슈**: [#22 코딩 컨벤션](https://github.com/boostcampwm-snu-2025/aiblog/issues/22)
