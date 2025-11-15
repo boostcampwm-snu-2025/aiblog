@@ -9,7 +9,24 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
-  globalIgnores(["dist"]),
+  globalIgnores(["dist/**"]),
+  {
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommendedTypeChecked,
+      perfectionist.configs["recommended-natural"],
+      eslintConfigPrettier,
+    ],
+    files: ["*.ts", "*.mts", "*.cts"],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.node,
+      parserOptions: {
+        project: ["./tsconfig.node.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
   {
     extends: [
       js.configs.recommended,
@@ -20,12 +37,12 @@ export default defineConfig([
       tanstackQuery.configs["flat/recommended"],
       eslintConfigPrettier,
     ],
-    files: ["**/*.{ts,tsx}"],
+    files: ["src/**/*.ts", "src/**/*.tsx"],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
       parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
+        project: ["./tsconfig.app.json"],
         tsconfigRootDir: import.meta.dirname,
       },
     },
