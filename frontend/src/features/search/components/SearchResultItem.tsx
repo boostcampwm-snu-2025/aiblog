@@ -34,9 +34,7 @@ export default function SearchResultItem({ owner, repository, pullRequest }: Sea
         </div>
       </div>
       <Button>
-        <Link
-          to={`${CREATE_POST_HREF}?owner=${owner}&repository=${repository}&pullRequestNumber=${pullRequest.number}`}
-        >
+        <Link to={`${CREATE_POST_HREF}?owner=${owner}&repository=${repository}&prNumber=${pullRequest.number}`}>
           이 PR로 글쓰기
         </Link>
       </Button>

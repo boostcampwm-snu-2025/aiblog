@@ -29,6 +29,8 @@ export default function SearchPage() {
     });
   };
 
+  console.log(status);
+
   return (
     <div className="p-8">
       <div className="space-y-8 p-10">
