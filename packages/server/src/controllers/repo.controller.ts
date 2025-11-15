@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { parseGitHubUrl } from "../utils/github.utils";
 import { fetchCommits, fetchPullRequests } from "../services/github.service";
-import { generate } from "../services/prSummary.service";
+import { generate as generatePRSummaryService } from "../services/prSummary.service";
+import { generate as generateBlogPostService } from "../services/blogPost.service";
 import { ValidationError } from "../utils/errors";
 
 export async function getCommits(
@@ -115,9 +116,52 @@ export async function generatePRSummary(
       throw new ValidationError("pullNumber는 1 이상의 정수여야 합니다.");
     }
 
-    const result = await generate({
+    const result = await generatePRSummaryService({
       url,
       pullNumber,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function generateBlogPost(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { url, pullNumber, summary } = req.body;
+
+    if (!url || typeof url !== "string") {
+      throw new ValidationError("url이 필요합니다.");
+    }
+
+    if (!pullNumber || typeof pullNumber !== "number") {
+      throw new ValidationError("pullNumber는 숫자여야 합니다.");
+    }
+
+    if (pullNumber < 1 || !Number.isInteger(pullNumber)) {
+      throw new ValidationError("pullNumber는 1 이상의 정수여야 합니다.");
+    }
+
+    if (!summary || typeof summary !== "string") {
+      throw new ValidationError("summary가 필요합니다.");
+    }
+
+    if (summary.trim().length === 0) {
+      throw new ValidationError("summary는 비어있을 수 없습니다.");
+    }
+
+    const result = await generateBlogPostService({
+      url,
+      pullNumber,
+      summary,
     });
 
     res.status(200).json({
