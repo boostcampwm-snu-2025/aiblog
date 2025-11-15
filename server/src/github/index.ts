@@ -29,17 +29,6 @@ router.get("/repos/:owner/:repo/branches", async (req, res) => {
 	res.json(data);
 });
 
-router.get("/repos/:owner/:repo/branches/:branch", async (req, res) => {
-	const schema = z.object({
-		owner: z.string(),
-		repo: z.string(),
-		branch: z.string(),
-	});
-	const params = schema.parse(req.params);
-	const { data } = await octokit.rest.repos.getBranch(params);
-	res.json(data);
-});
-
 router.get("/repos/:owner/:repo/branches/:branch/commits", async (req, res) => {
 	const schema = z.object({
 		owner: z.string(),
