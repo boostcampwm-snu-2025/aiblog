@@ -31,3 +31,43 @@ export async function getAuthState() {
   return res.json() as Promise<{ authenticated: boolean }>;
 }
 
+export interface BlogGenerationResponse {
+  success: boolean;
+  data?: {
+    title: string;
+    content: string;
+    summary?: string;
+    metadata: {
+      commitSha: string;
+      author: string;
+      date: string;
+      filesChanged: string[];
+      stats: {
+        additions: number;
+        deletions: number;
+        total: number;
+      };
+    };
+  };
+  error?: string;
+  detail?: string;
+}
+
+export async function generateBlog(owner: string, repo: string, commitSha: string): Promise<BlogGenerationResponse> {
+  const res = await fetch(`http://localhost:3000/api/blog/generate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ owner, repo, commitSha }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(errorData.error || `HTTP ${res.status}`);
+  }
+
+  return res.json() as Promise<BlogGenerationResponse>;
+}
+

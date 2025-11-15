@@ -5,6 +5,7 @@ import session from 'express-session';
 import path from 'path';
 import authRouter from './routes/auth';
 import githubRouter from './routes/github';
+import blogRouter from './routes/blog';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(session({
 
 app.use('/api/auth', authRouter);
 app.use('/api/github', githubRouter);
+app.use('/api/blog', blogRouter);
 
 const PORT = Number(process.env.PORT || 3000);
 app.listen(PORT, () => {
