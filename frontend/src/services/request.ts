@@ -1,6 +1,11 @@
 import { HttpError } from "./error";
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// 개발 중 환경변수 누락 체크
+if (!BASE_URL) {
+  throw new Error("VITE_API_BASE_URL is not defined in .env file");
+}
 
 const handleResponse = async <T>(response: Response): Promise<T> => {
   if (!response.ok) {
