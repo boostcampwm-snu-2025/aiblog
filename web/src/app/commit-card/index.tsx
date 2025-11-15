@@ -8,8 +8,8 @@ interface Props {
 
 function CommitCard({ commit }: Props) {
   return (
-    <div className="border-l-2 border-blue-500 pl-4 py-2">
-      <div className="font-medium text-sm mb-1">
+    <div className="border-l-2 border-blue-500 py-2 pl-4">
+      <div className="mb-1 text-sm font-medium">
         {commit.commit.message.split("\n")[0]}
       </div>
       <div className="text-xs text-gray-600">
@@ -19,7 +19,7 @@ function CommitCard({ commit }: Props) {
         {" · "}
         {dayjs(commit.commit.author?.date).fromNow()}
       </div>
-      <div className="text-xs text-gray-500 font-mono mt-1">
+      <div className="mt-1 font-mono text-xs text-gray-500">
         {commit.sha.substring(0, 7)}
       </div>
     </div>

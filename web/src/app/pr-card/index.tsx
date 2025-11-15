@@ -8,8 +8,8 @@ interface Props {
 
 function PrCard({ pr }: Props) {
   return (
-    <div className="border-l-2 border-green-500 pl-4 py-2">
-      <div className="font-medium text-sm mb-1">
+    <div className="border-l-2 border-green-500 py-2 pl-4">
+      <div className="mb-1 text-sm font-medium">
         #{pr.number} {pr.title}
       </div>
       <div className="text-xs text-gray-600">
@@ -17,12 +17,12 @@ function PrCard({ pr }: Props) {
         {" · "}
         {dayjs(pr.created_at).fromNow()}
       </div>
-      <div className="flex gap-2 mt-2">
-        <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded">
+      <div className="mt-2 flex gap-2">
+        <span className="rounded bg-green-100 px-2 py-1 text-xs text-green-800">
           {pr.state}
         </span>
         {pr.draft && (
-          <span className="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded">
+          <span className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-800">
             draft
           </span>
         )}

@@ -30,9 +30,9 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="mx-auto max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">
+          <h1 className="mb-4 text-4xl font-bold">
             GitHub Repository Activity
           </h1>
           <form className="flex gap-2" onSubmit={handleSearch}>
@@ -44,7 +44,7 @@ function App() {
               value={searchQuery}
             />
             <Button type="submit">
-              <Search className="w-4 h-4 mr-2" />
+              <Search className="mr-2 h-4 w-4" />
               Search
             </Button>
           </form>
@@ -58,12 +58,12 @@ function App() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Recent Commits */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <GitCommit className="w-5 h-5" />
+                <GitCommit className="h-5 w-5" />
                 Recent Commits
               </CardTitle>
               <CardDescription>
@@ -75,11 +75,11 @@ function App() {
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div
-                      className="border-l-2 border-blue-200 pl-4 py-2"
+                      className="border-l-2 border-blue-200 py-2 pl-4"
                       key={i}
                     >
-                      <Skeleton className="h-4 w-3/4 mb-2" />
-                      <Skeleton className="h-3 w-1/2 mb-1" />
+                      <Skeleton className="mb-2 h-4 w-3/4" />
+                      <Skeleton className="mb-1 h-3 w-1/2" />
                       <Skeleton className="h-3 w-20" />
                     </div>
                   ))}
@@ -97,7 +97,7 @@ function App() {
               )}
               {commitsStatus === "error" && (
                 <div className="text-sm text-red-600">
-                  <p className="font-semibold mb-1">Failed to load commits</p>
+                  <p className="mb-1 font-semibold">Failed to load commits</p>
                 </div>
               )}
               {commitsStatus === "idle" && (
@@ -112,7 +112,7 @@ function App() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <GitPullRequest className="w-5 h-5" />
+                <GitPullRequest className="h-5 w-5" />
                 Pull Requests
               </CardTitle>
               <CardDescription>Open pull requests</CardDescription>
@@ -122,11 +122,11 @@ function App() {
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div
-                      className="border-l-2 border-green-200 pl-4 py-2"
+                      className="border-l-2 border-green-200 py-2 pl-4"
                       key={i}
                     >
-                      <Skeleton className="h-4 w-3/4 mb-2" />
-                      <Skeleton className="h-3 w-1/2 mb-2" />
+                      <Skeleton className="mb-2 h-4 w-3/4" />
+                      <Skeleton className="mb-2 h-3 w-1/2" />
                       <div className="flex gap-2">
                         <Skeleton className="h-5 w-16" />
                       </div>
@@ -148,7 +148,9 @@ function App() {
               )}
               {pullsStatus === "error" && (
                 <div className="text-sm text-red-600">
-                  <p className="font-semibold mb-1">Failed to load pull requests</p>
+                  <p className="mb-1 font-semibold">
+                    Failed to load pull requests
+                  </p>
                 </div>
               )}
               {pullsStatus === "idle" && (
