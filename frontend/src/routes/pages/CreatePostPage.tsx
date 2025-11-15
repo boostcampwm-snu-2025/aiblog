@@ -22,7 +22,7 @@ export default function CreatePostPage() {
   if (status === "error") return <ErrorFallback />;
 
   if (hasSearchParams && status === "pending") {
-    return <LoadingFallback />;
+    return <LoadingFallback message="ai가 포스팅을 생성하는 중입니다." />;
   }
 
   const handleCreatePost = (post: PostEditorData) => {

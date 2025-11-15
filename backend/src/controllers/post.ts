@@ -1,20 +1,42 @@
 import type { Request, Response } from "express";
-import type {
-  GenerateContentRequest,
-  GenerateContentResponse,
-} from "../types/ai.js";
 import { generateContent } from "../services/geminiApi.js";
+import { fetchGithubData } from "../services/githubApi.js";
+import { GitHubCommit, GitHubPullRequest } from "../types/github.js";
+import { GenerateAiPostResponse } from "../types/post.js";
 
-export const generateBlogPost = async (
-  req: Request<unknown, unknown, GenerateContentRequest>,
-  res: Response
+type GenerateContentQuery = {
+  owner: string;
+  repository: string;
+  prNumber: string;
+};
+
+export const generateAiPost = async (
+  req: Request<unknown, unknown, unknown, GenerateContentQuery>,
+  res: Response<GenerateAiPostResponse | { error: string }>
 ) => {
   try {
-    const { prTitle, prBody, commits } = req.body;
+    const { owner, repository, prNumber } = req.query;
+    const prNum = Number(prNumber);
 
-    const prompt = createBlogPostPrompt(prTitle, prBody, commits);
+    // 1. PR detail 가져오기
+    const prDetail = await fetchGithubData<GitHubPullRequest>(
+      `/repos/${owner}/${repository}/pulls/${prNum}`
+    );
+
+    // 2. Commits 가져오기
+    const commits = await fetchGithubData<GitHubCommit[]>(
+      `/repos/${owner}/${repository}/pulls/${prNum}/commits`
+    );
+
+    // 3. 데이터 추출
+    const prTitle = prDetail.title;
+    const prBody = prDetail.body || "";
+    const commitMessages = commits.map((c) => c.commit.message);
+
+    // 4. AI 콘텐츠 생성 요청
+    const prompt = createBlogPostPrompt(prTitle, prBody, commitMessages);
     const responseText = await generateContent(prompt);
-    const result = JSON.parse(responseText) as GenerateContentResponse;
+    const result = JSON.parse(responseText) as GenerateAiPostResponse;
 
     res.json(result);
   } catch (error) {

@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import type { QueryConfig } from "@/services/react-query";
 import { getRequest } from "@/services/request";
 
+import { BASE_URL } from "./constants";
+
 type GetAiPostRequestParams = {
   owner: string;
   repository: string;
@@ -15,7 +17,7 @@ type GetAiPostResponse = {
 };
 
 const getAiPost = async ({ owner, repository, prNumber }: GetAiPostRequestParams) => {
-  return getRequest<GetAiPostResponse>(`/ai/post?owner=${owner}&repository=${repository}&prNumber=${prNumber}`);
+  return getRequest<GetAiPostResponse>(`${BASE_URL}/ai?owner=${owner}&repository=${repository}&prNumber=${prNumber}`);
 };
 
 type UseAiPostOptions = {

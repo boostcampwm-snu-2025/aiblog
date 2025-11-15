@@ -4,13 +4,15 @@ import type { QueryConfig } from "@/services/react-query";
 import { getRequest } from "@/services/request";
 import type { PullRequest } from "@/types/pullrequest";
 
+const BASE_URL = "/github";
+
 type GetPullRequestsParams = {
   owner: string;
   repository: string;
 };
 
 const getPullRequests = async ({ owner, repository }: GetPullRequestsParams) => {
-  return getRequest<PullRequest[]>(`/repos/${owner}/${repository}/pulls`);
+  return getRequest<PullRequest[]>(`${BASE_URL}/repos/${owner}/${repository}/pulls`);
 };
 
 type UsePullRequestsOptions = {
