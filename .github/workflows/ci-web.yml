@@ -38,7 +38,7 @@ jobs:
         working-directory: web
 
       - name: Check Format
-        run: pnpm exec prettier --check \"**/*.{ts,tsx,ctx,mts}\"
+        run: pnpm exec prettier --check **/*.{ts,tsx,ctx,mts}
         working-directory: web
 
       - name: Check Lint
