@@ -5,11 +5,11 @@ import { useEditor } from "@/components/editor/useEditor";
 import Button from "@/components/ui/Button";
 import Label from "@/components/ui/Label";
 import TextInput from "@/components/ui/TextInput";
-import type { Post } from "@/entities/post";
+import type { PostEditorData } from "@/entities/post";
 
 type PostEditorProps = {
-  initValue?: Post;
-  onSaveClick: (post: Post) => void;
+  initValue?: PostEditorData;
+  onSaveClick: (post: PostEditorData) => void;
 };
 
 export default function PostEditor({ initValue, onSaveClick }: PostEditorProps) {

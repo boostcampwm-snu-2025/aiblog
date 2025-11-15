@@ -9,26 +9,15 @@ export const setLocalStorage = <T = unknown>(key: string, value: T) => {
   }
 };
 
-export const getLocalStorage = <T = unknown>(key: string) => {
+export function getLocalStorage<T>(key: string) {
   try {
-    const serializedValue = localStorage.getItem(key);
-    if (serializedValue === null) {
-      return null;
-    }
-
-    // JSON.parse 시도. 실패하면 안전하게 null 반환
-    try {
-      return JSON.parse(serializedValue) as T;
-    } catch {
-      // JSON 형식이 아닌 일반 문자열일 경우 T로 캐스팅하여 반환
-      // (이 경우 T는 string 타입일 가능성이 높음)
-      return serializedValue as T;
-    }
+    const item = localStorage.getItem(key);
+    return item ? (JSON.parse(item) as T) : null;
   } catch (error) {
-    customConsole.error(`Error retrieving key "${key}" from localStorage:`, error);
+    customConsole.error(`Failed to get item with key "${key}":`, error);
     return null;
   }
-};
+}
 
 export const removeLocalStorage = (key: string) => {
   try {

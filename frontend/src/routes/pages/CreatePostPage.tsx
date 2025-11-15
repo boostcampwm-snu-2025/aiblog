@@ -1,7 +1,8 @@
 import { useSearchParams } from "react-router";
 
 import { ErrorFallback, LoadingFallback } from "@/components/ui/Fallback";
-import type { Post } from "@/entities/post";
+import type { PostEditorData } from "@/entities/post";
+import { createPost } from "@/features/post/api/createPost";
 import { useAiPost } from "@/features/post/api/getAiPost";
 import PostEditor from "@/features/post/components/PostEditor";
 
@@ -24,7 +25,10 @@ export default function CreatePostPage() {
     return <LoadingFallback />;
   }
 
-  const handleCreatePost = (post: Post) => {};
+  const handleCreatePost = (post: PostEditorData) => {
+    createPost(post);
+    alert("포스트를 생성했습니다.");
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
