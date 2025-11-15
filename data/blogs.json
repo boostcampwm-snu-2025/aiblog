@@ -1,0 +1,25 @@
+[
+  {
+    "id": "c9ad1f09-81e5-4f99-9d7f-daa26713d08f",
+    "title": "RepoInput 입력 최적화 및 개발 계획 업데이트",
+    "content": "안녕하세요! 오늘은 `aiblog` 프로젝트에서 사용자 경험을 크게 개선한 `RepoInput` 컴포넌트 최적화 작업과 함께, 프로젝트의 개발 계획(`DEVELOPMENT_PLAN.md`)을 업데이트한 내용을 공유합니다.\n\n### 🧐 왜 이 작업이 필요했을까요?\n\n기존 `RepoInput` 컴포넌트는 사용자가 레포지토리 이름이나 오너를 입력할 때, 글자 하나하나를 타이핑할 때마다 새로운 데이터를 받아오려 시도하는 문제가 있었습니다. 이는 불필요한 API 호출을 과도하게 발생시켜, 다음과 같은 문제를 야기했습니다.\n\n*   **성능 저하**: 매번 데이터를 요청하느라 UI가 버벅거리고 반응성이 떨어짐.\n*   **사용자 경험 저해**: 입력 중 로딩 스피너가 계속 나타나 산만한 느낌을 줌.\n*   **API 비용 및 한도 문제**: GitHub API 호출 횟수를 불필요하게 소모.\n\n### 🛠️ 어떻게 구현했나요?\n\n이 문제를 해결하기 위해 **입력 필드의 상태와 실제 검색에 사용될 상태를 분리**했습니다.\n\n1.  **두 가지 상태 관리**:\n    *   `inputOwner`, `inputRepo`: 사용자가 입력 필드에 타이핑하는 **현재 값**을 관리합니다.\n    *   `owner`, `repo`: \"불러오기\" 버튼을 클릭하거나 특정 액션이 발생했을 때 **실제 API 호출에 사용될 값**을 관리합니다.\n\n2.  **동작 방식**:\n    *   사용자가 입력 필드에 타이핑할 때는 `inputOwner`, `inputRepo`만 업데이트됩니다.\n    *   사용자가 \"불러오기\" 버튼을 클릭하면, 그때 `inputOwner`, `inputRepo`의 값을 `owner`, `repo`에 할당하고 API 호출을 트리거합니다.\n\n간단한 코드 스니펫으로 살펴보면 다음과 같습니다:\n\n```typescript\n// src/App.tsx (개념적 예시)\nconst [inputOwner, setInputOwner] = useState('');\nconst [inputRepo, setInputRepo] = useState('');\nconst [owner, setOwner] = useState(''); // 실제 검색에 사용될 값\nconst [repo, setRepo] = useState('');   // 실제 검색에 사용될 값\n\nconst handleLoadRepo = () => {\n    setOwner(inputOwner); // 입력된 값으로 실제 검색 상태 업데이트\n    setRepo(inputRepo);\n    // 이제 'owner'와 'repo' 값으로 GitHub API 호출\n};\n\n// ... JSX\n<input value={inputOwner} onChange={(e) => setInputOwner(e.target.value)} />\n<input value={inputRepo} onChange={(e) => setInputRepo(e.target.value)} />\n<button onClick={handleLoadRepo}>불러오기</button>\n```\n\n이와 함께, 프로젝트의 `DEVELOPMENT_PLAN.md` 파일도 업데이트했습니다. Phase 1 (`LLM 연동 기반 구축`)이 완료되었음을 명확히 하고, LLM 공급자를 Google Gemini API로 확정한 내용, 그리고 다음 단계인 `투 페인 UI 구현`에 대한 상세 계획을 반영했습니다.\n\n### ✨ 어떤 효과가 있었나요?\n\n이번 개선으로 `RepoInput` 컴포넌트 사용 시 불필요한 API 호출이 사라지고, 사용자 입력 경험이 훨씬 부드러워졌습니다. 이제 사용자는 원하는 레포지토리 정보를 안정적으로 입력하고, \"불러오기\" 버튼을 눌러 정확한 시점에 데이터를 가져올 수 있게 되었습니다.\n\n또한, 개발 계획이 명확해짐에 따라 Phase 1을 성공적으로 마무리하고, 다음 목표인 투 페인 UI 구현에 집중할 수 있는 기반이 마련되었습니다.",
+    "summary": "불필요한 API 호출을 방지하기 위해 RepoInput 컴포넌트의 입력 상태를 최적화하고, 개발 계획을 업데이트했습니다.",
+    "commitSha": "734f006cd2a10ed75f76857a0a71d598d1f1429e",
+    "owner": "dev-pyun",
+    "repo": "aiblog",
+    "author": "dev-pyun",
+    "filesChanged": [
+      "DEVELOPMENT_PLAN.md",
+      "src/App.tsx"
+    ],
+    "stats": {
+      "additions": 68,
+      "deletions": 26,
+      "total": 94
+    },
+    "published": true,
+    "createdAt": "2025-11-15T09:54:09.158Z",
+    "updatedAt": "2025-11-15T09:54:09.158Z",
+    "publishedAt": "2025-11-15T09:54:09.158Z"
+  }
+]

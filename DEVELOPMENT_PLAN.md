@@ -208,82 +208,135 @@ useEffect(() => {
 
 ---
 
-### Phase 2: 투 페인 UI 구현
+### Phase 2: 투 페인 UI 구현 ✅ 완료
 **목표**: 커밋 목록과 블로그 미리보기를 나란히 표시
 
-#### 컴포넌트 구조 설계
+#### 컴포넌트 구조 (구현 완료)
 ```
 App
-├── Header (토글 버튼 포함)
-├── TwoColumnLayout
-│   ├── CommitListPanel (왼쪽)
-│   │   └── ActivityList
-│   └── BlogPreviewPanel (오른쪽)
-│       ├── BlogContent (Markdown 렌더링)
+├── TwoColumnLayout ✅
+│   ├── 왼쪽 패널: ActivityList (커밋 목록)
+│   └── 오른쪽 패널: BlogPreviewPanel (블로그 미리보기)
+│       ├── Markdown 렌더링 (react-markdown)
 │       └── BlogActions (게시/취소 버튼)
-└── BlogListPage (전환용)
 ```
 
 #### 작업 항목
-- [ ] `TwoColumnLayout` 컴포넌트 생성
-  - CSS Grid 또는 Flexbox 레이아웃
-  - 반응형 디자인 (모바일 대응)
+- [x] `react-markdown` 패키지 설치 ✅
+  - `react-markdown` + `remark-gfm` 설치
+  - GitHub Flavored Markdown 지원
 
-- [ ] `BlogPreviewPanel` 컴포넌트 생성
-  - Markdown 렌더링 (react-markdown 설치)
-  - 생성 중 로딩 스피너
-  - 빈 상태 메시지 ("커밋을 선택하고 블로그를 생성하세요")
+- [x] `TwoColumnLayout` 컴포넌트 생성 ✅
+  - CSS Grid 레이아웃 (1fr 1fr)
+  - 반응형 디자인 (화면 크기 < 1024px 시 세로 배치)
+  - 패널 헤더 및 스크롤 영역 분리
+  - 파일: `src/components/TwoColumnLayout.tsx`
 
-- [ ] 상태 관리 개선
-  - `selectedCommit` 상태 추가
-  - `generatedBlog` 상태 추가 (title, content)
-  - `blogGenerating` 로딩 상태
+- [x] `BlogPreviewPanel` 컴포넌트 생성 ✅
+  - Markdown 렌더링 (코드 블록, 링크, 헤더 등 스타일링)
+  - 빈 상태 메시지 표시
+  - 메타데이터 표시 (작성자, 커밋 SHA, 파일 수)
+  - 게시/취소 버튼 구현
+  - 파일: `src/components/BlogPreviewPanel.tsx`
+
+- [x] 상태 관리 개선 ✅
+  - `generatedBlog` 상태로 블로그 데이터 관리
+  - `handlePublish`, `handleCancel` 함수 구현
+  - Alert 대신 패널에 직접 표시
+
+#### 다크모드 지원 추가 🎨
+- [x] `useDarkMode` 커스텀 훅 생성 ✅
+  - 시스템 다크모드 설정 자동 감지
+  - 실시간 변경 감지
+  - 파일: `src/hooks/useDarkMode.ts`
+
+- [x] 모든 컴포넌트에 다크모드 스타일 적용 ✅
+  - `TwoColumnLayout`: 패널 배경, 테두리, 헤더 색상
+  - `BlogPreviewPanel`: 본문, 코드 블록, 버튼 색상
+  - `ActivityItem`: 카드 배경, 링크 색상
+  - `RepositoryList`: 저장소 카드, 호버 효과
+
+- [x] 다크모드 색상 팔레트 정의 ✅
+  - 배경: `#1e1e1e` / `#fff`
+  - 서브 배경: `#2a2a2a` / `#f9fafb`
+  - 테두리: `#444` / `#e5e7eb`
+  - 텍스트: `#d4d4d4` / `#333`
+  - 링크: `#5BA3F5` / `#0066cc`
 
 ---
 
-### Phase 3: 블로그 게시 기능
+### Phase 3: 블로그 게시 기능 ✅ 완료
 **목표**: 생성된 블로그를 저장하고 관리
 
 #### 백엔드 작업
-- [ ] 블로그 저장 시스템 설계
-  - 파일 시스템 저장 (JSON 파일) 또는 데이터베이스 선택
-  - 저장 형식: `{ id, title, content, commitSha, createdAt, published }`
+- [x] 블로그 저장 시스템 설계 ✅
+  - JSON 파일 방식 선택 (`data/blogs.json`)
+  - 저장 형식: `{ id, title, content, summary, commitSha, owner, repo, author, filesChanged, stats, published, createdAt, updatedAt, publishedAt }`
+  - 파일: `src/services/blogStorage.ts`
 
-- [ ] 블로그 CRUD API 개발
+- [x] 블로그 CRUD API 개발 ✅
   - `POST /api/blog/publish` - 블로그 게시
-  - `GET /api/blog/list` - 게시된 블로그 목록
+  - `GET /api/blog/list` - 게시된 블로그 목록 (페이징 지원)
   - `GET /api/blog/:id` - 특정 블로그 조회
   - `PUT /api/blog/:id` - 블로그 수정
   - `DELETE /api/blog/:id` - 블로그 삭제
+  - 파일: `src/routes/blog.ts`
 
 #### 프론트엔드 작업
-- [ ] BlogActions 컴포넌트 구현
-  - "게시하기" 버튼 클릭 시 블로그 저장
+- [x] BlogActions 컴포넌트 구현 ✅
+  - BlogPreviewPanel에 게시/취소 버튼 통합
+  - "게시하기" 버튼 클릭 시 블로그 저장 (`publishBlog` API 호출)
   - "취소하기" 버튼 클릭 시 미리보기 초기화
-  - 성공/실패 메시지 표시
+  - 성공/실패 알림 메시지 표시
 
-- [ ] BlogListPage 컴포넌트 생성
+- [x] BlogListPage 컴포넌트 생성 ✅
   - 게시된 블로그 목록 표시
-  - 카드 형식 레이아웃
-  - 클릭 시 상세 보기
+  - 카드 형식 레이아웃 (그리드)
+  - 페이지네이션 UI (이전/다음 버튼)
+  - 다크모드 지원
+  - 파일: `src/components/BlogListPage.tsx`
+
+- [x] BlogDetailModal 컴포넌트 생성 ✅
+  - 블로그 상세 내용 모달로 표시
+  - Markdown 렌더링
+  - 메타데이터 표시 (작성자, 커밋, 날짜, 통계)
+  - 삭제 버튼 구현
+  - 다크모드 지원
+  - 파일: `src/components/BlogDetailModal.tsx`
+
+- [x] API 함수 추가 ✅
+  - `publishBlog()` - 블로그 게시
+  - `fetchBlogList()` - 블로그 목록 조회
+  - `fetchBlogDetail()` - 블로그 상세 조회
+  - `deleteBlog()` - 블로그 삭제
+  - 파일: `src/lib/api.ts`
 
 ---
 
-### Phase 4: 페이지 네비게이션
+### Phase 4: 페이지 네비게이션 ✅ 완료
 **목표**: 커밋 목록과 블로그 목록 페이지 간 전환
 
 #### 작업 항목
-- [ ] Header 컴포넌트 생성
+- [x] Header 컴포넌트 생성 ✅
   - 토글 버튼: "커밋 분석" / "블로그 목록"
-  - 현재 페이지 하이라이트
+  - 현재 페이지 하이라이트 (활성 버튼 강조)
+  - 다크모드 지원
+  - 파일: `src/components/Header.tsx`
 
-- [ ] 페이지 상태 관리
+- [x] 페이지 상태 관리 ✅
   - `currentView: 'commits' | 'blogs'` 상태 추가
-  - 조건부 렌더링
+  - 조건부 렌더링 (App.tsx)
+  - ViewMode 타입 정의 및 export
 
-- [ ] 전환 애니메이션
-  - CSS transition 또는 Framer Motion 활용
-  - 부드러운 fade-in/out 효과
+- [x] 전환 애니메이션 ✅
+  - CSS keyframes를 활용한 fadeIn 애니메이션
+  - 부드러운 fade-in/slide-up 효과
+  - 파일: `src/index.css` (fadeIn 애니메이션 정의)
+
+- [x] 레이아웃 일관성 개선 ✅
+  - 모든 뷰에 동일한 padding 적용
+  - Header 위치 고정
+  - body 스타일 조정 (center 정렬 제거)
 
 ---
 
@@ -561,23 +614,41 @@ N8N_WEBHOOK_URL=http://localhost:5678/webhook/...
   - 커밋별 블로그 생성 기능 구현
   - 프론트엔드 UI 개선 (RepoInput 최적화)
 
-### 🚀 다음 단계: Phase 2
+- **Phase 2: 투 페인 UI 구현** - 100% 완료
+  - 좌우 2열 레이아웃 구현 (TwoColumnLayout)
+  - Markdown 블로그 미리보기 (BlogPreviewPanel)
+  - 다크모드 지원 (useDarkMode 커스텀 훅)
+  - 반응형 디자인 적용
+  - 게시/취소 버튼 구현
 
-#### Phase 2: 투 페인 UI 구현 (예정)
-**목표**: 커밋 목록과 블로그 미리보기를 나란히 표시
+- **Phase 3: 블로그 게시 기능** - 100% 완료
+  - JSON 파일 기반 블로그 저장 시스템 구축
+  - 블로그 CRUD API 5개 엔드포인트 개발
+  - 블로그 목록 페이지 (페이징, 다크모드)
+  - 블로그 상세 보기 모달
+  - 블로그 삭제 기능
+
+- **Phase 4: 페이지 네비게이션** - 100% 완료
+  - Header 컴포넌트 with 토글 버튼
+  - 커밋 분석 ↔ 블로그 목록 뷰 전환
+  - CSS 애니메이션 (fadeIn 효과)
+  - 레이아웃 일관성 개선
+
+### 🚀 다음 단계: Phase 5
+
+#### Phase 5: n8n 자동화 (선택 사항)
+**목표**: GitHub 푸시 시 자동 블로그 생성
 
 **작업 내용**:
-1. `react-markdown` 설치 및 설정
-2. `TwoColumnLayout` 컴포넌트 생성
-3. `BlogPreviewPanel` 컴포넌트 생성 (Markdown 렌더링)
-4. 왼쪽: 커밋 목록, 오른쪽: 블로그 미리보기 레이아웃
-5. 반응형 디자인 적용
+1. n8n 워크플로우 설계
+2. GitHub Webhook 설정
+3. 자동화 테스트 및 디버깅
 
 **예상 소요 시간**: 1-2일
 
 ---
 
-**문서 버전**: 1.2
+**문서 버전**: 1.4
 **작성일**: 2025-11-15
-**마지막 업데이트**: 2025-11-15 16:40 KST
+**마지막 업데이트**: 2025-11-15 (Phase 3, 4 완료)
 **참고 이슈**: [#22 코딩 컨벤션](https://github.com/boostcampwm-snu-2025/aiblog/issues/22)
