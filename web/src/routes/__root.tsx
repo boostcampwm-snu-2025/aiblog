@@ -1,13 +1,22 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import type { QueryClient } from "@tanstack/react-query";
 
-export const Route = createRootRoute({
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { Suspense } from "react";
+
+export interface RouterContext {
+  queryClient: QueryClient;
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
 });
 
 function RootComponent() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Outlet />
+      <Suspense>
+        <Outlet />
+      </Suspense>
     </div>
   );
 }

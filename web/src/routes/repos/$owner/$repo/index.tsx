@@ -14,28 +14,23 @@ import {
 
 export const Route = createFileRoute("/repos/$owner/$repo/")({
   component: RepositoryDetailPage,
+  loader: ({ context: { queryClient }, params: { owner, repo } }) => {
+    queryClient.prefetchQuery(readRepository(owner, repo)).catch(console.error);
+    queryClient.prefetchQuery(readBranches(owner, repo)).catch(console.error);
+    queryClient.prefetchQuery(readPulls(owner, repo)).catch(console.error);
+  },
 });
 
 function RepositoryDetailPage() {
   const { owner, repo } = Route.useParams();
 
-  const { data: repository, status: repositoryStatus } = useQuery({
-    queryFn: () => readRepository(owner, repo),
-    queryKey: ["repository", owner, repo],
-  });
-
-  const { data: branches, status: branchesStatus } = useQuery({
-    queryFn: () => readBranches(owner, repo),
-    queryKey: ["branches", owner, repo],
-  });
-
-  const { data: pulls, status: pullsStatus } = useQuery({
-    queryFn: () => readPulls(owner, repo),
-    queryKey: ["pulls", owner, repo],
-  });
-
-  const isLoading = branchesStatus === "pending" || pullsStatus === "pending";
-  const isError = branchesStatus === "error" || pullsStatus === "error";
+  const { data: repository, status: repositoryStatus } = useQuery(
+    readRepository(owner, repo),
+  );
+  const { data: branches, status: branchesStatus } = useQuery(
+    readBranches(owner, repo),
+  );
+  const { data: pulls, status: pullsStatus } = useQuery(readPulls(owner, repo));
 
   return (
     <div className="p-8">
@@ -50,14 +45,14 @@ function RepositoryDetailPage() {
           {owner}/{repo}
         </h1>
 
-        {isLoading && (
+        {repositoryStatus === "pending" && (
           <Alert>
             <Loader2 className="animate-spin" />
             <AlertDescription>Loading repository...</AlertDescription>
           </Alert>
         )}
 
-        {isError && (
+        {repositoryStatus === "error" && (
           <Alert variant="destructive">
             <AlertCircle />
             <AlertDescription>
@@ -86,7 +81,7 @@ function RepositoryDetailPage() {
                       }}
                       to="/repos/$owner/$repo/branches/$branch"
                     >
-                      View Branches ({branches?.length || 0})
+                      View Branches ({branches.length})
                     </Link>
                   </CardContent>
                 </Card>
@@ -104,7 +99,7 @@ function RepositoryDetailPage() {
                       params={{ owner, repo }}
                       to="/repos/$owner/$repo/pull-requests"
                     >
-                      View Pull Requests ({pulls?.length || 0})
+                      View Pull Requests ({pulls.length})
                     </Link>
                   </CardContent>
                 </Card>
