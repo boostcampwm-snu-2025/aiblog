@@ -1,0 +1,49 @@
+name: CI (web)
+
+on:
+  push:
+    paths:
+      - 'web/**'
+      - '.github/workflows/ci-web.yml'
+  pull_request:
+    paths:
+      - 'web/**'
+      - '.github/workflows/ci-web.yml'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: web/
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+          package_json_file: web/package.json
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: 'pnpm'
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Install Packages
+        run: pnpm i --frozen-lockfile
+        working-directory: web
+
+      - name: Check Format
+        run: pnpm exec prettier --check \"**/*.{ts,tsx,ctx,mts}\"
+        working-directory: web
+
+      - name: Check Lint
+        run: pnpm exec eslint . --max-warnings=0
+        working-directory: web
+
+      - name: Check Type
+        run: pnpm exec tsc --noEmit
+        working-directory: web
