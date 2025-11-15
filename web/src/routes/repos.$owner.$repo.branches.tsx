@@ -74,13 +74,11 @@ function BranchesPage() {
           {owner}/{repo} - Branches
         </h1>
 
-        <div className="mb-6">
-          <label className="mb-2 block text-sm font-medium" htmlFor="branch">
-            Select Branch
-          </label>
+        <label className="mb-6 block">
+          <span className="mb-2 block text-sm font-medium">Select Branch</span>
           <select
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
-            id="branch"
+            name="branch"
             onChange={(e) => {
               handleBranchChange(e.target.value);
             }}
@@ -94,7 +92,7 @@ function BranchesPage() {
                 </option>
               ))}
           </select>
-        </div>
+        </label>
 
         {branchesStatus === "pending" && (
           <div className="text-gray-600">Loading branches...</div>

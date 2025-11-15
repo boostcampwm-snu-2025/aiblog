@@ -77,16 +77,13 @@ function PullRequestsPage() {
           {owner}/{repo} - Pull Requests
         </h1>
 
-        <div className="mb-6">
-          <label
-            className="mb-2 block text-sm font-medium"
-            htmlFor="pull-request"
-          >
+        <label className="mb-6 block">
+          <span className="mb-2 block text-sm font-medium">
             Select Pull Request
-          </label>
+          </span>
           <select
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
-            id="pull-request"
+            name="pull-request"
             onChange={(e) => handlePullRequestChange(e.target.value)}
             value={pullNumber ?? ""}
           >
@@ -98,7 +95,7 @@ function PullRequestsPage() {
                 </option>
               ))}
           </select>
-        </div>
+        </label>
 
         {pullsStatus === "pending" && (
           <div className="text-gray-600">Loading pull requests...</div>
