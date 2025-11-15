@@ -20,6 +20,24 @@ export async function readBranch(
   return data;
 }
 
+export async function readBranchCommits(
+  owner: string,
+  repo: string,
+  branch: string,
+  signal?: AbortSignal | null,
+) {
+  const response = await fetch(
+    `${baseUrl}/api/github/repos/${owner}/${repo}/branches/${branch}/commits`,
+    { signal },
+  );
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+  const data =
+    (await response.json()) as Endpoints["GET /repos/{owner}/{repo}/commits"]["response"]["data"];
+  return data;
+}
+
 export async function readBranches(
   owner: string,
   repo: string,
@@ -52,23 +70,6 @@ export async function readCommit(
   }
   const data =
     (await response.json()) as Endpoints["GET /repos/{owner}/{repo}/commits/{ref}"]["response"]["data"];
-  return data;
-}
-
-export async function readCommits(
-  owner: string,
-  repo: string,
-  signal?: AbortSignal | null,
-) {
-  const response = await fetch(
-    `${baseUrl}/api/github/repos/${owner}/${repo}/commits`,
-    { signal },
-  );
-  if (!response.ok) {
-    throw new Error(response.statusText);
-  }
-  const data =
-    (await response.json()) as Endpoints["GET /repos/{owner}/{repo}/commits"]["response"]["data"];
   return data;
 }
 

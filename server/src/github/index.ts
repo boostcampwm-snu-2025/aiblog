@@ -30,13 +30,18 @@ router.get("/repos/:owner/:repo/branches/:branch", async (req, res) => {
 	res.json(data);
 });
 
-router.get("/repos/:owner/:repo/commits", async (req, res) => {
+router.get("/repos/:owner/:repo/branches/:branch/commits", async (req, res) => {
 	const schema = z.object({
 		owner: z.string(),
 		repo: z.string(),
+		branch: z.string(),
 	});
 	const params = schema.parse(req.params);
-	const { data } = await octokit.rest.repos.listCommits(params);
+	const { data } = await octokit.rest.repos.listCommits({
+		owner: params.owner,
+		repo: params.repo,
+		sha: params.branch,
+	});
 	res.json(data);
 });
 

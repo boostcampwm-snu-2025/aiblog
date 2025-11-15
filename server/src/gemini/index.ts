@@ -14,16 +14,20 @@ const octokit = new Octokit({
 
 router.get("/summary/:owner/:repo/commits/:ref", async (req, res) => {
 	const schema = z.object({
-			owner: z.string(),
-			repo: z.string(),
-			ref: z.string(),
-		});
+		owner: z.string(),
+		repo: z.string(),
+		ref: z.string(),
+	});
 	const params = schema.parse(req.params);
 	const commitResponse = await octokit.rest.repos.getCommit(params);
 	const commitMessage = commitResponse.data.commit.message;
-	const filesWithDiffs = commitResponse.data.files?.map(file =>
-		`File: ${file.filename}\n${file.patch || "Binary file or no diff available"}`
-	).join("\n\n") || "";
+	const filesWithDiffs =
+		commitResponse.data.files
+			?.map(
+				(file) =>
+					`File: ${file.filename}\n${file.patch || "Binary file or no diff available"}`,
+			)
+			.join("\n\n") || "";
 	const prompt = `Generate a concise summary of the following commit for a changelog.
 
 Commit Message:
