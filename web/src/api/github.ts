@@ -37,6 +37,24 @@ export async function readBranches(
   return data;
 }
 
+export async function readCommit(
+  owner: string,
+  repo: string,
+  ref: string,
+  signal?: AbortSignal | null,
+) {
+  const response = await fetch(
+    `${baseUrl}/api/github/repos/${owner}/${repo}/commits/${ref}`,
+    { signal },
+  );
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+  const data =
+    (await response.json()) as Endpoints["GET /repos/{owner}/{repo}/commits/{ref}"]["response"]["data"];
+  return data;
+}
+
 export async function readCommits(
   owner: string,
   repo: string,

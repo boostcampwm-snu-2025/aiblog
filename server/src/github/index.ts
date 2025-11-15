@@ -40,6 +40,17 @@ router.get("/repos/:owner/:repo/commits", async (req, res) => {
 	res.json(data);
 });
 
+router.get("/repos/:owner/:repo/commits/:ref", async (req, res) => {
+	const schema = z.object({
+		owner: z.string(),
+		repo: z.string(),
+		ref: z.string(),
+	});
+	const params = schema.parse(req.params);
+	const { data } = await octokit.rest.repos.getCommit(params);
+	res.json(data);
+});
+
 router.get("/repos/:owner/:repo/pulls", async (req, res) => {
 	const schema = z.object({
 		owner: z.string(),
