@@ -54,3 +54,12 @@ export function buildGitHubPullRequestsApiUrl(
   const baseUrl = "https://api.github.com";
   return `${baseUrl}/repos/${owner}/${repo}/pulls?state=${state}&page=${page}&per_page=${perPage}`;
 }
+
+export function buildGitHubPullRequestDetailApiUrl(
+  owner: string,
+  repo: string,
+  pullNumber: number
+): string {
+  const baseUrl = "https://api.github.com";
+  return `${baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}`;
+}

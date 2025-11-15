@@ -10,6 +10,7 @@ interface EnvConfig {
   GITHUB_CALLBACK_URL: string;
   NODE_ENV: string;
   CLIENT_URL: string;
+  OPENAI_API_KEY: string;
 }
 
 const getEnvVariable = (key: string, defaultValue?: string): string => {
@@ -30,4 +31,5 @@ export const env: EnvConfig = {
   GITHUB_CALLBACK_URL: getEnvVariable("GITHUB_CALLBACK_URL"),
   NODE_ENV: getEnvVariable("NODE_ENV", "development"),
   CLIENT_URL: getEnvVariable("CLIENT_URL", "http://localhost:5173"),
+  OPENAI_API_KEY: getEnvVariable("OPENAI_API_KEY"),
 };

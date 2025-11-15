@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { parseGitHubUrl } from "../utils/github.utils";
 import { fetchCommits, fetchPullRequests } from "../services/github.service";
+import { generate } from "../services/prSummary.service";
 import { ValidationError } from "../utils/errors";
 
 export async function getCommits(
@@ -88,6 +89,40 @@ export async function getPullRequests(
         count: pullRequests.length,
         pullRequests,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function generatePRSummary(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { url, pullNumber } = req.body;
+
+    if (!url || typeof url !== "string") {
+      throw new ValidationError("url이 필요합니다.");
+    }
+
+    if (!pullNumber || typeof pullNumber !== "number") {
+      throw new ValidationError("pullNumber는 숫자여야 합니다.");
+    }
+
+    if (pullNumber < 1 || !Number.isInteger(pullNumber)) {
+      throw new ValidationError("pullNumber는 1 이상의 정수여야 합니다.");
+    }
+
+    const result = await generate({
+      url,
+      pullNumber,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: result,
     });
   } catch (error) {
     next(error);

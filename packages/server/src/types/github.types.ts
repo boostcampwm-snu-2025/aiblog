@@ -89,3 +89,33 @@ export type PullRequestInfo = {
   draft: boolean;
   htmlUrl: string;
 };
+
+export type GitHubPullRequestDetailResponse = {
+  id: number;
+  number: number;
+  state: "open" | "closed";
+  title: string;
+  body: string | null;
+  diff_url: string;
+  patch_url: string;
+  user: {
+    login: string;
+    avatar_url: string;
+  } | null;
+  created_at: string;
+  updated_at: string;
+  closed_at: string | null;
+  merged_at: string | null;
+  head: {
+    ref: string;
+    sha: string;
+  };
+  base: {
+    ref: string;
+    sha: string;
+  };
+  merged: boolean;
+  mergeable: boolean | null;
+  draft: boolean;
+  html_url: string;
+};
