@@ -1,0 +1,46 @@
+name: CI (server)
+
+on:
+  push:
+    paths:
+      - 'server/**'
+      - '.github/workflows/ci-server.yml'
+  pull_request:
+    paths:
+      - 'server/**'
+      - '.github/workflows/ci-server.yml'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: server/
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+          version: 10.12.1
+          package_json_file: server/package.json
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: 'pnpm-server'
+          cache-dependency-path: server/pnpm-lock.yaml
+
+      - name: Install Packages
+        run: pnpm i --frozen-lockfile
+        working-directory: server
+
+      - name: Check Format & Lint
+        run: pnpm run reporter
+        working-directory: server
+
+      - name: Check Type
+        run: pnpm exec tsc --noEmit
+        working-directory: server
