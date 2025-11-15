@@ -43,3 +43,14 @@ export function buildGitHubApiUrl(
   const baseUrl = "https://api.github.com";
   return `${baseUrl}/repos/${owner}/${repo}/commits?page=${page}&per_page=${perPage}`;
 }
+
+export function buildGitHubPullRequestsApiUrl(
+  owner: string,
+  repo: string,
+  page: number = 1,
+  perPage: number = 30,
+  state: "open" | "closed" | "all" = "all"
+): string {
+  const baseUrl = "https://api.github.com";
+  return `${baseUrl}/repos/${owner}/${repo}/pulls?state=${state}&page=${page}&per_page=${perPage}`;
+}
