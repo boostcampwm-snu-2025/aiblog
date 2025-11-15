@@ -37,6 +37,10 @@ jobs:
         run: pnpm i --frozen-lockfile
         working-directory: web
 
+      - name: Generate Routes
+        run: pnpm run generate-routes
+        working-directory: web
+
       - name: Check Format
         run: pnpm exec prettier --check "**/*.{ts,tsx,ctx,mts}"
         working-directory: web
