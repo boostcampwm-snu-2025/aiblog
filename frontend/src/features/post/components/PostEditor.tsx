@@ -18,8 +18,6 @@ export default function PostEditor({ initValue, onSaveClick }: PostEditorProps) 
 
   const handleSave = () => {
     const markdown = getMarkdown();
-    console.log("Title:", title);
-    console.log("Content:", markdown);
     onSaveClick({ title, content: markdown });
   };
 

@@ -2,7 +2,7 @@ import { useSearchParams } from "react-router";
 
 import Divider from "@/components/ui/Divider";
 import { ErrorFallback, LoadingFallback } from "@/components/ui/Fallback";
-import { usePullRequests } from "@/features/search/api/get-pullrequests";
+import { usePullRequests } from "@/features/search/api/getPullRequests";
 import RepositorySearchBar from "@/features/search/components/RepositorySearchBar";
 import SearchResult from "@/features/search/components/SearchResult";
 
@@ -28,8 +28,6 @@ export default function SearchPage() {
       repository,
     });
   };
-
-  console.log(status);
 
   return (
     <div className="p-8">
