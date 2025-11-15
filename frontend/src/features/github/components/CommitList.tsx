@@ -3,9 +3,10 @@ import SummaryButton from "../../../shared/ui/SummaryButton";
 
 interface CommitListProps {
   commits: Commit[];
+  onSummary: (title: string, summary: string) => void;
 }
 
-export default function CommitList({ commits }: CommitListProps) {
+export default function CommitList({ commits, onSummary }: CommitListProps) {
   if (!commits || commits.length === 0)
     return <p className="text-center text-gray-400">데이터 없음</p>;
 
@@ -35,6 +36,7 @@ export default function CommitList({ commits }: CommitListProps) {
               content={
                 c.commit.message + "\n\n" + (c.commit.author.name ?? "")
               }
+              onSummary={onSummary}
             />
           </div>
         </li>

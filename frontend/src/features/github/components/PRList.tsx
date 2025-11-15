@@ -3,10 +3,11 @@ import SummaryButton from "../../../shared/ui/SummaryButton";
 
 interface PRListProps {
   prs: PullRequest[];
-  onOpenDetail?: (number: number) => void; // ✅ 추가
+  onOpenDetail?: (number: number) => void; 
+  onSummary: (title: string, summary: string) => void;
 }
 
-export default function PRList({ prs, onOpenDetail }: PRListProps) {
+export default function PRList({ prs, onOpenDetail, onSummary }: PRListProps) {
   if (!prs || prs.length === 0)
     return <p className="text-center text-gray-400">데이터 없음</p>;
 
@@ -43,6 +44,7 @@ export default function PRList({ prs, onOpenDetail }: PRListProps) {
             <SummaryButton
               title={pr.title}
               content={pr.title + "\n\n" + (pr.body ?? "No body provided")}
+              onSummary={onSummary}
             />
           </div>
         </li>

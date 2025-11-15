@@ -3,6 +3,7 @@ import CommitList from "../components/CommitList";
 import PRList from "../components/PRList";
 import RepoList from "../components/RepoList";
 import PRDetailModal from "../components/PRDetailModal";
+import SummaryPanel from "../components/SummaryPanel";
 import Loader from "../../../shared/ui/Loader";
 import useFetch from "../../../shared/hooks/useFetch";
 import {
@@ -27,6 +28,8 @@ export default function GithubPage() {
 
   const [commitPage, setCommitPage] = useState(1);
   const [prPage, setPrPage] = useState(1);
+  const [summaryTitle, setSummaryTitle] = useState<string | null>(null);
+  const [summaryResult, setSummaryResult] = useState<string | null>(null);
 
   const commitsFetch = useFetch<Commit[], [string, string]>(getCommits);
   const prsFetch = useFetch<PullRequest[], [string, string]>(getPRs);
@@ -86,6 +89,20 @@ export default function GithubPage() {
       prev ? [...prev, ...newData] : [...newData]
     );
     setPrPage(nextPage);
+  };
+
+  const handleSaveSummary = () => {
+    if (!summaryTitle || !summaryResult) return;
+
+    const posts = JSON.parse(localStorage.getItem("blog-posts") || "[]");
+    posts.push({
+      title: summaryTitle,
+      content: summaryResult,
+      createdAt: new Date().toISOString(),
+    });
+    localStorage.setItem("blog-posts", JSON.stringify(posts));
+
+    alert("저장 완료!");
   };
 
   const loading = commitsFetch.loading || prsFetch.loading;
@@ -155,33 +172,56 @@ export default function GithubPage() {
 
           {loading && <Loader text="데이터 불러오는 중..." />}
 
-          {!loading && activeTab === "commits" && commitsFetch.data && (
-            <>
-              <CommitList commits={commitsFetch.data} />
-              {commitsFetch.data.length >= 10 && (
-                <button
-                  onClick={handleLoadMoreCommits}
-                  className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                >
-                  더 보기
-                </button>
+          <div className="flex gap-6 items-start">
+            <div className="flex-1">
+              {!loading && activeTab === "commits" && commitsFetch.data && (
+                <>
+                  <CommitList
+                    commits={commitsFetch.data}
+                    onSummary={(title, summary) => {
+                      setSummaryTitle(title);
+                      setSummaryResult(summary);
+                    }}
+                  />
+                  {commitsFetch.data.length >= 10 && (
+                    <button
+                      onClick={handleLoadMoreCommits}
+                      className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                    >
+                      더 보기
+                    </button>
+                  )}
+                </>
               )}
-            </>
-          )}
 
-          {!loading && activeTab === "prs" && prsFetch.data && (
-            <>
-              <PRList prs={prsFetch.data} onOpenDetail={openPRDetail} />
-              {prsFetch.data.length >= 10 && (
-                <button
-                  onClick={handleLoadMorePRs}
-                  className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                >
-                  더 보기
-                </button>
+              {!loading && activeTab === "prs" && prsFetch.data && (
+                <>
+                  <PRList
+                    prs={prsFetch.data}
+                    onOpenDetail={openPRDetail}
+                    onSummary={(title, summary) => {
+                      setSummaryTitle(title);
+                      setSummaryResult(summary);
+                    }}
+                  />
+                  {prsFetch.data.length >= 10 && (
+                    <button
+                      onClick={handleLoadMorePRs}
+                      className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                    >
+                      더 보기
+                    </button>
+                  )}
+                </>
               )}
-            </>
-          )}
+            </div>
+
+            <SummaryPanel
+              title={summaryTitle}
+              summary={summaryResult}
+              onSave={handleSaveSummary}
+            />
+          </div>
         </>
       )}
 
