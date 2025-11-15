@@ -28,14 +28,14 @@ export default function RepoInput({
         type="text"
         placeholder="owner (ex: facebook)"
         value={owner}
-        onChange={(e) => onChangeOwner(e.target.value)}
+        onChange={(e) => onChangeOwner(e.currentTarget.value)}
         className="border rounded px-3 py-2"
       />
       <input
         type="text"
         placeholder="repo (ex: react)"
         value={repo}
-        onChange={(e) => onChangeRepo(e.target.value)}
+        onChange={(e) => onChangeRepo(e.currentTarget.value)}
         className="border rounded px-3 py-2"
       />
       <button
