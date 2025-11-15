@@ -38,23 +38,29 @@
   - /search/repositories 엔드포인트를 사용하여 리포지토리 검색
   - /users/{username}/repos 엔드포인트를 사용하여 특정 사용자의 리포지토리 검색
 - 검색 결과 목록 표시
+
+2. 리포지토리 상세 화면 (`/repos/{owner}/{repo}`)
+
 - 검색된 리포지토리 선택 시 경로 반영 (`/repos/{owner}/{repo}`)
   - 선택한 리포지토리의 기본 정보 표시
   - 브랜치와 풀 리퀘스트 선택 화면으로 이동하는 링크 제공
 
-2. 브랜치 화면 (`/repos/{owner}/{repo}/branches`)
+3. 브랜치 화면 (`/repos/{owner}/{repo}/branches/{branch}`)
 
+- branch 기본값은 기본 브랜치
 - 브랜치 선택 드롭다운
-- 브랜치 선택 시 경로 반영 (`/repos/{owner}/{repo}/branches/{branch}`)
+- 브랜치 변경 시 경로 반영
 - 선택한 브랜치의 커밋 목록 표시
 
-3. 풀 리퀘스트 화면 (`/repos/{owner}/{repo}/pull-requests`)
+4. 풀 리퀘스트 목록 화면 (`/repos/{owner}/{repo}/pull-requests`)
 
-- 풀 리퀘스트 선택 드롭다운
-- 풀 리퀘스트 선택 시 경로 반영 (`/repos/{owner}/{repo}/pull-requests/{pullRequest}`)
+- 풀 리퀘스트 선택 목록
+
+5. 풀 리퀘스트 상세 정보 화면 (`/repos/{owner}/{repo}/pull-requests/{pullRequest}`)
+
 - 선택한 풀 리퀘스트의 커밋 목록 표시
 
-4. 커밋 상세 정보 표시 (`/repos/{owner}/{repo}/commits/{ref}`)
+6. 커밋 상세 정보 표시 (`/repos/{owner}/{repo}/commits/{ref}`)
 
 - 선택한 커밋의 상세 정보 (메시지, 작성자, 날짜 등) 표시
 - diff 뷰어를 사용하여 커밋 변경 사항 시각화

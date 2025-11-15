@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { AlertCircle, GitPullRequest, Loader2 } from "lucide-react";
+import { AlertCircle, GitCommit, Loader2 } from "lucide-react";
 
-import { readPullCommits, readPulls } from "~/api/github";
+import { readBranchCommits, readBranches } from "~/api/github";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import {
   Card,
@@ -21,51 +21,31 @@ import {
 } from "~/components/ui/select";
 import { Skeleton } from "~/components/ui/skeleton";
 
-type PullRequestsSearch = {
-  pullNumber?: number;
-};
-
-export const Route = createFileRoute("/repos/$owner/$repo/pull-requests")({
-  component: PullRequestsPage,
-  validateSearch: (search: Record<string, unknown>): PullRequestsSearch => {
-    return {
-      pullNumber: search.pullNumber ? Number(search.pullNumber) : undefined,
-    };
-  },
+export const Route = createFileRoute("/repos/$owner/$repo/branches/$branch")({
+  component: BranchesPage,
 });
 
-function PullRequestsPage() {
-  const { owner, repo } = Route.useParams();
-  const { pullNumber } = Route.useSearch();
+function BranchesPage() {
+  const { branch, owner, repo } = Route.useParams();
   const navigate = useNavigate();
 
-  // Fetch pull requests
-  const { data: pulls, status: pullsStatus } = useQuery({
-    queryFn: () => readPulls(owner, repo),
-    queryKey: ["pulls", owner, repo],
+  // Fetch branches
+  const { data: branches, status: branchesStatus } = useQuery({
+    queryFn: () => readBranches(owner, repo),
+    queryKey: ["branches", owner, repo],
   });
 
-  // Fetch commits for selected PR
+  // Fetch commits for selected branch
   const { data: commits, status: commitsStatus } = useQuery({
-    enabled: pullNumber !== undefined,
-    queryFn: () => readPullCommits(owner, repo, pullNumber!),
-    queryKey: ["pull-commits", owner, repo, pullNumber],
+    queryFn: ({ signal }) => readBranchCommits(owner, repo, branch, signal),
+    queryKey: ["branch-commits", owner, repo, branch],
   });
 
-  const handlePullRequestChange = (selectedPullNumber: string) => {
-    if (selectedPullNumber) {
-      navigate({
-        params: { owner, repo },
-        search: { pullNumber: Number(selectedPullNumber) },
-        to: "/repos/$owner/$repo/pull-requests",
-      }).catch(console.error);
-    } else {
-      navigate({
-        params: { owner, repo },
-        search: {},
-        to: "/repos/$owner/$repo/pull-requests",
-      }).catch(console.error);
-    }
+  const handleBranchChange = (selectedBranch: string) => {
+    navigate({
+      params: { branch: selectedBranch, owner, repo },
+      to: "/repos/$owner/$repo/branches/$branch",
+    }).catch(console.error);
   };
 
   return (
@@ -82,43 +62,43 @@ function PullRequestsPage() {
         </div>
 
         <h1 className="mb-6 text-3xl font-bold">
-          {owner}/{repo} - Pull Requests
+          {owner}/{repo} - Branches
         </h1>
 
         <div className="mb-6 space-y-2">
-          <label className="text-sm font-medium">Select Pull Request</label>
+          <label className="text-sm font-medium">Select Branch</label>
           <Select
-            name="pull-request"
-            onValueChange={(value) => handlePullRequestChange(value)}
-            value={pullNumber?.toString() ?? ""}
+            name="branch"
+            onValueChange={(value) => handleBranchChange(value)}
+            value={branch}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="-- Select a pull request --" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {pullsStatus === "success" &&
-                pulls?.map((pr) => (
-                  <SelectItem key={pr.number} value={pr.number.toString()}>
-                    #{pr.number} - {pr.title}
+              {branchesStatus === "success" &&
+                branches.map((b) => (
+                  <SelectItem key={b.name} value={b.name}>
+                    {b.name}
                   </SelectItem>
                 ))}
             </SelectContent>
           </Select>
         </div>
 
-        {pullsStatus === "pending" && (
+        {branchesStatus === "pending" && (
           <Alert>
             <Loader2 className="animate-spin" />
-            <AlertDescription>Loading pull requests...</AlertDescription>
+            <AlertDescription>Loading branches...</AlertDescription>
           </Alert>
         )}
 
-        {pullNumber !== undefined && (
+        {branch && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <GitPullRequest className="h-5 w-5" />
-                Commits in PR #{pullNumber}
+                <GitCommit className="h-5 w-5" />
+                Commits on {branch}
               </CardTitle>
               <CardDescription>
                 Click on a commit to view details
@@ -129,7 +109,7 @@ function PullRequestsPage() {
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div
-                      className="border-l-2 border-green-200 py-2 pl-4"
+                      className="border-l-2 border-blue-200 py-2 pl-4"
                       key={i}
                     >
                       <Skeleton className="mb-2 h-4 w-3/4" />
@@ -143,7 +123,7 @@ function PullRequestsPage() {
                 <div className="space-y-4">
                   {commits?.map((commit) => (
                     <Link
-                      className="block border-l-2 border-green-500 py-2 pl-4 transition-colors hover:bg-gray-50"
+                      className="block border-l-2 border-blue-500 py-2 pl-4 transition-colors hover:bg-gray-50"
                       key={commit.sha}
                       params={{ owner, ref: commit.sha, repo }}
                       to="/repos/$owner/$repo/commits/$ref"
