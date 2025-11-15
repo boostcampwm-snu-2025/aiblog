@@ -30,7 +30,7 @@ export default function RepositorySearchBar({ initValues, onSearch }: Repository
         <TextInput label="Owner" value={owner} onChange={(e) => setOwner(e.target.value)} />
         <TextInput label="Repository" value={repository} onChange={(e) => setRepository(e.target.value)} />
       </fieldset>
-      <Button text="검색" onClick={handleSearchButtonClick} />
+      <Button onClick={handleSearchButtonClick}>검색</Button>
     </form>
   );
 }
