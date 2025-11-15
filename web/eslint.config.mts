@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import tanstackQuery from "@tanstack/eslint-plugin-query";
+import pluginRouter from "@tanstack/eslint-plugin-router";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
 import perfectionist from "eslint-plugin-perfectionist";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -35,6 +36,7 @@ export default defineConfig([
       reactRefresh.configs.vite,
       perfectionist.configs["recommended-natural"],
       tanstackQuery.configs["flat/recommended"],
+      pluginRouter.configs["flat/recommended"],
       eslintConfigPrettier,
     ],
     files: ["src/**/*.ts", "src/**/*.tsx"],
@@ -48,6 +50,18 @@ export default defineConfig([
     },
     rules: {
       "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/only-throw-error": [
+        "error",
+        {
+          allow: [
+            {
+              from: "package",
+              name: "Redirect",
+              package: "@tanstack/router-core"
+            }
+          ]
+        }
+      ],
       "no-unused-vars": "off",
     },
   },
