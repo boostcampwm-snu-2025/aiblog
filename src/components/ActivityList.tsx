@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import type { Activity } from '../types';
-import { fetchActivities } from '../lib/api';
+import { fetchActivities, type BlogGenerationResponse } from '../lib/api';
 import ActivityItem from './ActivityItem';
 
 type Props = {
   owner: string;
   repo: string;
   onLoadingChange?: (loading: boolean) => void;
+  onBlogGenerate?: (blogData: BlogGenerationResponse['data']) => void;
 };
 
-export default function ActivityList({ owner, repo, onLoadingChange }: Props) {
+export default function ActivityList({ owner, repo, onLoadingChange, onBlogGenerate }: Props) {
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
@@ -38,7 +39,15 @@ export default function ActivityList({ owner, repo, onLoadingChange }: Props) {
   return (
     <div style={{ display:'grid', gap:12, marginTop:12 }}>
       {err && <div style={{ color:'crimson' }}>에러: {err}</div>}
-      {items.map((it, idx) => <ActivityItem key={`${it.kind}-${it.kind==='commit'?it.id:it.number}-${idx}`} item={it} />)}
+      {items.map((it, idx) => (
+        <ActivityItem
+          key={`${it.kind}-${it.kind==='commit'?it.id:it.number}-${idx}`}
+          item={it}
+          owner={owner}
+          repo={repo}
+          onBlogGenerate={onBlogGenerate}
+        />
+      ))}
       {loading && <div>로딩중…</div>}
       {!loading && items.length > 0 && (hasMore ? (
         <button onClick={() => load(page + 1)} style={{ padding:10 }}>더 보기</button>
