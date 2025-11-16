@@ -33,28 +33,28 @@ const router = express.Router();
  *               message:
  *                 type: string
  *                 description: 커밋 메시지 (type이 commit일 때 필수)
- *                 example: Feat: Add login feature
+ *                 example: "Feat: Add login feature"
  *               title:
  *                 type: string
  *                 description: PR 제목 (type이 pull_request일 때 필수)
- *                 example: Add user authentication
+ *                 example: "Add user authentication"
  *               body:
  *                 type: string
  *                 description: PR 본문
- *                 example: This PR implements user authentication using JWT
+ *                 example: "This PR implements user authentication using JWT"
  *               author:
  *                 type: string
  *                 description: 작성자 이름
- *                 example: John Doe
+ *                 example: "John Doe"
  *               date:
  *                 type: string
  *                 format: date-time
  *                 description: 작성 날짜
- *                 example: 2025-11-16T10:00:00Z
+ *                 example: "2025-11-16T10:00:00Z"
  *               url:
  *                 type: string
  *                 description: GitHub URL
- *                 example: https://github.com/user/repo/commit/abc123
+ *                 example: "https://github.com/user/repo/commit/abc123"
  *     responses:
  *       200:
  *         description: 블로그 생성 성공
@@ -72,7 +72,7 @@ const router = express.Router();
  *                     title:
  *                       type: string
  *                       description: 생성된 블로그 제목
- *                       example: GitHub 활동 내역, 한눈에 확인하세요!
+ *                       example: "GitHub 활동 내역, 한눈에 확인하세요!"
  *                     content:
  *                       type: string
  *                       description: 생성된 블로그 본문 (Markdown 형식)
@@ -81,7 +81,7 @@ const router = express.Router();
  *                       type: string
  *                       format: date-time
  *                       description: 블로그 생성 시각
- *                       example: 2025-11-16T10:05:00Z
+ *                       example: "2025-11-16T10:05:00Z"
  *       400:
  *         description: 잘못된 요청
  *         content:
@@ -94,10 +94,10 @@ const router = express.Router();
  *                   example: false
  *                 error:
  *                   type: string
- *                   example: Bad Request
+ *                   example: "Bad Request"
  *                 message:
  *                   type: string
- *                   example: Activity type is required (commit or pull_request)
+ *                   example: "Activity type is required (commit or pull_request)"
  *       429:
  *         description: API 호출 제한 초과
  *         content:
@@ -110,10 +110,10 @@ const router = express.Router();
  *                   example: false
  *                 error:
  *                   type: string
- *                   example: Rate Limit Exceeded
+ *                   example: "Rate Limit Exceeded"
  *                 message:
  *                   type: string
- *                   example: Too many requests. Please try again later.
+ *                   example: "Too many requests. Please try again later."
  *       500:
  *         description: 서버 에러
  *         content:
@@ -126,10 +126,10 @@ const router = express.Router();
  *                   example: false
  *                 error:
  *                   type: string
- *                   example: Internal Server Error
+ *                   example: "Internal Server Error"
  *                 message:
  *                   type: string
- *                   example: Failed to generate blog post
+ *                   example: "Failed to generate blog post"
  */
 router.post('/generate', async (req, res) => {
   try {

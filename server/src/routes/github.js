@@ -11,7 +11,39 @@ const getGitHubHeaders = () => ({
   'X-GitHub-Api-Version': '2022-11-28'
 });
 
-// 레포지토리의 최근 커밋 목록 가져오기
+/**
+ * @swagger
+ * /api/github/commits/{owner}/{repo}:
+ *   get:
+ *     summary: GitHub 레포지토리의 최근 커밋 목록 조회
+ *     tags: [GitHub]
+ *     parameters:
+ *       - in: path
+ *         name: owner
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 레포지토리 소유자
+ *         example: facebook
+ *       - in: path
+ *         name: repo
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 레포지토리 이름
+ *         example: react
+ *       - in: query
+ *         name: per_page
+ *         schema:
+ *           type: integer
+ *           default: 30
+ *         description: 페이지당 결과 수
+ *     responses:
+ *       200:
+ *         description: 커밋 목록 조회 성공
+ *       500:
+ *         description: 서버 에러
+ */
 router.get('/commits/:owner/:repo', async (req, res) => {
   try {
     const { owner, repo } = req.params;
@@ -35,7 +67,46 @@ router.get('/commits/:owner/:repo', async (req, res) => {
   }
 });
 
-// 레포지토리의 최근 PR 목록 가져오기
+/**
+ * @swagger
+ * /api/github/pulls/{owner}/{repo}:
+ *   get:
+ *     summary: GitHub 레포지토리의 최근 PR 목록 조회
+ *     tags: [GitHub]
+ *     parameters:
+ *       - in: path
+ *         name: owner
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 레포지토리 소유자
+ *         example: facebook
+ *       - in: path
+ *         name: repo
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 레포지토리 이름
+ *         example: react
+ *       - in: query
+ *         name: state
+ *         schema:
+ *           type: string
+ *           enum: [open, closed, all]
+ *           default: all
+ *         description: PR 상태
+ *       - in: query
+ *         name: per_page
+ *         schema:
+ *           type: integer
+ *           default: 30
+ *         description: 페이지당 결과 수
+ *     responses:
+ *       200:
+ *         description: PR 목록 조회 성공
+ *       500:
+ *         description: 서버 에러
+ */
 router.get('/pulls/:owner/:repo', async (req, res) => {
   try {
     const { owner, repo } = req.params;
@@ -59,7 +130,98 @@ router.get('/pulls/:owner/:repo', async (req, res) => {
   }
 });
 
-// 커밋과 PR을 합쳐서 반환 (통합 활동 내역)
+/**
+ * @swagger
+ * /api/github/activity/{owner}/{repo}:
+ *   get:
+ *     summary: GitHub 레포지토리의 통합 활동 내역 조회 (커밋 + PR)
+ *     description: 커밋과 PR을 합쳐서 날짜순으로 정렬하여 반환합니다
+ *     tags: [GitHub]
+ *     parameters:
+ *       - in: path
+ *         name: owner
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 레포지토리 소유자
+ *         example: facebook
+ *       - in: path
+ *         name: repo
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 레포지토리 이름
+ *         example: react
+ *       - in: query
+ *         name: per_page
+ *         schema:
+ *           type: integer
+ *           default: 30
+ *         description: 페이지당 결과 수
+ *     responses:
+ *       200:
+ *         description: 활동 내역 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 oneOf:
+ *                   - type: object
+ *                     properties:
+ *                       type:
+ *                         type: string
+ *                         example: commit
+ *                       id:
+ *                         type: string
+ *                         example: abc123def456
+ *                       message:
+ *                         type: string
+ *                         example: "Fix bug in component"
+ *                       author:
+ *                         type: string
+ *                         example: "John Doe"
+ *                       date:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-11-16T10:00:00Z"
+ *                       url:
+ *                         type: string
+ *                         example: "https://github.com/facebook/react/commit/abc123"
+ *                   - type: object
+ *                     properties:
+ *                       type:
+ *                         type: string
+ *                         example: pull_request
+ *                       id:
+ *                         type: integer
+ *                         example: 12345
+ *                       number:
+ *                         type: integer
+ *                         example: 100
+ *                       title:
+ *                         type: string
+ *                         example: "Add new feature"
+ *                       body:
+ *                         type: string
+ *                         example: "This PR adds a new feature"
+ *                       author:
+ *                         type: string
+ *                         example: "Jane Smith"
+ *                       date:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-11-15T15:30:00Z"
+ *                       state:
+ *                         type: string
+ *                         enum: [open, closed]
+ *                         example: open
+ *                       url:
+ *                         type: string
+ *                         example: "https://github.com/facebook/react/pull/100"
+ *       500:
+ *         description: 서버 에러
+ */
 router.get('/activity/:owner/:repo', async (req, res) => {
   try {
     const { owner, repo } = req.params;

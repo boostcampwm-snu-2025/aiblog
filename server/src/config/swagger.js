@@ -28,7 +28,10 @@ const options = {
       },
     ],
   },
-  apis: ['./src/routes/*.js'], // 라우터 파일에서 주석 읽어오기
+  apis: [
+    './src/routes/blog.js',
+    './src/routes/github.js'
+  ], // 라우터 파일에서 주석 읽어오기
 };
 
 const swaggerSpec = swaggerJsdoc(options);
