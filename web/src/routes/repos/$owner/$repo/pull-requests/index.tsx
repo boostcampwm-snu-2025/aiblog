@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
 import { Suspense } from "react";
 
 import { readPulls } from "~/api/github";
-import { Alert, AlertDescription } from "~/components/ui/alert";
+import { Skeleton } from "~/components/ui/skeleton";
 
 import PullRequests from "./-pull-requests";
 
@@ -37,10 +36,15 @@ function PullRequestsPage() {
         <div>
           <Suspense
             fallback={
-              <Alert>
-                <Loader2 className="animate-spin" />
-                <AlertDescription>Loading pull requests...</AlertDescription>
-              </Alert>
+              <div className="space-y-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div className="rounded-lg border bg-card p-4" key={i}>
+                    <Skeleton className="mb-2 h-5 w-3/4" />
+                    <Skeleton className="mb-2 h-4 w-1/2" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                ))}
+              </div>
             }
           >
             <PullRequests owner={owner} repo={repo} />
