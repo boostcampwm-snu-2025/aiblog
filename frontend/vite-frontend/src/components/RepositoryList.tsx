@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import type { Repository } from '../types/Repository';
 import './RepositoryList.css';
+import RepoDetails from './RepoDetails';
 
 export default function RepositoryList() {
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
 
   useEffect(() => {
     const fetchRepositories = async () => {
@@ -26,6 +28,10 @@ export default function RepositoryList() {
   if (loading) return <div>Loading repositories...</div>;
   if (error) return <div className="error">{error}</div>;
 
+  if (selectedRepo) {
+    return <RepoDetails repo={selectedRepo} onBack={() => setSelectedRepo(null)} />;
+  }
+
   return (
     <div className="repository-list">
       <h1>My Public Repositories</h1>
@@ -33,9 +39,9 @@ export default function RepositoryList() {
         {repositories.map(repo => (
           <div key={repo.id} className="repository-card">
             <h2>
-              <a href={repo.url} target="_blank" rel="noopener noreferrer">
+              <button className="repo-link" onClick={() => setSelectedRepo(repo)}>
                 {repo.name}
-              </a>
+              </button>
             </h2>
             {repo.description && <p className="description">{repo.description}</p>}
             <div className="repository-info">

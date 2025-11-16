@@ -33,12 +33,18 @@
   font-size: 1.2em;
 }
 
-.repository-card h2 a {
+.repository-card h2 a,
+.repository-card h2 .repo-link {
   color: #0366d6;
   text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
 }
 
-.repository-card h2 a:hover {
+.repository-card h2 .repo-link:hover {
   text-decoration: underline;
 }
 
