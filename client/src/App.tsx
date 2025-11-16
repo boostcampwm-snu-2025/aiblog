@@ -77,7 +77,7 @@ export default function App() {
           commits={commits}
         />
       ) : view === "blog" ? (
-        <BlogPage content={blogContent} />
+        <BlogPage content={blogContent} repoName={repoName} />
       ) : null}
     </>
   );
