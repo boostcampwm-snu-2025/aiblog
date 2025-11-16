@@ -1,6 +1,6 @@
 import './ActivityList.css';
 
-function ActivityList({ activities, repoInfo }) {
+function ActivityList({ activities, repoInfo, onSelectActivity, selectedActivity }) {
   if (activities.length === 0) {
     return null;
   }
@@ -14,56 +14,40 @@ function ActivityList({ activities, repoInfo }) {
 
       <div className="activity-list">
         {activities.map((activity) => (
-          <div key={activity.id} className="activity-item">
+          <div
+            key={activity.id}
+            className={`activity-item ${selectedActivity?.id === activity.id ? 'selected' : ''}`}
+            onClick={() => onSelectActivity(activity)}
+          >
             <div className="activity-type-badge">
               {activity.type === 'commit' ? '📝 커밋' : '🔀 PR'}
             </div>
 
             {activity.type === 'commit' ? (
-              <>
-                <div className="activity-content">
-                  <p className="activity-message">{activity.message}</p>
-                  <div className="activity-meta">
-                    <span className="author">{activity.author}</span>
-                    <span className="date">
-                      {new Date(activity.date).toLocaleString('ko-KR')}
-                    </span>
-                  </div>
-                </div>
-                <a
-                  href={activity.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="activity-link"
-                >
-                  보기
-                </a>
-              </>
-            ) : (
-              <>
-                <div className="activity-content">
-                  <p className="activity-title">
-                    #{activity.number} {activity.title}
-                  </p>
-                  <span className={`pr-state ${activity.state}`}>
-                    {activity.state === 'open' ? '열림' : '닫힘'}
+              <div className="activity-content">
+                <p className="activity-message">{activity.message}</p>
+                <div className="activity-meta">
+                  <span className="author">{activity.author}</span>
+                  <span className="date">
+                    {new Date(activity.date).toLocaleString('ko-KR')}
                   </span>
-                  <div className="activity-meta">
-                    <span className="author">{activity.author}</span>
-                    <span className="date">
-                      {new Date(activity.date).toLocaleString('ko-KR')}
-                    </span>
-                  </div>
                 </div>
-                <a
-                  href={activity.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="activity-link"
-                >
-                  보기
-                </a>
-              </>
+              </div>
+            ) : (
+              <div className="activity-content">
+                <p className="activity-title">
+                  #{activity.number} {activity.title}
+                </p>
+                <span className={`pr-state ${activity.state}`}>
+                  {activity.state === 'open' ? '열림' : '닫힘'}
+                </span>
+                <div className="activity-meta">
+                  <span className="author">{activity.author}</span>
+                  <span className="date">
+                    {new Date(activity.date).toLocaleString('ko-KR')}
+                  </span>
+                </div>
+              </div>
             )}
           </div>
         ))}
