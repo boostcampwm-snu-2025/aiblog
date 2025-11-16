@@ -4,7 +4,7 @@ import { PATHS } from "@/constants/path";
 import type { PRStatus, PullRequest } from "@/entities/pullrequest";
 import Badge from "@/shared/ui/Badge";
 import Button from "@/shared/ui/Button";
-import { formatDate } from "@/utils/format";
+import { formatDate } from "@/shared/utils/format";
 
 type SearchResultItemProps = {
   owner: string;

@@ -9,7 +9,7 @@ export const setLocalStorage = <T = unknown>(key: string, value: T) => {
   }
 };
 
-export function getLocalStorage<T>(key: string) {
+export const getLocalStorage = <T>(key: string) => {
   try {
     const item = localStorage.getItem(key);
     return item ? (JSON.parse(item) as T) : null;
@@ -17,7 +17,7 @@ export function getLocalStorage<T>(key: string) {
     customConsole.error(`Failed to get item with key "${key}":`, error);
     return null;
   }
-}
+};
 
 export const removeLocalStorage = (key: string) => {
   try {

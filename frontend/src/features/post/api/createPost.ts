@@ -1,7 +1,7 @@
 import type { Post } from "@/entities/post";
 
-import { setLocalStorage } from "@/utils/localStorage";
-import { generateUUID } from "@/utils/uuid";
+import { setLocalStorage } from "@/shared/utils/localStorage";
+import { generateUUID } from "@/shared/utils/uuid";
 
 import { STORAGE_KEY } from "./constants";
 import { getPosts } from "./getPosts";
