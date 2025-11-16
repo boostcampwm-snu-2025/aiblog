@@ -92,3 +92,19 @@ export type SaveBlogPostResponse = {
   repository: string;
   prNumber: number;
 };
+
+export type BlogPostItem = {
+  id: string;
+  repository: string;
+  prNumber: number;
+  title: string | null;
+  summary: string | null;
+  content: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+};
+
+export type GetAllBlogPostsResponse = {
+  count: number;
+  posts: BlogPostItem[];
+};

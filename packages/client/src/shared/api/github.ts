@@ -8,6 +8,7 @@ import type {
   GenerateBlogPostResponse,
   SaveBlogPostRequest,
   SaveBlogPostResponse,
+  GetAllBlogPostsResponse,
 } from "./types";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -44,6 +45,25 @@ export async function fetchCommits(
   return data.data;
 }
 
+export async function fetchAllBlogPosts(): Promise<GetAllBlogPostsResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/repos/blog-posts/all`);
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({
+      status: "error",
+      message: "Failed to fetch blog posts",
+    }));
+    throw new Error(error.message || "Failed to fetch blog posts");
+  }
+
+  const data: ApiResponse<GetAllBlogPostsResponse> = await response.json();
+
+  if (!data.success) {
+    throw new Error(data.error || "Failed to fetch blog posts");
+  }
+
+  return data.data;
+}
 export async function fetchPullRequests(
   url: string,
   page: number = 1,
