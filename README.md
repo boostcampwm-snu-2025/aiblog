@@ -2,7 +2,9 @@ Smart Blog Maker
 GitHub 저장소의 커밋/PR 이력을 AI로 요약하여 기술 블로그 초안을 생성해주는 프로젝트입니다.
 
 # 🖥️ 주요 기능 데모
-![데모 파일](./assets/demo.png)
+![데모 파일](./assets/demo3.png)
+![데모 파일2](./assets/demo2.png)
+
 
 # ✨ 주요 기능
 GitHub 데이터 연동: owner/repo 또는 GitHub URL을 입력받아, 해당 저장소의 최근 커밋 및 PR 목록을 실시간으로 조회합니다.
