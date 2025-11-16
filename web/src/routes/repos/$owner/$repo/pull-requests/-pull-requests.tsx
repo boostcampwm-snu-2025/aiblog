@@ -19,6 +19,7 @@ interface Props {
 
 function PullRequests({ owner, repo }: Props) {
   const { data } = useSuspenseQuery(readPulls(owner, repo));
+  const isEmpty = data.length === 0;
 
   return (
     <Card>
@@ -32,16 +33,16 @@ function PullRequests({ owner, repo }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {data.length > 0 ? (
+        {isEmpty ? (
+          <p className="text-sm text-gray-500">
+            No pull requests found for this repository.
+          </p>
+        ) : (
           <div className="space-y-2">
             {data.map((pr) => (
               <PullRequest key={pr.number} owner={owner} pr={pr} repo={repo} />
             ))}
           </div>
-        ) : (
-          <p className="text-sm text-gray-500">
-            No pull requests found for this repository.
-          </p>
         )}
       </CardContent>
     </Card>
