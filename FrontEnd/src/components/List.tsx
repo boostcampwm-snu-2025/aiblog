@@ -8,6 +8,7 @@ export interface CommitData {
   author: string
   date: string
   sha?: string
+  files?: string // Commit 파일 변경사항 (diff)
 }
 
 export interface PullRequestData {
@@ -17,6 +18,11 @@ export interface PullRequestData {
   date: string
   status?: 'open' | 'closed' | 'merged'
   number?: number
+  description?: string
+  comments?: string // PR 코멘트들
+  readme?: string
+  body?: string // PR 본문 설명
+  files?: string // PR 파일 변경사항 (diff)
 }
 
 interface ListProps {
@@ -26,8 +32,10 @@ interface ListProps {
   repositoryName?: string
   commits?: CommitData[]
   pullRequests?: PullRequestData[]
+  selectedType?: 'commit' | 'pr' | null
+  selectedData?: CommitData | PullRequestData | null
   onItemSelect?: (data: CommitData | PullRequestData, type: 'commit' | 'pr') => void
-  onGenerateSummary?: (data: CommitData | PullRequestData, type: 'commit' | 'pr') => void
+  onGenerateSummary?: (data?: CommitData | PullRequestData, type?: 'commit' | 'pr') => void
 }
 
 export default function List({
@@ -36,6 +44,8 @@ export default function List({
   selectedRepository,
   commits = [],
   pullRequests = [],
+  selectedType,
+  selectedData,
   onItemSelect,
   onGenerateSummary
 }: ListProps) {
@@ -68,9 +78,14 @@ export default function List({
               <Commit
                 key={commit.id}
                 data={commit}
+                isSelected={selectedType === 'commit' && selectedData?.id === commit.id}
+                onSelect={() => onItemSelect?.(commit, 'commit')}
                 onGenerateSummary={() => {
                   onItemSelect?.(commit, 'commit')
-                  onGenerateSummary?.(commit, 'commit')
+                  // selectedData가 업데이트될 때까지 기다린 후 호출하기 위해 데이터 파라미터 없이 호출
+                  setTimeout(() => {
+                    onGenerateSummary?.()
+                  }, 100)
                 }}
               />
             ))
@@ -78,9 +93,14 @@ export default function List({
               <PR
                 key={pr.id}
                 data={pr}
+                isSelected={selectedType === 'pr' && selectedData?.id === pr.id}
+                onSelect={() => onItemSelect?.(pr, 'pr')}
                 onGenerateSummary={() => {
                   onItemSelect?.(pr, 'pr')
-                  onGenerateSummary?.(pr, 'pr')
+                  // selectedData가 업데이트될 때까지 기다린 후 호출하기 위해 데이터 파라미터 없이 호출
+                  setTimeout(() => {
+                    onGenerateSummary?.()
+                  }, 100)
                 }}
               />
             ))}
