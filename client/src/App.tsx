@@ -32,17 +32,29 @@ export default function App() {
     setView(repo ? "commits" : "repos");
   };
 
-  async function handleGenerateBlog(username: string, repo: string) {
+  // Generate blog for a specific repo
+  const handleGenerateBlog = async (username: string, repo: string) => {
     setView("blog");
+    setBlogContent("Generating blog..."); // show loading in UI
 
-    const res = await fetch("http://localhost:3001/generate-blog", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, repo }),
-    });
-    const data = await res.json();
-    setBlogContent(data.blog);
-  }
+    try {
+      const res = await fetch("http://localhost:3000/api/generate-blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, repo }),
+      });
+      const data = await res.json();
+
+      if (data.blog) {
+        setBlogContent(data.blog);
+      } else {
+        setBlogContent("Failed to generate blog.");
+      }
+    } catch (err) {
+      console.error(err);
+      setBlogContent("Error generating blog.");
+    }
+  };
 
   return (
     <>

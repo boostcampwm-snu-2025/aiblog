@@ -2,7 +2,7 @@ import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 import cors from "cors";
-import { TextServiceClient } from "@google-ai/generativelanguage";
+import { GoogleGenAI } from "@google/genai";
 
 
 dotenv.config();
@@ -29,9 +29,9 @@ const GH_HEADERS = {
   Authorization: `token ${GITHUB_TOKEN}`,
   "User-Agent": "GitHub-Explorer-App",
 };
-const textClient = new TextServiceClient({
+const ai = new GoogleGenAI({
   // auth via API key
-  authClient: null,
+//  authClient: null,
   apiKey: GOOGLE_API_KEY,
 });
 /* -----------------------------------------------------------
@@ -148,6 +148,8 @@ app.get("/api/search", async (req, res) => {
  * POST /api/generate-blog
  * Body: { username: string, repo: string, commits: Array<{sha, message, author, date}> (optional) }
  */
+
+
 app.post("/api/generate-blog", async (req, res) => {
   const { username, repo, commits } = req.body;
 
@@ -193,18 +195,15 @@ Write the blog as if for a developer audience. Include:
 Make the blog friendly, professional, and informative.
 `;
 
-    // Call Gemini / Generative Language API
-    const [response] = await textClient.generateText({
-      model: "models/gemini-2.5-flash", // you can change to the model you want to use
-      prompt: {
-        text: promptText,
-      },
+    // Call GoogleGenAI
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash", // you can change to the model you want to use
+      contents: promptText,
       temperature: 0.7, // controls creativity
       maxOutputTokens: 1024,
     });
 
-    const generated = response.candidates && response.candidates[0].output?.text;
-
+    const generated = response.text;
     if (!generated) {
       return res
         .status(500)
