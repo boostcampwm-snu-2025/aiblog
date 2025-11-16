@@ -1,8 +1,9 @@
+import type { MouseEventHandler } from "react";
 import type { SimplePRDetail } from "../../../shared/api/github";
 
 interface PRDetailModalProps {
   open: boolean;
-  onClose: () => void;
+  onClose: MouseEventHandler<HTMLButtonElement>;
   data: SimplePRDetail | null;
 }
 
