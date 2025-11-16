@@ -3,6 +3,7 @@ import { parseGitHubUrl } from "../utils/github.utils";
 import { fetchCommits, fetchPullRequests } from "../services/github.service";
 import { generate as generatePRSummaryService } from "../services/prSummary.service";
 import { generate as generateBlogPostService } from "../services/blogPost.service";
+import { save as saveBlogPostService } from "../services/blogStorage.service";
 import { ValidationError } from "../utils/errors";
 
 export async function getCommits(
@@ -165,6 +166,65 @@ export async function generateBlogPost(
     });
 
     res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function saveBlogPost(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { url, pullNumber, blogPost, summary, title } = req.body as {
+      url?: unknown;
+      pullNumber?: unknown;
+      blogPost?: unknown;
+      summary?: unknown;
+      title?: unknown;
+    };
+
+    if (!url || typeof url !== "string") {
+      throw new ValidationError("url이 필요합니다.");
+    }
+
+    if (
+      typeof pullNumber !== "number" ||
+      !Number.isInteger(pullNumber) ||
+      pullNumber < 1
+    ) {
+      throw new ValidationError("pullNumber는 1 이상의 정수여야 합니다.");
+    }
+
+    if (
+      !blogPost ||
+      typeof blogPost !== "string" ||
+      blogPost.trim().length === 0
+    ) {
+      throw new ValidationError("blogPost 내용이 필요합니다.");
+    }
+
+    if (summary != null && typeof summary !== "string") {
+      throw new ValidationError("summary는 문자열이어야 합니다.");
+    }
+
+    if (title != null && typeof title !== "string") {
+      throw new ValidationError("title은 문자열이어야 합니다.");
+    }
+
+    const result = await saveBlogPostService({
+      url,
+      pullNumber,
+      blogPost,
+      summary: (summary as string | undefined) ?? null,
+      title: (title as string | undefined) ?? null,
+    });
+
+    res.status(201).json({
       success: true,
       data: result,
     });
