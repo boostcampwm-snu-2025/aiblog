@@ -1,9 +1,14 @@
+import { useState } from "react";
 import { useSavedBlogPosts } from "../../features/saved/model/useSavedBlogPosts";
 import { BlogCard } from "../../entities/blog-post";
-import { QueryState } from "../../shared";
+import { QueryState, Modal, Button, MarkdownContent } from "../../shared";
+import type { BlogPostItem } from "../../shared/api/types";
 
 export function SavedPostsPage() {
   const query = useSavedBlogPosts();
+  const [selected, setSelected] = useState<BlogPostItem | null>(null);
+  const isOpen = selected !== null;
+  const onClose = () => setSelected(null);
 
   return (
     <div className="space-y-6">
@@ -21,11 +26,33 @@ export function SavedPostsPage() {
               key={post.id}
               title={post.title ?? "(제목 없음)"}
               content={post.content}
-              onViewDetails={() => {}}
+              onViewDetails={() => setSelected(post)}
             />
           ))}
         </div>
       </QueryState>
+      <Modal isOpen={isOpen} onClose={onClose} className="max-w-3xl">
+        {selected && (
+          <div className="flex flex-col h-full overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">
+                {selected.title ?? "(제목 없음)"}
+              </h2>
+              <p className="text-xs text-gray-500 mt-1">
+                {selected.repository} · PR #{selected.prNumber}
+              </p>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-4">
+              <MarkdownContent content={selected.content} />
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+              <Button variant="outline" onClick={onClose}>
+                닫기
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
