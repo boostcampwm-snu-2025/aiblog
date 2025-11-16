@@ -1,6 +1,6 @@
 import { parseGitHubUrl } from "../utils/github.utils";
 import { getPullRequest, getDiff } from "./github.service";
-import { generateBlogPost } from "./llm.service";
+import { generateBlogPost, type GeneratedBlogPost } from "./llm.service";
 import { AppError } from "../utils/errors";
 
 export interface GenerateBlogPostRequest {
@@ -11,6 +11,7 @@ export interface GenerateBlogPostRequest {
 
 export interface GenerateBlogPostResponse {
   blogPost: string;
+  blogPostTitle: string;
   prNumber: number;
   repository: string;
 }
@@ -25,14 +26,15 @@ export async function generate(
 
     const diff = await getDiff(prDetail.diff_url);
 
-    const blogPost = await generateBlogPost(
+    const generated: GeneratedBlogPost = await generateBlogPost(
       request.summary,
       prDetail.body,
       diff
     );
 
     return {
-      blogPost,
+      blogPost: generated.content,
+      blogPostTitle: generated.title,
       prNumber: request.pullNumber,
       repository: `${parsedUrl.owner}/${parsedUrl.repo}`,
     };
