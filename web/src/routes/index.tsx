@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { type FormEvent, Suspense, useState } from "react";
+import { Suspense } from "react";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -8,6 +8,7 @@ import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Skeleton } from "~/components/ui/skeleton";
 
+import { useSearchState } from "./-index.service";
 import OrgReposResults from "./-org-repos-results";
 import SearchReposResults from "./-search-repos-results";
 import UserReposResults from "./-user-repos-results";
@@ -16,23 +17,18 @@ export const Route = createFileRoute("/")({
   component: IndexPage,
 });
 
-type SearchType = "org" | "repositories" | "user";
-
 function IndexPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchType, setSearchType] = useState<SearchType>("repositories");
-  const [submittedQuery, setSubmittedQuery] = useState("");
-  const [submittedType, setSubmittedType] = useState<null | SearchType>(null);
-  const navigate = useNavigate();
+  const {
+    handleQueryChange,
+    handleSubmit,
+    handleTypeChange,
+    searchQuery,
+    searchType,
+    submittedQuery,
+    submittedType,
+  } = useSearchState();
 
-  const handleSearch = (e: FormEvent) => {
-    e.preventDefault();
-    const trimmedQuery = searchQuery.trim();
-    if (trimmedQuery) {
-      setSubmittedQuery(trimmedQuery);
-      setSubmittedType(searchType);
-    }
-  };
+  const navigate = useNavigate();
 
   const handleSelectRepo = (owner: string, repo: string) => {
     navigate({
@@ -48,11 +44,8 @@ function IndexPage() {
           <h1 className="mb-4 text-4xl font-bold">
             GitHub Repository Activity
           </h1>
-          <form className="space-y-4" onSubmit={handleSearch}>
-            <RadioGroup
-              onValueChange={(value) => setSearchType(value as SearchType)}
-              value={searchType}
-            >
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <RadioGroup onValueChange={handleTypeChange} value={searchType}>
               <div className="flex gap-6">
                 <div className="flex items-center space-x-2">
                   <Label>
@@ -78,7 +71,7 @@ function IndexPage() {
               <Input
                 className="flex-1"
                 name={searchType}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleQueryChange(e.target.value)}
                 placeholder={
                   {
                     org: "Enter organization name (e.g., microsoft)",
