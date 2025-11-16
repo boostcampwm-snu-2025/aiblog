@@ -9,6 +9,7 @@ export default function RepositoryList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
+  const [blogContent, setBlogContent] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRepositories = async () => {
@@ -33,7 +34,10 @@ export default function RepositoryList() {
     try {
       const payload = { source, item, repo: selectedRepo };
       const resp = await axios.post('http://localhost:3000/api/create-blog', payload);
+      // Prefer different possible response shapes from backend
+      const generated = resp?.data?.result || resp?.data?.data || (typeof resp?.data === 'string' ? resp.data : null) || JSON.stringify(resp?.data);
       console.log('Create blog result:', resp.data);
+      setBlogContent(generated);
       // For now, just log result to console (frontend requirement)
     } catch (err) {
       console.error('Failed to create blog', err);
@@ -41,7 +45,26 @@ export default function RepositoryList() {
   };
 
   if (selectedRepo) {
-    return <RepoDetails repo={selectedRepo} onBack={() => setSelectedRepo(null)} onCreateBlog={handleCreateBlog} />;
+    return (
+      <div className="details-container">
+        <div className="details-left">
+          <RepoDetails repo={selectedRepo} onBack={() => { setSelectedRepo(null); setBlogContent(null); }} onCreateBlog={handleCreateBlog} />
+        </div>
+        <div className="blog-preview">
+          <div className="preview-header">
+            <h3>Generated Blog</h3>
+            <button className="close-preview" onClick={() => setBlogContent(null)}>Close</button>
+          </div>
+          <div className="preview-body">
+            {blogContent ? (
+              <pre style={{ whiteSpace: 'pre-wrap' }}>{blogContent}</pre>
+            ) : (
+              <div className="empty">생성된 블로그가 없습니다. Commit/PR 항목에서 "Create Blog"를 클릭하세요.</div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

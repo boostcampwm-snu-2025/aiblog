@@ -16,6 +16,32 @@
   gap: 20px;
 }
 
+/* Details + preview layout */
+.details-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.details-left {
+  flex: 1 1 60%;
+}
+.blog-preview {
+  width: 38%;
+  min-width: 280px;
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+}
+.preview-header { display:flex; align-items:center; justify-content:space-between; gap:8px }
+.preview-header h3 { margin: 0 }
+.close-preview { background:transparent; border:1px solid #ddd; padding:4px 8px; border-radius:4px; cursor:pointer }
+.preview-body { margin-top: 12px; color:#222; }
+.preview-body pre { font-family: inherit; font-size: 0.95rem; line-height:1.5 }
+.preview-body .empty { color:#666; }
+
 .repository-card {
   background: white;
   border-radius: 8px;
