@@ -28,8 +28,20 @@ export default function RepositoryList() {
   if (loading) return <div>Loading repositories...</div>;
   if (error) return <div className="error">{error}</div>;
 
+  const handleCreateBlog = async (source: 'commit' | 'pr', item: any) => {
+    if (!selectedRepo) return;
+    try {
+      const payload = { source, item, repo: selectedRepo };
+      const resp = await axios.post('http://localhost:3000/api/create-blog', payload);
+      console.log('Create blog result:', resp.data);
+      // For now, just log result to console (frontend requirement)
+    } catch (err) {
+      console.error('Failed to create blog', err);
+    }
+  };
+
   if (selectedRepo) {
-    return <RepoDetails repo={selectedRepo} onBack={() => setSelectedRepo(null)} />;
+    return <RepoDetails repo={selectedRepo} onBack={() => setSelectedRepo(null)} onCreateBlog={handleCreateBlog} />;
   }
 
   return (
