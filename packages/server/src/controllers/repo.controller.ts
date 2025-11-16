@@ -3,7 +3,11 @@ import { parseGitHubUrl } from "../utils/github.utils";
 import { fetchCommits, fetchPullRequests } from "../services/github.service";
 import { generate as generatePRSummaryService } from "../services/prSummary.service";
 import { generate as generateBlogPostService } from "../services/blogPost.service";
-import { save as saveBlogPostService } from "../services/blogStorage.service";
+import {
+  save as saveBlogPostService,
+  list as listBlogPostsService,
+  listAll as listAllBlogPostsService,
+} from "../services/blogStorage.service";
 import { ValidationError } from "../utils/errors";
 
 export async function getCommits(
@@ -168,6 +172,65 @@ export async function generateBlogPost(
     res.status(200).json({
       success: true,
       data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getAllBlogPosts(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const posts = await listAllBlogPostsService();
+    res.status(200).json({
+      success: true,
+      data: {
+        count: posts.length,
+        posts,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getBlogPosts(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { repository, prNumber, limit } = req.query;
+
+    const prNum =
+      prNumber !== undefined ? parseInt(prNumber as string, 10) : undefined;
+    if (
+      prNumber !== undefined &&
+      (isNaN(prNum as number) || (prNum as number) < 1)
+    ) {
+      throw new ValidationError("prNumber는 1 이상의 숫자여야 합니다.");
+    }
+
+    const lim = limit !== undefined ? parseInt(limit as string, 10) : undefined;
+    if (limit !== undefined && (isNaN(lim as number) || (lim as number) < 1)) {
+      throw new ValidationError("limit는 1 이상의 숫자여야 합니다.");
+    }
+
+    const posts = await listBlogPostsService({
+      repository: typeof repository === "string" ? repository : undefined,
+      prNumber: prNum,
+      limit: lim,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        count: posts.length,
+        posts,
+      },
     });
   } catch (error) {
     next(error);
