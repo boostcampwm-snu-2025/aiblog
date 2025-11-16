@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import githubRoutes from './routes/github.js';
+import blogRoutes from './routes/blog.js';
 
 // Load environment variables
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/github', githubRoutes);
+app.use('/api/blog', blogRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
