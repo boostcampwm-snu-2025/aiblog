@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import * as githubApi from '../apis/githubApi';
+import { githubApi } from '../apis/api';
 
 export const useGitHubActivity = () => {
   const [activities, setActivities] = useState([]);
@@ -13,7 +13,7 @@ export const useGitHubActivity = () => {
     setActivities([]);
 
     try {
-      const data = await githubApi.fetchGitHubActivity(owner, repo);
+      const data = await githubApi.getActivity(owner, repo);
       setActivities(data);
       setRepoInfo({ owner, repo });
     } catch (err) {
