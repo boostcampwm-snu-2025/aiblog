@@ -12,6 +12,6 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "NodeNext"
   },
-  "include": ["src"],
+  "include": ["src", "src/scripts"],
   "exclude": ["dist", "node_modules"]
 }
