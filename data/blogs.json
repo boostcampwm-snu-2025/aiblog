@@ -1,5 +1,36 @@
 [
   {
+    "id": "43038187-51c1-447c-9880-eba30605a866",
+    "title": "AI 블로그: 게시 & 페이지 탐색 기능 추가!",
+    "content": "안녕하세요! 🚀 AI 블로그 프로젝트의 흥미로운 업데이트 소식을 전해드립니다. 이번 커밋에서는 AI가 생성한 블로그 글을 실제로 **게시**하고 관리할 수 있는 기능과, 애플리케이션 내에서 쉽게 페이지를 **탐색**할 수 있는 내비게이션 시스템을 구축했습니다. 개발 과정에서 인공지능 코드 어시스턴트인 Claude Code의 도움도 톡톡히 받았습니다!\n\n## 무엇을 했나요?\n\n이번 업데이트의 핵심은 다음과 같습니다.\n\n1.  **블로그 게시 기능 구현**: AI가 생성한 블로그를 저장하고, 목록으로 보고, 상세 내용을 조회하며, 수정 및 삭제까지 가능한 CRUD 시스템을 완성했습니다.\n2.  **페이지 네비게이션 구현**: '커밋 분석' 페이지와 '블로그 목록' 페이지를 쉽게 오갈 수 있는 헤더 내비게이션과 부드러운 화면 전환 효과를 추가했습니다.\n\n## 왜 이 작업이 필요했나요?\n\n이전까지 AI가 생성한 블로그 글은 휘발성이 강했습니다. 한 번 생성되면 저장되지 않아 다시 볼 수 없었죠. AI가 만들어낸 소중한 결과물을 영구적으로 보관하고, 필요할 때 언제든 다시 찾아볼 수 있도록 **지속성**을 부여하는 것이 가장 시급한 목표였습니다.\n\n또한, 프로젝트 기능이 확장됨에 따라 사용자가 여러 기능 영역 사이를 매끄럽게 이동할 수 있도록 직관적인 **사용자 경험(UX)** 개선이 필수적이었습니다. 이를 위해 페이지 네비게이션 시스템이 필요했습니다.\n\n## 어떻게 구현했나요?\n\n### 1. 블로그 게시 기능 (Phase 3)\n\n블로그 게시 기능은 백엔드와 프론트엔드 모두에서 중요한 변화를 가져왔습니다.\n\n*   **백엔드 (저장 및 API)**:\n    *   간편한 시작을 위해 `src/services/blogStorage.ts` 파일에 JSON 기반의 블로그 저장 시스템을 구축했습니다. 실제 서비스에서는 데이터베이스로 전환될 수 있는 유연한 구조입니다.\n    *   이 저장 시스템을 바탕으로 `src/routes/blog.ts`에 **블로그 CRUD API 5개 엔드포인트** (`POST`, `GET`, `PUT`, `DELETE`)를 개발하여 블로그 생성, 조회, 수정, 삭제의 모든 작업을 처리할 수 있게 했습니다.\n\n*   **프론트엔드 (UI 및 연동)**:\n    *   `src/components/BlogListPage.tsx`를 새로 만들어 게시된 블로그 목록을 보여줍니다. 이 목록 페이지는 페이징 기능과 다크모드를 지원하여 사용 편의성을 높였습니다.\n    *   블로그 상세 내용을 아름답게 보여주기 위해 `src/components/BlogDetailModal.tsx`를 구현했습니다. 이 모달에서는 Markdown 렌더링을 지원하며, 필요한 경우 블로그를 바로 삭제할 수 있는 기능도 포함되어 있습니다.\n    *   이 모든 프론트엔드 작업은 `src/lib/api.ts`에 정의된 `publishBlog`, `fetchBlogList`, `fetchBlogDetail`, `deleteBlog`와 같은 API 호출 함수들을 통해 백엔드와 유기적으로 연동됩니다.\n\n### 2. 페이지 네비게이션 구현 (Phase 4)\n\n사용자 경험을 개선하기 위한 네비게이션 시스템은 다음과 같이 구현되었습니다.\n\n*   **Header 컴포넌트**: `src/components/Header.tsx`를 생성하여 상단에 고정하고, \"커밋 분석\"과 \"블로그 목록\" 뷰를 전환할 수 있는 토글 버튼을 추가했습니다.\n*   **뷰 전환 로직**: `src/App.tsx`에서 현재 어떤 뷰를 보여줄지 상태를 관리하고, 이 상태에 따라 적절한 컴포넌트를 조건부 렌더링하도록 구현했습니다.\n*   **애니메이션 및 레이아웃**: `src/index.css`에 CSS `fadeIn` 애니메이션 효과를 적용하여 페이지 전환 시 부드러운 시각적 효과를 주었습니다. 또한, 전체 레이아웃의 `padding`과 헤더의 위치를 고정하여 일관성을 개선했습니다.\n\n```typescript\n// src/App.tsx (Simplified view switching logic)\nimport React, { useState } from 'react';\nimport Header from './components/Header';\nimport TwoColumnLayout from './components/TwoColumnLayout';\nimport BlogListPage from './components/BlogListPage';\n\ntype ViewType = 'commitAnalysis' | 'blogList';\n\nfunction App() {\n  const [currentView, setCurrentView] = useState<ViewType>('commitAnalysis');\n\n  const handleViewChange = (view: ViewType) => {\n    setCurrentView(view);\n  };\n\n  return (\n    <div className={`app-container ${currentView === 'blogList' ? 'fade-in' : ''}`}>\n      <Header onViewChange={handleViewChange} currentView={currentView} />\n      <main className=\"content-area\">\n        {currentView === 'commitAnalysis' ? (\n          <TwoColumnLayout />\n        ) : (\n          <BlogListPage />\n        )}\n      </main>\n    </div>\n  );\n}\n```\n\n## 어떤 효과가 있었나요?\n\n이번 업데이트를 통해 AI 블로그 프로젝트는 다음과 같은 이점을 얻게 되었습니다.\n\n*   **지속 가능한 콘텐츠 관리**: AI가 생성한 블로그 글이 더 이상 일회성이 아닌, 게시 및 관리 가능한 영구적인 콘텐츠가 되었습니다.\n*   **향상된 사용자 경험**: 직관적인 네비게이션과 부드러운 화면 전환으로 사용자가 애플리케이션의 여러 섹션을 훨씬 쉽게 탐색할 수 있게 되었습니다.\n*   **확장성 기반 마련**: 블로그 저장 시스템과 API가 구축됨으로써 향후 검색, 필터링, 사용자 인증 등 더 복잡한 기능들을 추가하기 위한 든든한 기반이 마련되었습니다.\n\nAI 어시스턴트인 Claude Code와 함께 효율적으로 구현된 이번 기능들로, AI 블로그 프로젝트가 한 단계 더 발전할 수 있었음에 기쁩니다! 앞으로도 사용자분들께 더 좋은 경험을 제공하기 위해 꾸준히 발전시켜 나가겠습니다. 기대해주세요!",
+    "summary": "AI가 생성한 블로그를 저장하고 탐색할 수 있는 기능과 깔끔한 페이지 네비게이션을 추가했습니다.",
+    "commitSha": "657e072220f05e18c23735cf71f43bd5dc5ef770",
+    "owner": "dev-pyun",
+    "repo": "aiblog",
+    "author": "dev-pyun",
+    "filesChanged": [
+      "DEVELOPMENT_PLAN.md",
+      "data/blogs.json",
+      "src/App.tsx",
+      "src/components/BlogDetailModal.tsx",
+      "src/components/BlogListPage.tsx",
+      "src/components/Header.tsx",
+      "src/index.css",
+      "src/lib/api.ts",
+      "src/routes/blog.ts",
+      "src/services/blogStorage.ts"
+    ],
+    "stats": {
+      "additions": 1393,
+      "deletions": 109,
+      "total": 1502
+    },
+    "published": true,
+    "createdAt": "2025-11-15T10:01:55.515Z",
+    "updatedAt": "2025-11-15T10:01:55.515Z",
+    "publishedAt": "2025-11-15T10:01:55.515Z"
+  },
+  {
     "id": "c9ad1f09-81e5-4f99-9d7f-daa26713d08f",
     "title": "RepoInput 입력 최적화 및 개발 계획 업데이트",
     "content": "안녕하세요! 오늘은 `aiblog` 프로젝트에서 사용자 경험을 크게 개선한 `RepoInput` 컴포넌트 최적화 작업과 함께, 프로젝트의 개발 계획(`DEVELOPMENT_PLAN.md`)을 업데이트한 내용을 공유합니다.\n\n### 🧐 왜 이 작업이 필요했을까요?\n\n기존 `RepoInput` 컴포넌트는 사용자가 레포지토리 이름이나 오너를 입력할 때, 글자 하나하나를 타이핑할 때마다 새로운 데이터를 받아오려 시도하는 문제가 있었습니다. 이는 불필요한 API 호출을 과도하게 발생시켜, 다음과 같은 문제를 야기했습니다.\n\n*   **성능 저하**: 매번 데이터를 요청하느라 UI가 버벅거리고 반응성이 떨어짐.\n*   **사용자 경험 저해**: 입력 중 로딩 스피너가 계속 나타나 산만한 느낌을 줌.\n*   **API 비용 및 한도 문제**: GitHub API 호출 횟수를 불필요하게 소모.\n\n### 🛠️ 어떻게 구현했나요?\n\n이 문제를 해결하기 위해 **입력 필드의 상태와 실제 검색에 사용될 상태를 분리**했습니다.\n\n1.  **두 가지 상태 관리**:\n    *   `inputOwner`, `inputRepo`: 사용자가 입력 필드에 타이핑하는 **현재 값**을 관리합니다.\n    *   `owner`, `repo`: \"불러오기\" 버튼을 클릭하거나 특정 액션이 발생했을 때 **실제 API 호출에 사용될 값**을 관리합니다.\n\n2.  **동작 방식**:\n    *   사용자가 입력 필드에 타이핑할 때는 `inputOwner`, `inputRepo`만 업데이트됩니다.\n    *   사용자가 \"불러오기\" 버튼을 클릭하면, 그때 `inputOwner`, `inputRepo`의 값을 `owner`, `repo`에 할당하고 API 호출을 트리거합니다.\n\n간단한 코드 스니펫으로 살펴보면 다음과 같습니다:\n\n```typescript\n// src/App.tsx (개념적 예시)\nconst [inputOwner, setInputOwner] = useState('');\nconst [inputRepo, setInputRepo] = useState('');\nconst [owner, setOwner] = useState(''); // 실제 검색에 사용될 값\nconst [repo, setRepo] = useState('');   // 실제 검색에 사용될 값\n\nconst handleLoadRepo = () => {\n    setOwner(inputOwner); // 입력된 값으로 실제 검색 상태 업데이트\n    setRepo(inputRepo);\n    // 이제 'owner'와 'repo' 값으로 GitHub API 호출\n};\n\n// ... JSX\n<input value={inputOwner} onChange={(e) => setInputOwner(e.target.value)} />\n<input value={inputRepo} onChange={(e) => setInputRepo(e.target.value)} />\n<button onClick={handleLoadRepo}>불러오기</button>\n```\n\n이와 함께, 프로젝트의 `DEVELOPMENT_PLAN.md` 파일도 업데이트했습니다. Phase 1 (`LLM 연동 기반 구축`)이 완료되었음을 명확히 하고, LLM 공급자를 Google Gemini API로 확정한 내용, 그리고 다음 단계인 `투 페인 UI 구현`에 대한 상세 계획을 반영했습니다.\n\n### ✨ 어떤 효과가 있었나요?\n\n이번 개선으로 `RepoInput` 컴포넌트 사용 시 불필요한 API 호출이 사라지고, 사용자 입력 경험이 훨씬 부드러워졌습니다. 이제 사용자는 원하는 레포지토리 정보를 안정적으로 입력하고, \"불러오기\" 버튼을 눌러 정확한 시점에 데이터를 가져올 수 있게 되었습니다.\n\n또한, 개발 계획이 명확해짐에 따라 Phase 1을 성공적으로 마무리하고, 다음 목표인 투 페인 UI 구현에 집중할 수 있는 기반이 마련되었습니다.",
