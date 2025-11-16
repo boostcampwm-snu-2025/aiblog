@@ -4,12 +4,14 @@ type BlogPostContentProps = {
   blogPost: string | null;
   isLoading: boolean;
   error: string | null;
+  title?: string | null;
 };
 
 export function BlogPostContent({
   blogPost,
   isLoading,
   error,
+  title,
 }: BlogPostContentProps) {
   if (isLoading) {
     return <LoadingSpinner message="블로그 글을 생성하는 중..." />;
@@ -25,7 +27,12 @@ export function BlogPostContent({
   }
 
   if (blogPost) {
-    return <MarkdownContent content={blogPost} />;
+    return (
+      <div className="space-y-4">
+        {title && <h1 className="text-2xl font-bold text-gray-900">{title}</h1>}
+        <MarkdownContent content={blogPost} />
+      </div>
+    );
   }
 
   return null;
