@@ -1,0 +1,148 @@
+[
+  {
+    "id": "63102e16-96eb-4751-998b-6982f0320e6f",
+    "type": "commit",
+    "typeLabel": "Commit",
+    "message": "feature: top modal create & dancer/studio info updated",
+    "author": "cloNoey",
+    "date": "Oct 30, 2025, 01:58:34 PM",
+    "summary": "이 커밋은 상단 모달 기능을 새로 추가하고, 댄서 및 스튜디오 정보를 업데이트했습니다. 이를 통해 사용자에게 더 많은 정보를 제공하고 인터페이스를 개선하려는 목적입니다.",
+    "createdAt": "2025-11-16T05:56:24.188Z"
+  },
+  {
+    "id": "4571886d-679c-49ef-b54f-05427550589a",
+    "type": "commit",
+    "typeLabel": "Commit",
+    "message": "feature: naver Map API connection",
+    "author": "cloNoey",
+    "date": "Oct 27, 2025, 07:45:40 PM",
+    "summary": "이 커밋은 Naver Map API 연동 기능을 구현했습니다. 이를 통해 지도 서비스 관련 새로운 기능 추가의 기반을 마련했습니다.",
+    "createdAt": "2025-11-16T06:01:53.446Z"
+  },
+  {
+    "id": "b7393387-a5a5-4879-8a5e-e3950db3580d",
+    "type": "pr",
+    "typeLabel": "Pull Request",
+    "title": "Dev to main - own branch",
+    "author": "cloNoey",
+    "date": "Sep 7, 2025, 03:12:09 PM",
+    "summary": "이 Pull Request(#1)는 cloNoey님이 2025년 9월 7일에 Dev 브랜치의 변경 사항을 Main 브랜치로 병합한 내용을 담고 있습니다. 'own branch'라는 제목으로 보아, 개인적인 작업 내용을 메인 브랜치에 반영하기 위한 PR로 추정됩니다. 해당 PR은 현재 닫힌 상태입니다.",
+    "createdAt": "2025-11-16T06:03:03.420Z",
+    "status": "closed",
+    "number": 1
+  },
+  {
+    "id": "79399db9-387d-43c5-93b2-0dcfda0fea75",
+    "type": "pr",
+    "typeLabel": "Pull Request",
+    "title": "[자유전공학부_곽승연] - 넷플릭스 클론 코딩",
+    "author": "cloNoey",
+    "date": "Sep 14, 2025, 05:55:34 PM",
+    "summary": "이 Pull Request는 곽승연 님이 넷플릭스 클론 코딩 프로젝트를 진행하며 작성한 코드를 제출한 것입니다. #1번 Pull Request이며, 2025년 9월 14일에 닫혔습니다.",
+    "createdAt": "2025-11-16T06:13:51.324Z",
+    "status": "closed",
+    "number": 1
+  },
+  {
+    "id": "278a04c3-1296-44a2-a975-c19a300e3287",
+    "type": "commit",
+    "typeLabel": "Commit",
+    "message": "server setting",
+    "author": "cloNoey",
+    "date": "Oct 11, 2025, 08:04:33 PM",
+    "summary": "이 커밋은 서버 설정을 변경했습니다. 변경 사항은 아직 명확하지 않지만, 서버 환경 구성을 업데이트하는 데 중점을 둔 것으로 보입니다.",
+    "createdAt": "2025-11-16T06:22:49.632Z"
+  },
+  {
+    "id": "2f643b2e-0567-43ee-b6c0-347f46c2ccfc",
+    "type": "commit",
+    "typeLabel": "Commit",
+    "message": "Replace local route calculations with TMap API and implement caching",
+    "author": "Claude",
+    "date": "Nov 5, 2025, 04:31:50 AM",
+    "summary": "기존에 로컬에서 수행하던 경로 계산 로직을 TMap API 호출로 대체했습니다. 또한, TMap API 응답을 localStorage에 캐싱하여 30분 동안 재사용할 수 있도록 구현했습니다. 이는 동일한 출발지/목적지로 경로 검색 시 API 호출 횟수를 줄여 성능을 향상시킵니다.",
+    "createdAt": "2025-11-16T07:04:56.553Z"
+  },
+  {
+    "id": "d818c606-7ee6-4ab9-ae20-899a9ff2b803",
+    "type": "commit",
+    "typeLabel": "Commit",
+    "message": "feature: top modal create & dancer/studio info updated",
+    "author": "cloNoey",
+    "date": "Oct 30, 2025, 01:58:34 PM",
+    "summary": "`dancer_infos.json` 파일이 삭제되고, `studio_schedule.csv` 파일이 새로 추가되었습니다. 이 변경사항은 댄서 정보 데이터가 제거되고, 스튜디오별 일정 정보가 CSV 형식으로 추가되었음을 나타냅니다.",
+    "createdAt": "2025-11-16T07:12:46.940Z"
+  },
+  {
+    "id": "35719a88-44e4-407a-9c6d-51331d57bca5",
+    "type": "commit",
+    "typeLabel": "Commit",
+    "message": "feature: detail Modal",
+    "author": "cloNoey",
+    "date": "Oct 27, 2025, 09:16:24 PM",
+    "summary": "`dancer_infos.json` 파일이 완전히 삭제되었으며, `exports/studio_schedule.csv` 파일이 새로 추가되었습니다. 새로 추가된 CSV 파일에는 스튜디오 ID, 이름, 주소, 인스타그램, 위도, 경도, 날짜, 시간 및 댄서 정보가 포함된 스튜디오 스케줄 데이터가 들어 있습니다.",
+    "createdAt": "2025-11-16T07:12:50.977Z"
+  },
+  {
+    "id": "18947944-0715-4ce5-8abd-0ce50edc65a1",
+    "type": "commit",
+    "typeLabel": "Commit",
+    "message": "fix: change naver map to kakao map",
+    "author": "cloNoey",
+    "date": "Oct 27, 2025, 08:24:38 PM",
+    "summary": "`App.tsx` 파일에서 스튜디오 상세 정보를 보여줄 `StudioDetail` 컴포넌트를 새로 추가했습니다. `selectedStudio` 상태를 도입하여 사용자가 클릭한 스튜디오의 정보를 저장하고, 지도 위에 `StudioDetail` 컴포넌트를 렌더링하여 상세 정보를 모달 형태로 표시합니다. 또한, `Map.tsx` 파일은 네이버 지도 관련 코드가 제거되었습니다.",
+    "createdAt": "2025-11-16T07:12:54.854Z"
+  },
+  {
+    "id": "08db9e46-b115-406a-9b7f-cf5940277738",
+    "type": "commit",
+    "typeLabel": "Commit",
+    "message": "README.md updated",
+    "author": "cloNoey",
+    "date": "Oct 12, 2025, 03:37:54 PM",
+    "summary": "README.md 파일이 수정되었습니다. 3주차 체크리스트에서 5, 6주차 내용으로 변경되었으며, 검색 기능에 대한 상세 요구사항(Search PRD)이 추가되었습니다. 검색창의 애니메이션 효과, 최근 검색어 노출 및 선택 기능, 검색 결과 페이지 구성, 그리고 검색 종료 조건 등에 대한 구체적인 내용이 포함되어 있습니다.",
+    "createdAt": "2025-11-16T07:13:14.671Z"
+  },
+  {
+    "id": "15effbe7-3367-44ea-a6d0-c7b56441376a",
+    "type": "commit",
+    "typeLabel": "Commit",
+    "message": "search content query page added",
+    "author": "cloNoey",
+    "date": "Oct 12, 2025, 02:47:03 AM",
+    "summary": "HTML 파일에 검색 결과 섹션과 관련된 구조가 추가되었습니다. 또한, 새로 추가된 `search-results.css` 파일에는 검색 결과 섹션, 그리드, 카드 등의 스타일이 정의되어 있습니다.",
+    "createdAt": "2025-11-16T07:13:18.733Z"
+  },
+  {
+    "id": "b283010b-37e8-4f7d-aa4d-eca91429f196",
+    "type": "commit",
+    "typeLabel": "Commit",
+    "message": "recent-search localStorage로 구현",
+    "author": "cloNoey",
+    "date": "Oct 12, 2025, 12:59:15 AM",
+    "summary": "`index.html` 파일에 검색 결과 페이지를 위한 새로운 HTML 섹션이 추가되었습니다. `search-results.css` 파일은 이 섹션의 스타일을 정의하며, 검색 결과 카드, 로딩 스피너, 빈 결과 메시지 등을 포함합니다.",
+    "createdAt": "2025-11-16T07:13:23.276Z"
+  },
+  {
+    "id": "6fa6ce0c-bc22-4bd1-95bf-71ba366a4974",
+    "type": "pr",
+    "typeLabel": "Pull Request",
+    "title": "Dev to main - own branch",
+    "author": "cloNoey",
+    "date": "Sep 7, 2025, 03:12:09 PM",
+    "summary": "본 Pull Request는 \"Dev to main - own branch\"라는 제목으로, 개인 브랜치에서 진행된 개발 내용을 메인 브랜치로 병합하는 것을 목적으로 합니다. 주요 변경 사항으로는 `README.md` 파일에 1주차 미션 진행 과정 및 체크포인트를 추가하고, `src/index.html` 파일의 기존 \"Hello World\" 예제 코드를 \"AboutMe\" 페이지로 수정했습니다. 또한, 새로운 이미지 파일 5개를 추가하여 페이지 구성에 활용하고 `style.css` 파일을 연결하도록 변경했습니다. 이 PR은 메인 브랜치에 새로운 페이지 콘텐츠와 관련 리소스를 통합하여 프로젝트의 초기 개발 단계를 반영합니다.",
+    "createdAt": "2025-11-16T07:14:48.402Z",
+    "status": "closed",
+    "number": 1
+  },
+  {
+    "id": "021b94d3-b49a-4785-8e79-0759fdb43943",
+    "type": "commit",
+    "typeLabel": "Commit",
+    "message": "[feature] main info card created",
+    "author": "cloNoey",
+    "date": "Sep 7, 2025, 02:45:17 AM",
+    "summary": "`src/index.html` 파일에서 메인 콘텐츠 영역에 사용자 정보 카드(`div id=\"card\"`)를 새로 생성했습니다. 이 카드에는 프로필 이미지, 이름, 닉네임, 관심사, 소개 문구 등이 포함됩니다. `src/style.css` 파일에서는 새로 추가된 카드에 대한 스타일을 정의하여, 핑크색 테두리와 내부 요소들의 레이아웃, 폰트, 스크롤바 스타일 등을 적용했습니다.",
+    "createdAt": "2025-11-16T07:15:18.743Z"
+  }
+]

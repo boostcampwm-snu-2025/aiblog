@@ -1,7 +1,11 @@
 import { PullRequestData } from "./List"
+import GenerateSummaryButton from "./GenerateSummaryButton"
 
 interface PullRequestProps {
   data: PullRequestData
+  isSelected?: boolean
+  onSelect?: () => void
+  onGenerateSummary?: () => void
 }
 
 const getStatusColor = (status?: string) => {
@@ -30,9 +34,12 @@ const getStatusLabel = (status?: string) => {
   }
 }
 
-export default function PullRequest({ data }: PullRequestProps) {
+export default function PullRequest({ data, isSelected, onSelect, onGenerateSummary }: PullRequestProps) {
   return (
-    <div className="w-full h-auto p-[15px] rounded-inner border-t-thin border-b-thin border-primary-line flex items-center justify-between gap-[8px]">
+    <div
+      className={`w-full h-auto p-[15px] rounded-inner border-t-thin border-b-thin border-primary-line flex items-center justify-between gap-[8px] cursor-pointer transition-colors ${isSelected ? 'bg-gray-100' : ''}`}
+      onClick={onSelect}
+    >
       <div className="flex justify-center items-start flex-col gap-[8px] pl-[10px]">
         <div className="flex justify-between items-start gap-[10px]">
           <div className="text-title font-bold text-primary-login">
@@ -49,9 +56,9 @@ export default function PullRequest({ data }: PullRequestProps) {
           )}
         </div>
       </div>
-      <button className="w-[66px] h-[60px] flex items-center justify-end pr-[10px]">
-        <img src={'/assets/github-mark.svg'} alt="pullrequest" className="w-[24px] h-[24px]" />
-      </button>
+      <div className="w-[110px] h-[60px] flex items-center justify-end pr-[5px]" onClick={(e) => e.stopPropagation()}>
+        <GenerateSummaryButton onClick={onGenerateSummary || (() => {})} />
+      </div>
     </div>
   )
 }
