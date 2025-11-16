@@ -1,0 +1,48 @@
+.repo-details {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.repo-details .back-button {
+  background: transparent;
+  border: none;
+  color: #0366d6;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.repo-details h2 { margin-top: 0 }
+.repo-details .description { color: #586069 }
+.repo-details section { margin-top: 18px }
+.repo-details ul { list-style: none; padding: 0 }
+.repo-details li { padding: 10px 0; border-bottom: 1px solid #eee }
+.commit-message { font-weight: 500 }
+.commit-meta, .pr-meta { color: #666; font-size: 0.85em }
+.pr-title { font-weight: 600 }
+.error { color: #cf222e }
+
+/* Create Blog button: hidden until the list item is hovered */
+.repo-details li { position: relative }
+.create-blog-btn {
+  display: none;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background: #0366d6;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+.repo-details li:hover .create-blog-btn {
+  display: inline-block;
+}
+
+/* Small responsive tweak */
+@media (max-width: 640px) {
+  .create-blog-btn { position: static; display: block; margin-top: 8px }
+}
