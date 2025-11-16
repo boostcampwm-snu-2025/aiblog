@@ -29,3 +29,76 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gh-border-muted;
 }
+
+/* Markdown Content Styles */
+.markdown-content {
+  @apply text-gh-fg-default;
+}
+
+.markdown-content h1 {
+  @apply text-3xl font-bold mb-4 pb-2 border-b border-gh-border-default;
+}
+
+.markdown-content h2 {
+  @apply text-2xl font-bold mb-3 mt-6 pb-2 border-b border-gh-border-default;
+}
+
+.markdown-content h3 {
+  @apply text-xl font-bold mb-2 mt-4;
+}
+
+.markdown-content h4 {
+  @apply text-lg font-bold mb-2 mt-3;
+}
+
+.markdown-content p {
+  @apply mb-4 leading-relaxed;
+}
+
+.markdown-content ul, .markdown-content ol {
+  @apply mb-4 ml-6;
+}
+
+.markdown-content li {
+  @apply mb-2;
+}
+
+.markdown-content code {
+  @apply bg-gh-canvas-default px-1.5 py-0.5 rounded text-sm font-mono text-gh-accent-fg;
+}
+
+.markdown-content pre {
+  @apply bg-gh-canvas-default border border-gh-border-default rounded-lg p-4 mb-4 overflow-x-auto;
+}
+
+.markdown-content pre code {
+  @apply bg-transparent px-0 py-0 text-gh-fg-default;
+}
+
+.markdown-content blockquote {
+  @apply border-l-4 border-gh-border-default pl-4 italic text-gh-fg-muted mb-4;
+}
+
+.markdown-content a {
+  @apply text-gh-accent-fg hover:underline;
+}
+
+.markdown-content table {
+  @apply w-full border-collapse mb-4;
+}
+
+.markdown-content th, .markdown-content td {
+  @apply border border-gh-border-default px-4 py-2;
+}
+
+.markdown-content th {
+  @apply bg-gh-canvas-subtle font-bold;
+}
+
+.markdown-content hr {
+  @apply border-t border-gh-border-default my-6;
+}
+
+.markdown-content img {
+  @apply max-w-full h-auto rounded-lg;
+}
