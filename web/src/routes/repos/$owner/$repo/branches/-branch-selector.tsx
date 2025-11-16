@@ -1,4 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 import { readBranches } from "~/api/github";
 import {
@@ -18,6 +19,17 @@ interface Props {
 
 function BranchSelector({ branch, onBranchChange, owner, repo }: Props) {
   const { data: branches } = useSuspenseQuery(readBranches(owner, repo));
+
+  useEffect(() => {
+    if (branches.length === 0) {
+      console.error(`No branches found in repository "${owner}/${repo}".`);
+    } else if (!branches.map((b) => b.name).includes(branch)) {
+      console.warn(
+        `Branch "${branch}" not found in repository "${owner}/${repo}". Defaulting to "${branches[0].name}".`,
+      );
+      onBranchChange(branches[0].name);
+    }
+  }, [branch, branches, owner, repo, onBranchChange]);
 
   return (
     <div className="mb-6 space-y-2">
