@@ -55,7 +55,7 @@ const CommitsList = ({ owner, repo }) => {
       </div>
       
       {processedCommits.map((commit) => (
-        <CommitItem key={commit.sha} commit={commit} />
+        <CommitItem key={commit.sha} commit={commit} owner={owner} repo={repo} />
       ))}
     </div>
   );
