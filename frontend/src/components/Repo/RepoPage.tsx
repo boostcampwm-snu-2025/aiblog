@@ -4,10 +4,16 @@ import { useRepoContext } from '../../contexts/Repocontext';
 import RepoCard from './RepoCard';
 import { Typography } from '@mui/material';
 import { useAppContext } from '../../contexts/Appcontext';
+import SelectedFeedCard from './SelectedFeedCard';
 
 const RepoPage: React.FC = () => {
     const {isLoggedIn} = useAppContext();
     const { repos, selectedFeed } = useRepoContext();
+    const selectedFeedLabel = selectedFeed === 'commits'
+        ? 'Commit'
+        : selectedFeed === 'pullRequests'
+            ? 'Pull Request'
+            : 'Item';
     return (
         <Box
             sx={{
@@ -22,16 +28,19 @@ const RepoPage: React.FC = () => {
                 sx={{
                     display: 'flex',
                     flexDirection: 'row',
+                    gap: 2,
+                    flexWrap: 'wrap'
                 }}
             >
                 <Box
                     sx={{
-                        ml: 5,
-                        mr: 5,
+                        ml: 3,
+                        mr: 3,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'start',
-                        gap: 2
+                        gap: 3,
+                        flex: 1,
                     }}
                 >
                     {repos.map(repo => (
@@ -43,12 +52,18 @@ const RepoPage: React.FC = () => {
                 <Box
                     sx={{
                         padding: 3,
+                        flex: 1,
+                        minWidth: 500,
                     }}
                 >
-                    <Typography variant="h4" sx={{ padding: 2, display: isLoggedIn ? 'block' : 'none' }}>
-                        Selected {selectedFeed === 'commits' ? 'Commits' : 'Pull Requests'}
-                    </Typography>
-                    
+                    {isLoggedIn && (
+                        <>
+                            <Typography variant="h5" sx={{ mb: 2 }}>
+                                Selected {selectedFeedLabel}
+                            </Typography>
+                            <SelectedFeedCard />
+                        </>
+                    )}
                 </Box>
             </Box>
         </Box>

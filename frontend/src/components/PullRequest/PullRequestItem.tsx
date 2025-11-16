@@ -6,20 +6,37 @@ import Chip from '@mui/material/Chip';
 import { formatDateTime } from '../../utils/date';
 import type { PRItem } from '../../types/githubPR';
 import { Typography } from '@mui/material';
+import { useRepoContext } from '../../contexts/Repocontext';
 
 interface PullRequestItemProps {
     pullRequest: PRItem
 }
 
 const PullRequestItem: React.FC<PullRequestItemProps> = ({ pullRequest }) => {
-    const formattedDate = formatDateTime(pullRequest.updated_at, true);
+    const { selectedPullRequest, setSelectedPullRequest, setSelectedCommit } = useRepoContext();
+    const formattedDate = formatDateTime(pullRequest.created_at, true);
+    const isSelected = selectedPullRequest?.id === pullRequest.id;
+
+    const handleSelect = () => {
+        setSelectedPullRequest(pullRequest);
+        setSelectedCommit(null);
+    };
 
     return (
         <Box
+            role="button"
+            tabIndex={0}
+            onClick={handleSelect}
+            onKeyDown={event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleSelect();
+                }
+            }}
             sx={{
                 borderRadius: 3,
-                border: '1px solid rgba(216, 27, 96, 0.18)',
-                backgroundColor: '#ffffff',
+                border: `1px solid ${isSelected ? 'rgba(25, 118, 210, 0.5)' : 'rgba(216, 27, 96, 0.18)'}`,
+                backgroundColor: isSelected ? 'rgba(25, 118, 210, 0.04)' : '#ffffff',
                 p: { xs: 2, sm: 3 },
                 display: 'flex',
                 flexDirection: { xs: 'column', sm: 'row' },
@@ -27,7 +44,9 @@ const PullRequestItem: React.FC<PullRequestItemProps> = ({ pullRequest }) => {
                 transition: 'box-shadow 0.25s ease, transform 0.25s ease',
                 '&:hover': {
                     transform: 'translateY(-2px)',
+                    backgroundColor: isSelected ? 'rgba(25, 118, 210, 0.08)' : 'rgba(244, 143, 177, 0.08)'
                 },
+                cursor: 'pointer'
             }}
         >
             <Avatar

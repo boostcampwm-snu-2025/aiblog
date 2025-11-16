@@ -1,5 +1,11 @@
-from pydantic import BaseModel
 from datetime import datetime
+from enum import Enum
+from pydantic import BaseModel, model_validator
+
+
+class ChangeType(str, Enum):
+    commit = "commit"
+    pull_request = "pull_request"
 
 class RepoResponse(BaseModel):
     id: int
@@ -23,6 +29,7 @@ class CommitResponse(BaseModel):
 
 class PullRequestResponse(BaseModel):
     id: int
+    number: int
     html_url: str
     title: str
     body: str | None = None
@@ -32,4 +39,28 @@ class PullRequestResponse(BaseModel):
     merged_at: datetime | None = None
     author_login: str
     author_avatar_url: str
-    state: str
+
+
+class SummaryRequest(BaseModel):
+    change_type: ChangeType
+    owner: str
+    repo: str
+    sha: str | None = None
+    number: int | None = None
+    title: str | None = None
+    description: str | None = None
+    author: str | None = None
+    html_url: str | None = None
+
+    @model_validator(mode="after")
+    def validate_reference(self):
+        if self.change_type == ChangeType.commit and not self.sha:
+            raise ValueError("sha is required for commit summaries")
+        if self.change_type == ChangeType.pull_request and self.number is None:
+            raise ValueError("number is required for pull request summaries")
+        return self
+
+
+class SummaryResponse(BaseModel):
+    summary: str
+    truncated: bool = False

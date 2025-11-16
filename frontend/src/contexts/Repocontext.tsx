@@ -17,6 +17,10 @@ interface RepoContextType {
     selectRepo: (repoId: number) => void;
     selectedFeed: FeedType | null;
     setSelectedFeed: (feed: FeedType | null) => void;
+    selectedCommit: CommitItem | null;
+    setSelectedCommit: (commit: CommitItem | null) => void;
+    selectedPullRequest: PRItem | null;
+    setSelectedPullRequest: (pullRequest: PRItem | null) => void;
     commits: CommitItem[];
     setCommits: (commits: CommitItem[]) => void;
     pullRequests: PRItem[];
@@ -33,7 +37,9 @@ const RepoContext = createContext<RepoContextType | undefined>(undefined);
 export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [repos, setRepos] = useState<RepoItem[]>([]);
     const [selectedRepo, setSelectedRepoState] = useState<RepoItem | null>(null);
-    const [selectedFeed, setSelectedFeed] = useState<FeedType | null>(null);
+    const [selectedFeed, setSelectedFeedState] = useState<FeedType | null>(null);
+    const [selectedCommit, setSelectedCommit] = useState<CommitItem | null>(null);
+    const [selectedPullRequest, setSelectedPullRequest] = useState<PRItem | null>(null);
     const [commits, setCommits] = useState<CommitItem[]>([]);
     const [pullRequests, setPullRequests] = useState<PRItem[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -43,7 +49,21 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const setSelectedRepo = (repo: RepoItem | null) => {
         setSelectedRepoState(repo);
         if (!repo) {
-            setSelectedFeed(null);
+            setSelectedFeedState(null);
+            setSelectedCommit(null);
+            setSelectedPullRequest(null);
+        }
+    };
+
+    const setSelectedFeed = (feed: FeedType | null) => {
+        setSelectedFeedState(feed);
+        if (feed === 'commits') {
+            setSelectedPullRequest(null);
+        } else if (feed === 'pullRequests') {
+            setSelectedCommit(null);
+        } else {
+            setSelectedCommit(null);
+            setSelectedPullRequest(null);
         }
     };
 
@@ -58,6 +78,8 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         setSelectedRepoState(repo);
+        setSelectedCommit(null);
+        setSelectedPullRequest(null);
     };
 
     const fetchRepos = async () => {
@@ -94,6 +116,8 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         setLoading(true);
         setError(null);
+        setSelectedCommit(null);
+        setSelectedPullRequest(null);
 
         try {
             const commitsData = await commitsApi.getCommits(accessToken, repo.owner_login, repo.name);
@@ -116,6 +140,8 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         setLoading(true);
         setError(null);
+        setSelectedCommit(null);
+        setSelectedPullRequest(null);
 
         try {
             const prsData = await pullRequestsApi.getPullRequests(accessToken, repo.owner_login, repo.name);
@@ -137,6 +163,10 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         selectRepo,
         selectedFeed,
         setSelectedFeed,
+        selectedCommit,
+        setSelectedCommit,
+        selectedPullRequest,
+        setSelectedPullRequest,
         commits,
         setCommits,
         pullRequests,
@@ -157,6 +187,8 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         fetchRepos,
         fetchRepoCommits,
         fetchRepoPullRequests,
+        selectedCommit,
+        selectedPullRequest,
     ]);
 
     return (
