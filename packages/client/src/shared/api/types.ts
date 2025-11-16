@@ -74,6 +74,21 @@ export type GenerateBlogPostRequest = {
 
 export type GenerateBlogPostResponse = {
   blogPost: string;
+  blogPostTitle: string;
   prNumber: number;
   repository: string;
+};
+
+export type SaveBlogPostRequest = {
+  url: string;
+  pullNumber: number;
+  blogPost: string;
+  summary?: string | null;
+  title?: string | null;
+};
+
+export type SaveBlogPostResponse = {
+  id: string;
+  repository: string;
+  prNumber: number;
 };

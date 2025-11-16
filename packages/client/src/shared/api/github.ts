@@ -6,6 +6,8 @@ import type {
   GeneratePRSummaryResponse,
   GenerateBlogPostRequest,
   GenerateBlogPostResponse,
+  SaveBlogPostRequest,
+  SaveBlogPostResponse,
 } from "./types";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -130,6 +132,34 @@ export async function generateBlogPost(
 
   if (!data.success) {
     throw new Error(data.error || "Failed to generate blog post");
+  }
+
+  return data.data;
+}
+
+export async function saveBlogPost(
+  request: SaveBlogPostRequest
+): Promise<SaveBlogPostResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/repos/save-blog-post`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({
+      status: "error",
+      message: "Failed to save blog post",
+    }));
+    throw new Error(error.message || "Failed to save blog post");
+  }
+
+  const data: ApiResponse<SaveBlogPostResponse> = await response.json();
+
+  if (!data.success) {
+    throw new Error(data.error || "Failed to save blog post");
   }
 
   return data.data;

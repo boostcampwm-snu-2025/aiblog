@@ -27,6 +27,9 @@ export function CommitBrowser() {
   const handleGenerateBlogPost = () => {
     prSummaryModal.generateBlogPostContent();
   };
+  const handleSaveBlogPost = () => {
+    prSummaryModal.saveBlogPostToServer();
+  };
 
   const commitsError = commitsQuery.error
     ? extractErrorMessage(commitsQuery.error, "Failed to load commits")
@@ -91,11 +94,15 @@ export function CommitBrowser() {
         onClose={prSummaryModal.closeModal}
         summary={prSummaryModal.summary}
         blogPost={prSummaryModal.blogPost}
+        blogPostTitle={prSummaryModal.blogPostTitle}
         isLoading={prSummaryModal.isLoading}
         isLoadingBlogPost={prSummaryModal.isLoadingBlogPost}
+        isSavingBlogPost={prSummaryModal.isSavingBlogPost}
         error={prSummaryModal.error}
         blogPostError={prSummaryModal.blogPostError}
+        saveBlogPostError={prSummaryModal.saveBlogPostError}
         onGenerateBlogPost={handleGenerateBlogPost}
+        onSaveBlogPost={handleSaveBlogPost}
       />
     </div>
   );

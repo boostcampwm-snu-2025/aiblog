@@ -9,11 +9,15 @@ type PRSummaryModalProps = {
   onClose: () => void;
   summary: string | null;
   blogPost: string | null;
+  blogPostTitle?: string | null;
   isLoading: boolean;
   isLoadingBlogPost: boolean;
+  isSavingBlogPost?: boolean;
   error?: string | null;
   blogPostError?: string | null;
+  saveBlogPostError?: string | null;
   onGenerateBlogPost?: () => void;
+  onSaveBlogPost?: () => void;
 };
 
 export function PRSummaryModal({
@@ -21,16 +25,21 @@ export function PRSummaryModal({
   onClose,
   summary,
   blogPost,
+  blogPostTitle,
   isLoading,
   isLoadingBlogPost,
+  isSavingBlogPost = false,
   error,
   blogPostError,
+  saveBlogPostError,
   onGenerateBlogPost,
+  onSaveBlogPost,
 }: PRSummaryModalProps) {
   const isShowingBlogPost = blogPost !== null || isLoadingBlogPost;
   const modalTitle = isShowingBlogPost ? "블로그 글" : "PR 요약";
   const canShowBlogPostButton =
     summary !== null && blogPost === null && !isLoadingBlogPost;
+  const canShowSaveBlogPostButton = blogPost !== null && !!onSaveBlogPost;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-4xl">
@@ -48,6 +57,7 @@ export function PRSummaryModal({
               blogPost={blogPost}
               isLoading={isLoadingBlogPost}
               error={blogPostError ?? null}
+              title={blogPostTitle ?? null}
             />
           ) : (
             <PRSummaryContent
@@ -55,6 +65,9 @@ export function PRSummaryModal({
               isLoading={isLoading}
               error={error ?? null}
             />
+          )}
+          {saveBlogPostError && (
+            <div className="mt-3 text-sm text-red-600">{saveBlogPostError}</div>
           )}
         </div>
 
@@ -65,6 +78,11 @@ export function PRSummaryModal({
           {canShowBlogPostButton && onGenerateBlogPost && (
             <Button onClick={onGenerateBlogPost} disabled={isLoadingBlogPost}>
               블로그 글 생성하기
+            </Button>
+          )}
+          {canShowSaveBlogPostButton && (
+            <Button onClick={onSaveBlogPost} disabled={isSavingBlogPost}>
+              {isSavingBlogPost ? "저장 중..." : "블로그 포스트로 저장하기"}
             </Button>
           )}
         </div>
