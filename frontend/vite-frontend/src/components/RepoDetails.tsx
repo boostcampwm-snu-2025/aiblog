@@ -6,9 +6,11 @@ import './RepoDetails.css';
 type Props = {
   repo: Repository;
   onBack: () => void;
+  // optional callback when user clicks "Create Blog"
+  onCreateBlog?: (source: 'commit' | 'pr', item: any) => void;
 };
 
-export default function RepoDetails({ repo, onBack }: Props) {
+export default function RepoDetails({ repo, onBack, onCreateBlog }: Props) {
   const [commits, setCommits] = useState<any[]>([]);
   const [pulls, setPulls] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,11 +57,20 @@ export default function RepoDetails({ repo, onBack }: Props) {
         {commits.length === 0 && <p>No commits found.</p>}
         <ul>
           {commits.map(c => (
-            <li key={c.sha}>
-              <div className="commit-message">{c.message}</div>
-              <div className="commit-meta">{c.author} — {c.date ? new Date(c.date).toLocaleString() : ''}</div>
-            </li>
-          ))}
+              <li key={c.sha}>
+                <div className="commit-message">{c.message}</div>
+                <div className="commit-meta">{c.author} — {c.date ? new Date(c.date).toLocaleString() : ''}</div>
+                <button
+                  className="create-blog-btn"
+                  onClick={() => {
+                    if (onCreateBlog) onCreateBlog('commit', c);
+                    else console.log('Create Blog clicked for commit', c);
+                  }}
+                >
+                  Create Blog
+                </button>
+              </li>
+            ))}
         </ul>
       </section>
 
@@ -68,11 +79,20 @@ export default function RepoDetails({ repo, onBack }: Props) {
         {pulls.length === 0 && <p>No pull requests found.</p>}
         <ul>
           {pulls.map(p => (
-            <li key={p.id}>
-              <div className="pr-title">#{p.number} {p.title}</div>
-              <div className="pr-meta">{p.user} — {p.state} {p.merged_at ? `(merged ${new Date(p.merged_at).toLocaleDateString()})` : ''}</div>
-            </li>
-          ))}
+              <li key={p.id}>
+                <div className="pr-title">#{p.number} {p.title}</div>
+                <div className="pr-meta">{p.user} — {p.state} {p.merged_at ? `(merged ${new Date(p.merged_at).toLocaleDateString()})` : ''}</div>
+                <button
+                  className="create-blog-btn"
+                  onClick={() => {
+                    if (onCreateBlog) onCreateBlog('pr', p);
+                    else console.log('Create Blog clicked for PR', p);
+                  }}
+                >
+                  Create Blog
+                </button>
+              </li>
+            ))}
         </ul>
       </section>
     </div>

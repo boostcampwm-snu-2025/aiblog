@@ -22,3 +22,27 @@
 .commit-meta, .pr-meta { color: #666; font-size: 0.85em }
 .pr-title { font-weight: 600 }
 .error { color: #cf222e }
+
+/* Create Blog button: hidden until the list item is hovered */
+.repo-details li { position: relative }
+.create-blog-btn {
+  display: none;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background: #0366d6;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+.repo-details li:hover .create-blog-btn {
+  display: inline-block;
+}
+
+/* Small responsive tweak */
+@media (max-width: 640px) {
+  .create-blog-btn { position: static; display: block; margin-top: 8px }
+}
