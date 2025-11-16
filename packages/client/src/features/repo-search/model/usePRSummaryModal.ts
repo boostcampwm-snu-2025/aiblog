@@ -140,13 +140,13 @@ export function usePRSummaryModal() {
     }
   }, [state.currentRepoUrl, state.currentPRNumber, state.summary]);
 
-  const saveBlogPostToServer = useCallback(async () => {
+  const saveBlogPostToServer = useCallback(async (): Promise<boolean> => {
     if (!state.currentRepoUrl || !state.currentPRNumber || !state.blogPost) {
       setState((prev) => ({
         ...prev,
         saveBlogPostError: "블로그 글 저장을 위한 정보가 부족합니다.",
       }));
-      return;
+      return false;
     }
 
     setState((prev) => ({
@@ -169,6 +169,7 @@ export function usePRSummaryModal() {
         isSavingBlogPost: false,
         savedBlogPostId: result.id,
       }));
+      return true;
     } catch (err) {
       setState((prev) => ({
         ...prev,
@@ -178,6 +179,7 @@ export function usePRSummaryModal() {
           "블로그 글 저장에 실패했습니다."
         ),
       }));
+      return false;
     }
   }, [
     state.currentRepoUrl,

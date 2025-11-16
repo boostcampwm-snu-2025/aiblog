@@ -13,6 +13,7 @@ type PRSummaryModalProps = {
   isLoading: boolean;
   isLoadingBlogPost: boolean;
   isSavingBlogPost?: boolean;
+  isBlogPostSaved?: boolean;
   error?: string | null;
   blogPostError?: string | null;
   saveBlogPostError?: string | null;
@@ -29,6 +30,7 @@ export function PRSummaryModal({
   isLoading,
   isLoadingBlogPost,
   isSavingBlogPost = false,
+  isBlogPostSaved = false,
   error,
   blogPostError,
   saveBlogPostError,
@@ -81,8 +83,15 @@ export function PRSummaryModal({
             </Button>
           )}
           {canShowSaveBlogPostButton && (
-            <Button onClick={onSaveBlogPost} disabled={isSavingBlogPost}>
-              {isSavingBlogPost ? "저장 중..." : "블로그 포스트로 저장하기"}
+            <Button
+              onClick={onSaveBlogPost}
+              disabled={isSavingBlogPost || isBlogPostSaved}
+            >
+              {isSavingBlogPost
+                ? "저장 중..."
+                : isBlogPostSaved
+                ? "저장 완료"
+                : "블로그 포스트로 저장하기"}
             </Button>
           )}
         </div>
