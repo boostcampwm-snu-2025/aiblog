@@ -8,8 +8,8 @@ import LoadingBar from "./component/LoadingBar";
 import { useRepos } from "./hooks/useRepos";
 import { useCommits } from "./hooks/useCommits";
 
-import ReposPage from "./pages/ReposPage";
-import CommitsPage from "./pages/CommitsPage";
+import RepoList from "./component/RepoList";
+import CommitList from "./component/CommitList";
 import BlogPage from "./pages/BlogPage";
 
 export default function App() {
@@ -64,14 +64,14 @@ export default function App() {
       {loading ? (
         <LoadingBar loading />
       ) : view === "repos" ? (
-        <ReposPage
+        <RepoList
           repos={repos}
           username={username}
-          onSearch={handleSearch}
+          onClick={handleSearch}
           onGenerate={handleGenerateBlog}
         />
       ) : view === "commits" ? (
-        <CommitsPage
+        <CommitList
           username={username}
           repoName={repoName}
           commits={commits}
