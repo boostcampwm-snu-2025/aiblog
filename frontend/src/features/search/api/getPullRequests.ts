@@ -1,16 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 
+import type { PullRequest } from "@/entities/pullrequest";
 import type { QueryConfig } from "@/services/react-query";
 import { getRequest } from "@/services/request";
-import type { PullRequest } from "@/types/pullrequest";
 
-export type GetPullRequestsParams = {
+const BASE_URL = "/github";
+
+type GetPullRequestsParams = {
   owner: string;
   repository: string;
 };
 
-const getPullRequests = async ({ owner, repository }: GetPullRequestsParams): Promise<PullRequest[]> => {
-  return getRequest<PullRequest[]>(`/repos/${owner}/${repository}/pulls`);
+const getPullRequests = async ({ owner, repository }: GetPullRequestsParams) => {
+  return getRequest<PullRequest[]>(`${BASE_URL}/repos/${owner}/${repository}/pulls`);
 };
 
 type UsePullRequestsOptions = {
