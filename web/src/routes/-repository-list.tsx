@@ -4,7 +4,7 @@ interface Props {
 }
 
 type Repository = {
-  description?: null | string;
+  description: null | string;
   forks_count?: number;
   id: number;
   language?: null | string;
