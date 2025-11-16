@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 
-export const CallbackHandler: React.FC = () => {
+export const LoginCallbackPage: React.FC = () => {
     const { setCurrentTab, setIsLoggedIn } = useAppContext();
     const { fetchRepos } = useRepoContext();
     const hasRun = useRef(false);
