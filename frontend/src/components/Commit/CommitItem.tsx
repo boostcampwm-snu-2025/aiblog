@@ -5,20 +5,37 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import type { CommitItem as CommitItemType } from '../../types/githubCommit';
 import { formatDateTime } from '../../utils/date';
+import { useRepoContext } from '../../contexts/Repocontext';
 
 interface CommitItemProps {
     commit: CommitItemType;
 }
 
 const CommitItem: React.FC<CommitItemProps> = ({ commit }) => {
+    const { selectedCommit, setSelectedCommit, setSelectedPullRequest } = useRepoContext();
     const formattedDate = formatDateTime(commit.date, true);
+    const isSelected = selectedCommit?.sha === commit.sha;
+
+    const handleSelect = () => {
+        setSelectedCommit(commit);
+        setSelectedPullRequest(null);
+    };
 
     return (
         <Box
+            role="button"
+            tabIndex={0}
+            onClick={handleSelect}
+            onKeyDown={event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleSelect();
+                }
+            }}
             sx={{
                 borderRadius: 3,
-                border: '1px solid rgba(216, 27, 96, 0.18)',
-                backgroundColor: '#ffffff',
+                border: `1px solid ${isSelected ? 'rgba(25, 118, 210, 0.5)' : 'rgba(216, 27, 96, 0.18)'}`,
+                backgroundColor: isSelected ? 'rgba(25, 118, 210, 0.04)' : '#ffffff',
                 p: { xs: 2, sm: 3 },
                 display: 'flex',
                 flexDirection: { xs: 'column', sm: 'row' },
@@ -26,7 +43,9 @@ const CommitItem: React.FC<CommitItemProps> = ({ commit }) => {
                 transition: 'box-shadow 0.25s ease, transform 0.25s ease',
                 '&:hover': {
                     transform: 'translateY(-2px)',
+                    backgroundColor: isSelected ? 'rgba(25, 118, 210, 0.08)' : 'rgba(244, 143, 177, 0.08)'
                 },
+                cursor: 'pointer',
             }}
         >
             <Avatar

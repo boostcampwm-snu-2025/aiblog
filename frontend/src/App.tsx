@@ -4,7 +4,7 @@ import Header from './components/Header'
 import { useAppContext } from './contexts/Appcontext'
 import RepoPage from './components/Repo/RepoPage';
 import PostPage from './components/Post/PostPage';
-import { CallbackHandler } from './components/Login/CallbackHandler';
+import { LoginCallbackPage } from './components/Login/LoginCallbackPage';
 
 function App() {
 
@@ -26,7 +26,7 @@ function App() {
       case 'post':
         return <PostPage />;
       case 'callback':
-        return <CallbackHandler />;
+        return <LoginCallbackPage />;
       default:
         return <RepoPage />;
     }

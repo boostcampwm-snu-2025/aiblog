@@ -8,6 +8,7 @@
 - [x] 사용자 레포지토리 목록 조회 API 구현
 - [x] 사용자 레포지토리 커밋 목록 조회 API 구현
 - [x] 사용자 레포지토리 풀 리퀘스트 목록 조회 API 구현
+- [x] Google Gemini를 활용한 커밋/PR 요약 API 구현
 
 ### 프론트엔드 (React)
 
@@ -37,6 +38,8 @@ cp .env.example .env
 ```
 
 GITHUB_CLIENT_ID와 GITHUB_CLIENT_SECRET 값을 본인의 GitHub OAuth 앱 정보로 수정합니다.
+
+Gemini 요약 기능을 사용하려면 [Google AI Studio](https://aistudio.google.com/)에서 발급한 `GEMINI_API_KEY`와 원하는 `GEMINI_MODEL` 값을 `.env`에 추가하세요. 기본 모델은 `gemini-1.5-flash`입니다.
 
 ### 2. uv 설치
 
