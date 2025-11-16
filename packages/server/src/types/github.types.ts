@@ -39,3 +39,83 @@ export type CommitInfo = {
   authorLogin: string | null;
   authorAvatar: string | null;
 };
+
+export type GitHubPullRequestResponse = {
+  id: number;
+  number: number;
+  state: "open" | "closed";
+  title: string;
+  body: string | null;
+  user: {
+    login: string;
+    avatar_url: string;
+  } | null;
+  created_at: string;
+  updated_at: string;
+  closed_at: string | null;
+  merged_at: string | null;
+  head: {
+    ref: string;
+    sha: string;
+  };
+  base: {
+    ref: string;
+    sha: string;
+  };
+  merged: boolean;
+  mergeable: boolean | null;
+  draft: boolean;
+  html_url: string;
+};
+
+export type PullRequestInfo = {
+  id: number;
+  number: number;
+  state: "open" | "closed";
+  title: string;
+  body: string | null;
+  authorLogin: string | null;
+  authorAvatar: string | null;
+  createdAt: string;
+  updatedAt: string;
+  closedAt: string | null;
+  mergedAt: string | null;
+  headRef: string;
+  headSha: string;
+  baseRef: string;
+  baseSha: string;
+  merged: boolean;
+  mergeable: boolean | null;
+  draft: boolean;
+  htmlUrl: string;
+};
+
+export type GitHubPullRequestDetailResponse = {
+  id: number;
+  number: number;
+  state: "open" | "closed";
+  title: string;
+  body: string | null;
+  diff_url: string;
+  patch_url: string;
+  user: {
+    login: string;
+    avatar_url: string;
+  } | null;
+  created_at: string;
+  updated_at: string;
+  closed_at: string | null;
+  merged_at: string | null;
+  head: {
+    ref: string;
+    sha: string;
+  };
+  base: {
+    ref: string;
+    sha: string;
+  };
+  merged: boolean;
+  mergeable: boolean | null;
+  draft: boolean;
+  html_url: string;
+};

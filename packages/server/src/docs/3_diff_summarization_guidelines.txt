@@ -1,0 +1,22 @@
+# Diff 요약 규칙
+
+1. 의미 없는 변경을 필터링한다.
+- rename, formatting, prettier/lint, 주석 변경 등
+
+2. 의미 있는 변경을 다음 기준으로 분류한다:
+- 로직 변경
+- 상태 흐름 변경
+- 구조/파일 이동
+- API 변경
+- UI/UX 변경
+
+3. PR 유형별 요약 기준:
+- Refactor → 구조 중심
+- Bugfix → 원인 + 해결 방식 중심
+- Feature → 새로운 흐름 중심
+- Performance → 병목 개선 방식 + 수치 중심
+
+4. diff가 너무 크면:
+- 상위 3~5개 핵심 변경만 요약한다 (focus reduction)
+
+5. 삭제된 코드는 “제거한 이유” 중심으로 설명한다.
