@@ -11,11 +11,11 @@
 		"build": "tsc",
 		"check": "biome check --write",
 		"clean": "rm -rf dist node_modules",
-		"dev": "nodemon",
+		"dev": "NODE_ENV=development nodemon",
 		"format": "biome format --write",
 		"lint": "biome lint --write",
 		"reporter": "biome check --reporter=summary",
-		"start": "node dist/app.js"
+		"start": "NODE_ENV=production node dist/app.js"
 	},
 	"dependencies": {
 		"@google/genai": "^1.29.1",

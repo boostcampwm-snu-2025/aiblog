@@ -8,6 +8,7 @@ const env = z
 		PORT: z.coerce.number().default(3001),
 		GITHUB_TOKEN: z.string(),
 		GEMINI_API_KEY: z.string(),
+		NODE_ENV: z.enum(["development", "production"]).default("development"),
 	})
 	.parse(process.env);
 
