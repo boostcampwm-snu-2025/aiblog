@@ -1,6 +1,29 @@
+import { useState } from 'react';
 import { formatRelativeTime, truncateText } from '../../utils/helpers';
+import { useGenerateBlogFromPR } from '../../hooks/useBlog';
+import BlogViewer from '../blog/BlogViewer';
 
-const PullRequestItem = ({ pullRequest: pr }) => {
+const PullRequestItem = ({ pullRequest: pr, owner, repo }) => {
+  const [showBlog, setShowBlog] = useState(false);
+  const [generatedBlog, setGeneratedBlog] = useState(null);
+  
+  const { mutate: generateBlog, isPending } = useGenerateBlogFromPR();
+
+  const handleGenerateBlog = () => {
+    generateBlog(
+      { owner, repo, pullNumber: pr.number },
+      {
+        onSuccess: (data) => {
+          setGeneratedBlog(data.blog);
+          setShowBlog(true);
+        },
+        onError: (error) => {
+          alert(`블로그 생성 실패: ${error.message}`);
+        }
+      }
+    );
+  };
+
   const getStateColor = () => {
     if (pr.merged_at) return 'text-purple-500';
     if (pr.state === 'open') return 'text-gh-success-fg';
@@ -107,7 +130,7 @@ const PullRequestItem = ({ pullRequest: pr }) => {
           )}
 
           {/* Link */}
-          <div className="mt-2">
+          <div className="mt-2 flex items-center space-x-3">
             <a
               href={pr.html_url}
               target="_blank"
@@ -119,9 +142,41 @@ const PullRequestItem = ({ pullRequest: pr }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </a>
+
+            {/* Generate Blog Button */}
+            <button
+              onClick={handleGenerateBlog}
+              disabled={isPending}
+              className="inline-flex items-center space-x-1 px-3 py-1 text-xs bg-gh-accent-emphasis hover:bg-gh-accent-fg disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-md transition-colors"
+            >
+              {isPending ? (
+                <>
+                  <svg className="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>생성 중...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  <span>블로그 생성</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Blog Viewer Modal */}
+      {showBlog && generatedBlog && (
+        <BlogViewer 
+          blog={generatedBlog} 
+          onClose={() => setShowBlog(false)} 
+        />
+      )}
     </div>
   );
 };
