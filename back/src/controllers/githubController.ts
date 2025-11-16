@@ -1,7 +1,9 @@
 import type { Request, Response } from "express";
-import {
-  GithubService,
-} from "../services/GithubService.ts";
+import { GithubService } from "../services/GithubService.ts";
+import type {
+  GetCommitDetailListRequest,
+  GetRepoListRequest,
+} from "../types/index.ts";
 
 const githubService = new GithubService();
 
@@ -16,7 +18,7 @@ const handleError = (res: Response, error: unknown) => {
   }
 };
 
-export const listRepos = async (_req: Request, res: Response) => {
+export const getRepoList = async (_req: Request, res: Response) => {
   try {
     const repos = await githubService.listRepos();
     res.status(200).json(repos);
@@ -25,9 +27,12 @@ export const listRepos = async (_req: Request, res: Response) => {
   }
 };
 
-export const listCommits = async (req: Request, res: Response) => {
+export const getCommitList = async (
+  req: Request<GetRepoListRequest>,
+  res: Response,
+) => {
   try {
-    const { repoOrg, repoName } = req.params as { repoOrg: string; repoName: string };
+    const { repoOrg, repoName } = req.params;
     if (!repoOrg || !repoName) {
       res.status(400).json({ error: "Missing repoOrg or repoName" });
       return;
@@ -39,18 +44,23 @@ export const listCommits = async (req: Request, res: Response) => {
   }
 };
 
-export const getCommitDetails = async (req: Request, res: Response) => {
+export const getCommitDetailList = async (
+  req: Request<GetCommitDetailListRequest>,
+  res: Response,
+) => {
   try {
-    const { repoOrg, repoName, commitHash } = req.params as {
-      repoOrg: string;
-      repoName: string;
-      commitHash: string;
-    };
+    const { repoOrg, repoName, commitHash } = req.params;
     if (!repoOrg || !repoName || !commitHash) {
-      res.status(400).json({ error: "Missing repoOrg, repoName, or commitHash" });
+      res
+        .status(400)
+        .json({ error: "Missing repoOrg, repoName, or commitHash" });
       return;
     }
-    const details = await githubService.getCommitDetails(repoOrg, repoName, commitHash);
+    const details = await githubService.getCommitDetails(
+      repoOrg,
+      repoName,
+      commitHash,
+    );
     res.status(200).json(details);
   } catch (err) {
     handleError(res, err);

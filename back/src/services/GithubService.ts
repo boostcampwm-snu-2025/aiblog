@@ -1,4 +1,13 @@
 import { Octokit } from "octokit";
+import type { CommitFile } from "../types/index.ts";
+import { type Endpoints } from "@octokit/types";
+
+type CommitItem =
+  Endpoints["GET /repos/{owner}/{repo}/commits"]["response"]["data"][number];
+type CommitDetailResponse =
+  Endpoints["GET /repos/{owner}/{repo}/commits/{ref}"]["response"]["data"];
+type FileItem = Exclude<CommitDetailResponse["files"], undefined>[number];
+type RepoItem = Endpoints["GET /user/repos"]["response"]["data"][number];
 
 export interface CommitListItem {
   hash: string;
@@ -12,15 +21,6 @@ export interface CommitStats {
   deletions: number;
 }
 
-export interface CommitFile {
-  filename: string;
-  status: "added" | "modified" | "deleted" | "renamed";
-  additions: number;
-  deletions: number;
-  changes: number;
-  patch: string;
-}
-
 export interface CommitDetails {
   hash: string;
   message: string;
@@ -28,6 +28,18 @@ export interface CommitDetails {
   stats: CommitStats;
   files: CommitFile[];
 }
+const convertStatus = (status: FileItem["status"]): CommitFile["status"] => {
+  const statusMap: Record<FileItem["status"], CommitFile["status"]> = {
+    modified: "modified",
+    added: "added",
+    removed: "deleted",
+    renamed: "renamed",
+    copied: "modified",
+    changed: "modified",
+    unchanged: "modified",
+  } as const;
+  return statusMap[status];
+};
 
 export class GithubService {
   private octokit: Octokit;
@@ -49,14 +61,14 @@ export class GithubService {
     });
 
     return repos
-      .map((r: any) => r.full_name as string)
+      .map((r: RepoItem) => r.full_name)
       .filter(Boolean)
       .sort((a: string, b: string) => a.localeCompare(b));
   };
 
   public listCommits = async (
     repoOrg: string,
-    repoName: string
+    repoName: string,
   ): Promise<CommitListItem[]> => {
     const commits = await this.octokit.paginate(
       "GET /repos/{owner}/{repo}/commits",
@@ -64,15 +76,17 @@ export class GithubService {
         owner: repoOrg,
         repo: repoName,
         per_page: 100,
-      }
+      },
     );
 
-    return commits.map((c: any) => {
+    return commits.map((c: CommitItem) => {
       const date: string =
-        c.commit?.author?.date || c.commit?.committer?.date || new Date(0).toISOString();
-      const message: string = c.commit?.message || "";
+        c.commit.author?.date ||
+        c.commit.committer?.date ||
+        new Date(0).toISOString();
+      const message: string = c.commit.message || "";
       return {
-        hash: c.sha as string,
+        hash: c.sha,
         date,
         message,
       };
@@ -82,7 +96,7 @@ export class GithubService {
   public getCommitDetails = async (
     repoOrg: string,
     repoName: string,
-    commitHash: string
+    commitHash: string,
   ): Promise<CommitDetails> => {
     const { data } = await this.octokit.request(
       "GET /repos/{owner}/{repo}/commits/{ref}",
@@ -90,7 +104,7 @@ export class GithubService {
         owner: repoOrg,
         repo: repoName,
         ref: commitHash,
-      }
+      },
     );
 
     const stats: CommitStats = {
@@ -99,40 +113,26 @@ export class GithubService {
       deletions: data.stats?.deletions ?? 0,
     };
 
-    const files: CommitFile[] = (data.files ?? []).map((f: any) => {
-      let status: CommitFile["status"] = "modified";
-      switch (f.status) {
-        case "added":
-          status = "added";
-          break;
-        case "modified":
-          status = "modified";
-          break;
-        case "removed":
-          status = "deleted";
-          break;
-        case "renamed":
-          status = "renamed";
-          break;
-        default:
-          status = "modified";
-      }
+    const files: CommitFile[] = (data.files ?? []).map((f: FileItem) => {
+      let status: CommitFile["status"] = convertStatus(f.status);
       return {
-        filename: f.filename as string,
+        filename: f.filename,
         status,
-        additions: f.additions ?? 0,
-        deletions: f.deletions ?? 0,
-        changes: f.changes ?? 0,
+        additions: f.additions,
+        deletions: f.deletions,
+        changes: f.changes,
         patch: f.patch ?? "",
       };
     });
 
     const date: string =
-      (data.commit as any)?.author?.date || (data.commit as any)?.committer?.date || new Date(0).toISOString();
+      data.commit.author?.date ||
+      data.commit.committer?.date ||
+      new Date(0).toISOString();
 
     return {
-      hash: data.sha as string,
-      message: data.commit?.message ?? "",
+      hash: data.sha,
+      message: data.commit.message,
       date,
       stats,
       files,
