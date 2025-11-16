@@ -6,6 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Skeleton } from "~/components/ui/skeleton";
 
 import OrgReposResults from "./-org-repos-results";
 import SearchReposResults from "./-search-repos-results";
@@ -97,7 +98,30 @@ function IndexPage() {
           </form>
         </div>
         {submittedType && submittedQuery && (
-          <Suspense>
+          <Suspense
+            fallback={
+              <div className="space-y-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div
+                    className="rounded-lg border p-4 hover:bg-accent/50"
+                    key={i}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-full" />
+                        <div className="flex gap-4 pt-2">
+                          <Skeleton className="h-4 w-16" />
+                          <Skeleton className="h-4 w-16" />
+                          <Skeleton className="h-4 w-24" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            }
+          >
             {submittedType === "repositories" && (
               <SearchReposResults
                 onSelectRepo={handleSelectRepo}
