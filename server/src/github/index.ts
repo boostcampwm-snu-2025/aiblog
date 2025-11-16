@@ -8,12 +8,14 @@ import type {
 } from "express";
 import { Router } from "express";
 import { Octokit, RequestError } from "octokit";
-import { ZodError } from "zod";
+import z, { ZodError } from "zod";
 import env from "../env.js";
 import {
 	branchSchema,
 	commitSchema,
+	pageSchema,
 	pullRequestSchema,
+	querySchema,
 	repoSchema,
 } from "./schema.js";
 
@@ -44,6 +46,21 @@ const asyncGithubHandler = (
 		}
 	};
 };
+
+router.get(
+	"/orgs/:org/repos",
+	asyncGithubHandler(async (req) => {
+		const schema = z.object({
+			org: z.string(),
+		});
+		const params = schema.parse(req.params);
+		const query = pageSchema.parse(req.query);
+		return await octokit.rest.repos.listForOrg({
+			...params,
+			...query,
+		});
+	}),
+);
 
 router.get(
 	"/repos/:owner/:repo",
@@ -94,6 +111,33 @@ router.get(
 	asyncGithubHandler(async (req) => {
 		const params = pullRequestSchema.parse(req.params);
 		return await octokit.rest.pulls.listCommits(params);
+	}),
+);
+
+router.get(
+	"/search/repositories",
+	asyncGithubHandler(async (req) => {
+		const schema = z.object({
+			...querySchema.shape,
+			...pageSchema.shape,
+		});
+		const query = schema.parse(req.query);
+		return await octokit.rest.search.repos(query);
+	}),
+);
+
+router.get(
+	"/users/:username/repos",
+	asyncGithubHandler(async (req) => {
+		const schema = z.object({
+			username: z.string(),
+		});
+		const params = schema.parse(req.params);
+		const query = pageSchema.parse(req.query);
+		return await octokit.rest.repos.listForUser({
+			...params,
+			...query,
+		});
 	}),
 );
 

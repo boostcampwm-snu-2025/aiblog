@@ -58,6 +58,23 @@ export function readCommit(owner: string, repo: string, ref: string) {
   });
 }
 
+export function readOrgRepos(org: string) {
+  return queryOptions({
+    queryFn: async ({ signal }) => {
+      const response = await fetch(`${baseUrl}/api/github/orgs/${org}/repos`, {
+        signal,
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      const data =
+        (await response.json()) as Endpoints["GET /orgs/{org}/repos"]["response"]["data"];
+      return data;
+    },
+    queryKey: ["org-repos", org],
+  });
+}
+
 export function readPullCommits(owner: string, repo: string, prNumber: number) {
   return queryOptions({
     queryFn: async ({ signal }) => {
@@ -111,5 +128,43 @@ export function readRepository(owner: string, repo: string) {
       return data;
     },
     queryKey: ["repository", owner, repo],
+  });
+}
+
+export function readUserRepos(username: string) {
+  return queryOptions({
+    queryFn: async ({ signal }) => {
+      const response = await fetch(
+        `${baseUrl}/api/github/users/${username}/repos`,
+        { signal },
+      );
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      const data =
+        (await response.json()) as Endpoints["GET /users/{username}/repos"]["response"]["data"];
+      return data;
+    },
+    queryKey: ["user-repos", username],
+  });
+}
+
+export function searchRepositories(query: string) {
+  return queryOptions({
+    queryFn: async ({ signal }) => {
+      const response = await fetch(
+        `${baseUrl}/api/github/search/repositories?q=${encodeURIComponent(
+          query,
+        )}`,
+        { signal },
+      );
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      const data =
+        (await response.json()) as Endpoints["GET /search/repositories"]["response"]["data"];
+      return data;
+    },
+    queryKey: ["search-repositories", query],
   });
 }
