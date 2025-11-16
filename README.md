@@ -17,5 +17,8 @@
 3. LLM API 연동
 
 ## 2주차 구현 목표
-- [ ] repository별 상세 정보 페이지 추가 (PR/commit 기록 볼 수 있도록)
-- [ ] PR/commit 기록에 블로그 생성 버튼 추가: 생성 버튼 클릭시 LLM 돌도록 구현
+- [x] repository별 상세 정보 페이지 추가 (PR/commit 기록 볼 수 있도록)
+- [x] PR/commit 기록에 블로그 생성 버튼 추가: 생성 버튼 클릭시 LLM 돌도록 구현
+
+## 추후 구현 필요 사항
+llm call 시 돌아가고 있다는 표시가 되도록 Blog 창에 loading 같은 것을 걸거나, 다시 버튼 클릭 되는 것을 block하도록 구현할 필요
