@@ -1,41 +1,10 @@
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { useActivities } from "../contexts/ActivityContext";
 
-function ActivityList({ activities, isLoading, error }) {
-  const [generatedBlog, setGeneratedBlog] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generationError, setGenerationError] = useState(null);
-
-  const handleGenerateBlog = async (commitMessage, diff) => {
-    setIsGenerating(true);
-    setGeneratedBlog("");
-    setGenerationError(null);
-
-    try {
-      const response = await fetch("/api/blog/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          commitMessage: commitMessage,
-          diff: diff,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to generate blog post.");
-      }
-
-      const data = await response.json();
-      setGeneratedBlog(data.blog);
-    } catch (e) {
-      setGenerationError(e.message);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+function ActivityList() {
+  const { activities, isLoading, error, generateBlogMutation } =
+    useActivities();
+  const [processingCommitSha, setProcessingCommitSha] = useState(null);
 
   if (isLoading) {
     return (
@@ -49,7 +18,7 @@ function ActivityList({ activities, isLoading, error }) {
     return (
       <div className="text-center p-10 bg-red-100 border border-red-400 text-red-700 rounded-lg">
         <p className="font-bold">Oops! Something went wrong.</p>
-        <p className="text-sm">{error}</p>
+        <p className="text-sm">{error.message}</p>
       </div>
     );
   }
@@ -65,10 +34,29 @@ function ActivityList({ activities, isLoading, error }) {
     );
   }
 
+  const handleGenerateClick = (activity) => {
+    setProcessingCommitSha(activity.sha);
+    generateBlogMutation.mutate(
+      {
+        commitMessage: activity.message,
+        diff: activity.diff,
+      },
+      {
+        onSettled: () => {
+          setProcessingCommitSha(null);
+        },
+      }
+    );
+  };
+
   return (
-    <>
-      <div className="space-y-6">
-        {activities.map((activity) => (
+    <div className="space-y-6 mt-6">
+      {activities.map((activity) => {
+        const isProcessing =
+          generateBlogMutation.isLoading &&
+          processingCommitSha === activity.sha;
+
+        return (
           <div
             key={activity.sha}
             className="bg-white rounded-xl shadow-lg p-6 transition-transform transform hover:-translate-y-1 hover:shadow-xl"
@@ -85,13 +73,11 @@ function ActivityList({ activities, isLoading, error }) {
                 </span>
               </div>
               <button
-                onClick={() =>
-                  handleGenerateBlog(activity.message, activity.diff)
-                }
-                disabled={isGenerating}
+                onClick={() => handleGenerateClick(activity)}
+                disabled={generateBlogMutation.isLoading}
                 className="bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-4 rounded-full disabled:bg-gray-400 transition-colors"
               >
-                {isGenerating ? "Generating..." : "블로그 생성"}
+                {isProcessing ? "Generating..." : "블로그 생성"}
               </button>
             </div>
             <p className="text-gray-700 text-lg mb-3">{activity.message}</p>
@@ -101,35 +87,9 @@ function ActivityList({ activities, isLoading, error }) {
                 : "Unknown date"}
             </span>
           </div>
-        ))}
-      </div>
-
-      {isGenerating && (
-        <div className="text-center p-10">
-          <p className="text-lg text-pink-500">Generating blog post...</p>
-        </div>
-      )}
-
-      {generationError && (
-        <div className="text-center p-10 bg-red-100 border border-red-400 text-red-700 rounded-lg mt-6">
-          <p className="font-bold">Failed to generate blog.</p>
-          <p className="text-sm">{generationError}</p>
-        </div>
-      )}
-
-      {generatedBlog && (
-        <div className="mt-10 bg-pink-50 rounded-xl shadow-lg p-6 border-2 border-pink-200">
-          <h2 className="text-3xl font-bold mb-4 text-pink-600">
-            Generated Blog Post
-          </h2>
-          <div className="prose prose-pink max-w-none wrap-break-word">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {generatedBlog}
-            </ReactMarkdown>
-          </div>
-        </div>
-      )}
-    </>
+        );
+      })}
+    </div>
   );
 }
 

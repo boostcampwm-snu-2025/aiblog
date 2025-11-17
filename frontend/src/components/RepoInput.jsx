@@ -1,40 +1,114 @@
-import { useState } from "react";
+//폼 + 드롭다운 UI + watch()
+import { useForm } from "react-hook-form";
+import { useGithubRepos } from "../hooks/useGithubRepos";
+import { useGithubBranches } from "../hooks/useGithubBranches";
 
 function RepoInput({ onFetch }) {
-  const [owner, setOwner] = useState("");
-  const [repo, setRepo] = useState("");
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (owner && repo) {
-      onFetch(owner, repo);
-    }
-  };
+  const owner = watch("owner");
+  const repo = watch("repo");
+
+  const { data: repos, isLoading: repoLoading } = useGithubRepos(owner);
+  const { data: branches, isLoading: branchLoading } = useGithubBranches(
+    owner,
+    repo
+  );
+
+  const onSubmit = (data) => onFetch(data);
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md mb-8">
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
-        <input
-          type="text"
-          value={owner}
-          onChange={(e) => setOwner(e.target.value)}
-          placeholder="GitHub Owner (e.g., 'facebook')"
-          className="flex-grow p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400 transition-shadow"
-          required
-        />
-        <input
-          type="text"
-          value={repo}
-          onChange={(e) => setRepo(e.target.value)}
-          placeholder="Repository (e.g., 'react')"
-          className="flex-grow p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400 transition-shadow"
-          required
-        />
+    <div className="bg-white p-8 rounded-xl shadow-lg border-2 border-pink-100">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        Select a Repository
+      </h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Owner Input */}
+        <div>
+          <label
+            htmlFor="owner"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            GitHub Owner
+          </label>
+          <input
+            id="owner"
+            {...register("owner", { required: "Owner is required" })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500"
+            placeholder="e.g., facebook"
+          />
+          {errors.owner && (
+            <p className="text-red-500 text-xs mt-1">{errors.owner.message}</p>
+          )}
+        </div>
+
+        {/* Repo Dropdown */}
+        <div>
+          <label
+            htmlFor="repo"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Repository
+          </label>
+          <select
+            id="repo"
+            {...register("repo", { required: "Repository is required" })}
+            disabled={!repos || repoLoading}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 disabled:bg-gray-100"
+          >
+            <option value="">
+              {repoLoading ? "Loading repos..." : "Select Repo"}
+            </option>
+            {repos?.map((r) => (
+              <option key={r.id} value={r.name}>
+                {r.name}
+              </option>
+            ))}
+          </select>
+          {errors.repo && (
+            <p className="text-red-500 text-xs mt-1">{errors.repo.message}</p>
+          )}
+        </div>
+
+        {/* Branch Dropdown */}
+        <div>
+          <label
+            htmlFor="branch"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Branch
+          </label>
+          <select
+            id="branch"
+            {...register("branch", { required: "Branch is required" })}
+            disabled={!branches || branchLoading}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 disabled:bg-gray-100"
+          >
+            <option value="">
+              {branchLoading ? "Loading branches..." : "Select Branch"}
+            </option>
+            {branches?.map((b) => (
+              <option key={b.name} value={b.name}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+          {errors.branch && (
+            <p className="text-red-500 text-xs mt-1">{errors.branch.message}</p>
+          )}
+        </div>
+
         <button
           type="submit"
-          className="bg-pink-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition-transform transform hover:scale-105"
+          disabled={isSubmitting}
+          className="w-full bg-pink-400 hover:bg-pink-500 text-white font-bold py-3 px-4 rounded-lg disabled:bg-gray-400 transition-colors"
         >
-          Get Activities
+          {isSubmitting ? "Fetching Activities..." : "Get Activities"}
         </button>
       </form>
     </div>
