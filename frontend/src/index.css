@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --font-pretendard: "Pretendard", "sans-serif";
+  --font-gsans: "GmarketSans", "sans-serif";
+}
+
+/* Markdown 코드 블록 overflow 방지 */
+.prose pre {
+  white-space: pre-wrap !important; /* 줄바꿈 허용 */
+  word-break: break-word !important; /* 긴 단어 줄바꿈 */
+  overflow-x: auto !important; /* 가로 스크롤 */
+  background-color: #fce4ec !important; /* (선택) 예쁜 핑크톤 배경 */
+  padding: 1rem !important;
+  border-radius: 0.5rem;
+}
+
+.prose code {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+}
