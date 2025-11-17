@@ -1,4 +1,6 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function ActivityList({ activities, isLoading, error }) {
   const [generatedBlog, setGeneratedBlog] = useState("");
@@ -87,7 +89,7 @@ function ActivityList({ activities, isLoading, error }) {
                   handleGenerateBlog(activity.message, activity.diff)
                 }
                 disabled={isGenerating}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400"
+                className="bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-4 rounded-full disabled:bg-gray-400 transition-colors"
               >
                 {isGenerating ? "Generating..." : "블로그 생성"}
               </button>
@@ -104,7 +106,7 @@ function ActivityList({ activities, isLoading, error }) {
 
       {isGenerating && (
         <div className="text-center p-10">
-          <p className="text-lg text-gray-500">Generating blog post...</p>
+          <p className="text-lg text-pink-500">Generating blog post...</p>
         </div>
       )}
 
@@ -116,9 +118,15 @@ function ActivityList({ activities, isLoading, error }) {
       )}
 
       {generatedBlog && (
-        <div className="mt-10 bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">Generated Blog Post</h2>
-          <div className="prose max-w-none">{generatedBlog}</div>
+        <div className="mt-10 bg-pink-50 rounded-xl shadow-lg p-6 border-2 border-pink-200">
+          <h2 className="text-3xl font-bold mb-4 text-pink-600">
+            Generated Blog Post
+          </h2>
+          <div className="prose prose-pink max-w-none wrap-break-word">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {generatedBlog}
+            </ReactMarkdown>
+          </div>
         </div>
       )}
     </>
