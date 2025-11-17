@@ -14,6 +14,19 @@
   - 커밋 목록 렌더링 컴포넌트 (ActivityList.jsx) 제작
   - 가져온 커밋/PR 데이터를 UI에 간결하게 표시
 
+## 2주차 계획
+
+- 서버
+- [x] /api/blog/generate 엔드포인트 생성
+- [x] commitMessage + diff 받아서 prompt 만들기
+- [x] OpenAI 호출 로직 생성
+- [x] blogRoutes를 server.js에 연결
+
+- 프론트
+- [x] ActivityList에 블로그 생성 버튼 추가
+- [x] 버튼 클릭하면 POST api/blog/genetrate 요청
+- [x] 결과 블로그 글을 화면에 렌더링
+
 # for gemini
 
 ## 개발 계획
