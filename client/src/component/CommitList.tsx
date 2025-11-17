@@ -1,4 +1,4 @@
-import type { Commits } from "./types";
+import type { Commit } from "../types";
 
 export default function CommitList({
   username,
@@ -7,7 +7,7 @@ export default function CommitList({
 }: {
   username: string;
   repoName: string;
-  commits: Commits[];
+  commits: Commit[];
 }) {
   return (
     <div style={{ width: "80%", margin: "auto auto" }}>

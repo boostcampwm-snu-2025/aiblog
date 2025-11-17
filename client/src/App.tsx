@@ -1,74 +1,84 @@
-import './App.css'
-import Navigation from './assets/Navigation'
-import RepoList from './assets/RepoList';
-import Search from './assets/Search';
-import CommitList from './assets/CommitList';
-import LoadingBar from './assets/LoadingBar';
-import { useState, useEffect } from "react";
-import type { Repo } from './assets/types';
-function App() {
-  const [repos, setRepos] = useState<Repo[]>([]);
-  const [username, setUsername] = useState("zoo-zer0"); //todo: fetch username
+import "./App.css";
+import { useState } from "react";
+
+import Navigation from "./component/Navigation";
+import Search from "./component/Search";
+import LoadingBar from "./component/LoadingBar";
+
+import { useRepos } from "./hooks/useRepos";
+import { useCommits } from "./hooks/useCommits";
+
+import RepoList from "./component/RepoList";
+import CommitList from "./component/CommitList";
+import BlogPage from "./pages/BlogPage";
+
+export default function App() {
+  const [username, setUsername] = useState("zoo-zer0");
   const [repoName, setRepoName] = useState("");
-  const [commits, setCommits] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [_error, setError] = useState(""); //add something for error later
-  useEffect(()=>{
-    const fetchRepos = async () =>{
-      setLoading(true);
-      setError("");
-      try {
-        const response = await fetch("http://localhost:3000/api/repos");
-        if(!response.ok) throw new Error("Failed to fecth repos");
-        const data: Repo[] = await response.json();
-        setRepos(data);
-      } catch(err:any){
-        setError(err.message);
-      } finally{
-        setLoading(false);
-      }
-    };
-    fetchRepos();
-  },[]);
-  useEffect(()=>{
-    if(!repoName) return;
-    const fetchRepo = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/commits`);
-        if (!response.ok) throw new Error("Failed to fetch commits");
+  const [view, setView] = useState<"repos" | "commits" | "blog">("repos");
+  const [blogContent, setBlogContent] = useState("");
 
-        const data = await response.json();
-        setCommits(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { repos, loading: reposLoading } = useRepos();
+  const {
+    commits,
+    loading: commitsLoading,
+  } = useCommits(username, repoName);
 
-    fetchRepo();
-  }, [username, repoName]);
-  const handleSearch = (username: string, repo: string)=>{
-    setRepoName(repo);
+  const loading = reposLoading || commitsLoading;
+
+  const handleSearch = (username: string, repo: string) => {
     setUsername(username);
-  }
+    setRepoName(repo);
+    setView(repo ? "commits" : "repos");
+  };
+
+  // Generate blog for a specific repo
+  const handleGenerateBlog = async (username: string, repo: string) => {
+    setView("blog");
+    setBlogContent("Generating blog..."); // show loading in UI
+
+    try {
+      const res = await fetch("http://localhost:3000/api/generate-blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, repo }),
+      });
+      const data = await res.json();
+
+      if (data.blog) {
+        setBlogContent(data.blog);
+      } else {
+        setBlogContent("Failed to generate blog.");
+      }
+    } catch (err) {
+      console.error(err);
+      setBlogContent("Error generating blog.");
+    }
+  };
+
   return (
     <>
-        <Navigation/>
-        <Search username={username} repoName={repoName} onSearch={handleSearch}/>
-        
-        {loading ? (
-          <LoadingBar loading={loading} />
-        ) : !repoName ? (
-          <RepoList onClick={handleSearch} username={username} repos={repos} />
-        ) : (
-          <CommitList username={username} repoName={repoName} commits={commits} />
-        )}
+      <Navigation />
+      <Search username={username} repoName={repoName} onSearch={handleSearch} />
 
+      {loading ? (
+        <LoadingBar loading />
+      ) : view === "repos" ? (
+        <RepoList
+          repos={repos}
+          username={username}
+          onClick={handleSearch}
+          onGenerate={handleGenerateBlog}
+        />
+      ) : view === "commits" ? (
+        <CommitList
+          username={username}
+          repoName={repoName}
+          commits={commits}
+        />
+      ) : view === "blog" ? (
+        <BlogPage content={blogContent} repoName={repoName} />
+      ) : null}
     </>
-  )
+  );
 }
-
-export default App
