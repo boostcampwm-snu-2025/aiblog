@@ -3,16 +3,32 @@ import fs from "fs";
 import type { PostMeta } from "../types/index.ts";
 
 const FRONT_MATTER_DELIM_RE = /^---\s*$/gm;
+const parseTags = (s: string): string[] => {
+  const arrayMatch = s.match(/^\[(.*)\]$/);
+  if (arrayMatch) {
+    const inner = arrayMatch[1] ?? "";
+    return inner
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+  }
+  return s.length > 0 ? s.split(/\s+/).filter(Boolean) : [];
+};
 
 export const readFrontMatterPartial = (filePath: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    const stream = fs.createReadStream(filePath, { encoding: "utf8", highWaterMark: 4096 });
+    const stream = fs.createReadStream(filePath, {
+      encoding: "utf8",
+      highWaterMark: 4096,
+    });
     let buf = "";
     let found = false;
 
     const onChunk = (chunk: string | Buffer) => {
       buf += typeof chunk === "string" ? chunk : chunk.toString("utf8");
-      const matches = [...buf.matchAll(FRONT_MATTER_DELIM_RE)].map((m) => m.index ?? 0);
+      const matches = [...buf.matchAll(FRONT_MATTER_DELIM_RE)].map(
+        (m) => m.index ?? 0,
+      );
       if (matches.length >= 2) {
         const first = matches[0]!;
         const second = matches[1]!;
@@ -76,27 +92,25 @@ export const parseFrontMatter = (fmText: string): PostMeta => {
   for (const raw of lines) {
     const line = raw.trim();
     if (!line || line.startsWith("#")) continue;
-    if (line.startsWith("title:")) {
-      meta.title = line.slice("title:".length).trim();
-    } else if (line.startsWith("date:")) {
-      meta.date = line.slice("date:".length).trim();
-    } else if (line.startsWith("repo:")) {
-      meta.repo = line.slice("repo:".length).trim();
-    } else if (line.startsWith("commit:")) {
-      meta.commit = line.slice("commit:".length).trim();
-    } else if (line.startsWith("tags:")) {
-      const rest = line.slice("tags:".length).trim();
-      const match = rest.match(/^\[(.*)\]$/);
-      if (match) {
-        const inner = match[1] ?? "";
-        meta.tags = inner
-          .split(",")
-          .map((t) => t.trim())
-          .filter((t) => t.length > 0);
-      } else if (rest.length > 0) {
-        // Fallback: space-separated
-        meta.tags = rest.split(/\s+/).filter(Boolean);
-      }
+
+    const [key, ...vals] = line.split(":");
+    const val = vals.join(":");
+    switch (key) {
+      case "title":
+        meta.title = val;
+        break;
+      case "date":
+        meta.date = val;
+        break;
+      case "repo":
+        meta.repo = val;
+        break;
+      case "commit":
+        meta.commit = val;
+        break;
+      case "tags":
+        meta.tags = parseTags(val);
+        break;
     }
   }
 
@@ -104,9 +118,11 @@ export const parseFrontMatter = (fmText: string): PostMeta => {
 };
 
 export const parseMarkdownWhole = (
-  fullText: string
+  fullText: string,
 ): { meta: PostMeta; content: string } => {
-  const matches = [...fullText.matchAll(FRONT_MATTER_DELIM_RE)].map((m) => m.index ?? 0);
+  const matches = [...fullText.matchAll(FRONT_MATTER_DELIM_RE)].map(
+    (m) => m.index ?? 0,
+  );
   if (matches.length >= 2 && matches[0] === 0) {
     const first = matches[0]!;
     const second = matches[1]!;

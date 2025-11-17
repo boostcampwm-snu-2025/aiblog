@@ -1,18 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
-
-export interface AiGenerateFile {
-  filename: string;
-  status: "added" | "modified" | "deleted" | "renamed";
-  additions: number;
-  deletions: number;
-  changes: number;
-  patch: string;
-}
+import type { CommitFile } from "../types/index.ts";
 
 export interface AiGenerateRequest {
   commitMessage: string;
   commitDate: string; // ISO date-time
-  files: AiGenerateFile[];
+  files: CommitFile[];
 }
 
 export class AiService {
