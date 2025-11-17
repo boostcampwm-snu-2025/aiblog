@@ -7,19 +7,7 @@ interface RepoCardProps {
 	onClickPR?: (fullName: string) => void;
 }
 
-const repoCardStyles: {
-	card: CSSProperties;
-	headerRow: CSSProperties;
-	left: CSSProperties;
-	header: CSSProperties;
-	avatar: CSSProperties;
-	link: CSSProperties;
-	description: CSSProperties;
-	actions: CSSProperties;
-	actionBtn: CSSProperties;
-	metaContainer: CSSProperties;
-	metaItem: CSSProperties;
-} = {
+const repoCardStyles: Record<string, CSSProperties> = {
 	card: { padding: 16 },
 	headerRow: {
 		display: "flex",

@@ -22,6 +22,32 @@ export async function listMyReposRepo({
 	return { repos: res.data ?? [] };
 }
 
+export async function listRepoBranchesRepo({
+	token,
+	owner,
+	name,
+	per_page = 100,
+	page = 1,
+}) {
+	const octokit = makeOctokit(token);
+
+	const res = await octokit.repos.listBranches({
+		owner,
+		repo: name,
+		per_page: clamp(per_page, 1, 100),
+		page,
+	});
+
+	const rateLimit = res.headers || {};
+	const meta = {
+		remaining: Number(rateLimit["x-ratelimit-remaining"]),
+		limit: Number(rateLimit["x-ratelimit-limit"]),
+		reset: Number(rateLimit["x-ratelimit-reset"]),
+	};
+
+	return { branches: res.data ?? [], meta };
+}
+
 export async function listRecentCommitsRepo({
 	token,
 	owner,
@@ -30,6 +56,7 @@ export async function listRecentCommitsRepo({
 	until,
 	per_page = 20,
 	page = 1,
+	sha,
 }) {
 	const octokit = makeOctokit(token);
 
@@ -40,9 +67,9 @@ export async function listRecentCommitsRepo({
 		until, // ISO 8601 (optional)
 		per_page: clamp(per_page, 1, 100),
 		page,
+		sha, // Branch name (optional)
 	});
 
-	// rate limit info
 	const rateLimit = res.headers || {};
 	const meta = {
 		remaining: Number(rateLimit["x-ratelimit-remaining"]),
@@ -110,4 +137,34 @@ export async function listPullRequestsRepo({
 		per_page: clamp(per_page, 1, 100),
 		meta,
 	};
+}
+
+export async function getCommitByShaRepo({ token, owner, name, sha }) {
+	const octokit = makeOctokit(token);
+	const res = await octokit.repos.getCommit({
+		owner,
+		repo: name,
+		ref: sha,
+	});
+	return res.data;
+}
+
+export async function getPRByNumberRepo({ token, owner, name, number }) {
+	const octokit = makeOctokit(token);
+	const res = await octokit.pulls.get({
+		owner,
+		repo: name,
+		pull_number: number,
+	});
+	return res.data;
+}
+
+export async function assertRepoIsPublicRepo({ token, owner, name }) {
+	const octokit = makeOctokit(token);
+	const { data } = await octokit.repos.get({ owner, repo: name });
+	if (data.private) {
+		const err = new Error("Forbidden: private repository not allowed");
+		err.status = 403;
+		throw err;
+	}
 }

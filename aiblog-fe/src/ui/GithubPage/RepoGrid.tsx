@@ -15,14 +15,7 @@ interface RepoGridProps {
 	repos: RepoItem[];
 }
 
-const repoGridStyles: {
-	empty: CSSProperties;
-	grid: CSSProperties;
-	title: CSSProperties;
-	panelWrap: CSSProperties;
-	loading: CSSProperties;
-	error: CSSProperties;
-} = {
+const repoGridStyles: Record<string, CSSProperties> = {
 	empty: { padding: 24, textAlign: "center", color: "var(--gray-700)" },
 	grid: { display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 },
 	title: {

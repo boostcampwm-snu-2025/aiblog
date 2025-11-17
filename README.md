@@ -39,8 +39,41 @@
 
 ### 2주차
 
-- OpenAI API 연동
-- Blog contents 자동 생성하도록 OpenAI API 사용
+- 1주차 PR 리뷰 반영하기(code convention 등)
+- OpenAI API 연동 (Backend의 `.env`에 OpenAI API key 저장됨)
+- Blog contents (post) 자동 생성하도록 OpenAI API 사용
+  - Posts 탭:
+    - `PostForm.tsx`
+      - 나의 Repo 목록 불러오고, 선택된 repo에 해당하는 commit과 PR 목록을 불러온 후
+      - commit은 Checkbox (여러 개 선택 가능), PR은 Select box(한 개만 선택 가능)로 구현
+      - PR은 선택된 branch와 무관하게 모두 불러온다 (개수가 상대적으로 적으므로)
+    - `PostResult.tsx`
+    - `PostsPage.tsx`
+- About 글 자동 생성하도록 OpenAI API 사용
+  - About 탭:
+    - `AboutCard.tsx`
+    - `AboutPage.tsx`
+- Posts, About에 공통으로 사용되는 `Lang`, `Tone` type 하나로 통일: types `PromptLang`, `PromptTone`
+- `Lang`, `Tone` selectbox UI 컴포넌트화 (재사용): `LanguageSelectBox.tsx`, `ToneSelectBox.tsx`
+- OpenAI API prompt 문서화
+
+#### 완료 작업 사진
+
+- `Posts` tab 클릭 시의 메인 페이지:
+
+![PostsPage](./assets/2nd_week/PostsPage.png)
+
+- `Posts` tab에서 글 생성:
+
+![PostsPageGenerated](./assets/2nd_week/PostsPageGenerated.png)
+
+- `About` tab 클릭 시의 메인 페이지:
+
+![AboutPage](./assets/2nd_week/AboutPage.png)
+
+- `About` tab에서 소개글 생성:
+
+![AboutPageGenerated](./assets/2nd_week/AboutPageGenerated.png)
 
 ### 3주차
 
@@ -74,6 +107,13 @@ This project will open at `http://localhost:5173`
 
 ### Express Backend
 
+First set up the `.env` file at backend root directory `aiblog-be/`:
+
+```bash
+# check .env.example
+cp .env.example .env
+```
+
 ```bash
 # move to the backend project directory
 cd aiblog-be
@@ -95,6 +135,14 @@ Or start this project using `start-all.sh`
 # at root directory, run
 sh start-all.sh
 ```
+
+## Developing Branch
+
+- Week1: `main` branch
+
+- Week2: `week2` branch
+
+- Week3: `week3` branch
 
 ## Directory Structure
 
@@ -144,9 +192,29 @@ GET /github-data/my-repos
 - Headers:
 
 ```plaintext
-Authorization: Bearer ghp_YOUR_TOKEN
+Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
 Content-Type: application/json
 ```
+
+#### Repo Branches
+
+API to fetch branch data from a specific Github repository.
+
+```plaintext
+GET /github-data/branches
+```
+
+- Headers:
+
+```plaintext
+Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
+Content-Type: application/json
+```
+
+- Query Parameters:
+  - `repo` (string): `kimheonningg/REPO_NAME`
+  - `per_page` (number, number of branches to fetch, optional): `100`
+  - `page` (number, page number to fetch, optional): `1`
 
 #### Recent Commits
 
@@ -159,12 +227,13 @@ GET /github-data/recent-commits
 - Headers:
 
 ```plaintext
-Authorization: Bearer ghp_YOUR_TOKEN
+Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
 Content-Type: application/json
 ```
 
 - Query Parameters:
   - `repo` (string): `kimheonningg/REPO_NAME`
+  - `sha` (string, branch name or commit SHA for filtering, optional): `main`
   - `since` (string (ISO 8601), optional): `2025-11-01T00:00:00Z`
   - `until` (string (ISO 8601), optional): `2025-11-02T00:00:00Z`
   - `per_page` (number, number of commits to fetch, optional): `20`
@@ -181,7 +250,7 @@ GET /github-data/my-pull-requests
 - Headers:
 
 ```plaintext
-Authorization: Bearer ghp_YOUR_TOKEN
+Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
 Content-Type: application/json
 ```
 
@@ -190,3 +259,47 @@ Content-Type: application/json
   - `state` (string, PR filter by PR state, optional): `open` / `closed` / `all`
   - `per_page` (number, number of PRs to fetch, optional): `20`
   - `page` (number, page number to fetch, optional): `1`
+
+### 'Posts' Page API
+
+API to generate the 'Posts' page content (post) using my Github data and OpenAI API.
+
+```plaintext
+GET /post/generate
+```
+
+- Headers:
+
+```plaintext
+Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
+Content-Type: application/json
+```
+
+- Query Parameters:
+  - `repo` (string, `owner/name`): `kimheonningg/aiblog`
+  - `commits` (string[], optional)
+  - `prs` (number[], optional)
+  - `lang` (string, optional): `kr` / `en`
+  - `tone` (string, optional): `concise` / `friendly` / `formal`
+
+Either `commits` or `prs` must be provided. (At least one is required)
+
+### 'About' Page API
+
+API to generate the 'About' page content using my Github data and OpenAI API.
+
+```plaintext
+GET /about/generate
+```
+
+- Headers:
+
+```plaintext
+Authorization: Bearer ghp_YOUR_GITHUB_TOKEN
+Content-Type: application/json
+```
+
+- Query Parameters:
+  - `github` (string, github link): `https://github.com/kimheonningg`
+  - `lang` (string, optional): `kr` / `en`
+  - `tone` (string, optional): `concise` / `friendly` / `formal`

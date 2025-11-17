@@ -6,23 +6,7 @@ interface CommitListProps {
 	commits: CommitItem[];
 }
 
-const commitListStyles: {
-	wrap: CSSProperties;
-	headerRow: CSSProperties;
-	headerTitle: CSSProperties;
-	item: CSSProperties;
-	left: CSSProperties;
-	avatar: CSSProperties;
-	title: CSSProperties;
-	metaRow: CSSProperties;
-	metaChip: CSSProperties;
-	body: CSSProperties;
-	divider: CSSProperties;
-	empty: CSSProperties;
-	paginationRow: CSSProperties;
-	pageBtn: CSSProperties;
-	pageInfo: CSSProperties;
-} = {
+const commitListStyles: Record<string, CSSProperties> = {
 	wrap: {
 		display: "grid",
 		gap: 10,

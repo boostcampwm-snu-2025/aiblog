@@ -43,6 +43,32 @@ export function normalizeRepoItems(repos) {
 	}));
 }
 
+export function validateBranchesQuery(query) {
+	const out = {
+		repo: String(query.repo || "").trim(),
+		per_page: query.per_page ? Number(query.per_page) : 100,
+		page: query.page ? Number(query.page) : 1,
+	};
+
+	if (!out.repo || !out.repo.includes("/")) {
+		const err = new Error('Invalid query: repo must be "owner/name"');
+		err.status = 400;
+		throw err;
+	}
+	if (Number.isNaN(out.per_page) || out.per_page < 1) out.per_page = 100;
+	if (Number.isNaN(out.page) || out.page < 1) out.page = 1;
+
+	return out;
+}
+
+export function normalizeBranchItems(branches) {
+	return (branches || []).map((b) => ({
+		name: b.name,
+		protected: !!b.protected,
+		commit_sha: b.commit?.sha || null,
+	}));
+}
+
 export function validateRecentCommitsQuery(query) {
 	const out = {
 		repo: String(query.repo || "").trim(),
@@ -50,6 +76,7 @@ export function validateRecentCommitsQuery(query) {
 		until: query.until ? new Date(query.until).toISOString() : undefined,
 		per_page: query.per_page ? Number(query.per_page) : 20,
 		page: query.page ? Number(query.page) : 1,
+		sha: query.sha ? String(query.sha).trim() : undefined,
 	};
 
 	if (!out.repo || !out.repo.includes("/")) {
@@ -70,6 +97,8 @@ export function validateRecentCommitsQuery(query) {
 		err.status = 400;
 		throw err;
 	}
+
+	if (out.sha === "") out.sha = undefined;
 
 	return out;
 }

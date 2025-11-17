@@ -1,24 +1,16 @@
 import { useState } from "react";
 import type { CSSProperties } from "react";
-import type { PRItem } from "../../types/githubPRData";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
-const prListStyles: {
-	wrap: CSSProperties;
-	headerRow: CSSProperties;
-	headerTitle: CSSProperties;
-	item: CSSProperties;
-	left: CSSProperties;
-	avatar: CSSProperties;
-	title: CSSProperties;
-	metaRow: CSSProperties;
-	metaChip: CSSProperties;
-	body: CSSProperties;
-	divider: CSSProperties;
-	empty: CSSProperties;
-	paginationRow: CSSProperties;
-	pageBtn: CSSProperties;
-	pageInfo: CSSProperties;
-} = {
+import type { PRItem } from "../../types/githubPRData";
+import { markdownBaseStyles, markdownComponents } from "../markdown";
+
+interface PRListProps {
+	items: PRItem[];
+}
+
+const prListStyles: Record<string, CSSProperties> = {
 	wrap: {
 		display: "grid",
 		gap: 10,
@@ -67,7 +59,7 @@ const prListStyles: {
 			"color-mix(in srgb, var(--pink-300) 25%, white)" as unknown as string,
 		color: "var(--pink-800)",
 	},
-	body: { margin: "6px 0 0", color: "var(--gray-700)", whiteSpace: "pre-wrap" },
+	body: { margin: "6px 0 0" },
 	divider: { height: 1, background: "var(--gray-200)", margin: "2px 0" },
 	empty: { padding: 8, color: "var(--gray-700)" },
 	paginationRow: {
@@ -91,7 +83,7 @@ const prListStyles: {
 	pageInfo: { fontSize: 13, color: "var(--gray-700)", fontWeight: 600 },
 };
 
-const PRList = ({ items }: { items: PRItem[] }) => {
+const PRList = ({ items }: PRListProps) => {
 	const [page, setPage] = useState(1);
 	const perPage = 1;
 	const totalPages = Math.max(1, Math.ceil((items?.length ?? 0) / perPage));
@@ -114,7 +106,7 @@ const PRList = ({ items }: { items: PRItem[] }) => {
 				</span>
 			</div>
 
-			{current.map((pr, i) => (
+			{current.map((pr, idx) => (
 				<div key={pr.id}>
 					<div style={prListStyles.item}>
 						<div style={prListStyles.left}>
@@ -151,10 +143,19 @@ const PRList = ({ items }: { items: PRItem[] }) => {
 									</span>
 								)}
 							</div>
-							{pr.body && <p style={prListStyles.body}>{pr.body}</p>}
+							{pr.body && (
+								<div style={{ ...prListStyles.body, ...markdownBaseStyles }}>
+									<ReactMarkdown
+										remarkPlugins={[remarkGfm]}
+										components={markdownComponents}
+									>
+										{pr.body}
+									</ReactMarkdown>
+								</div>
+							)}
 						</div>
 					</div>
-					{i < current.length - 1 && <div style={prListStyles.divider} />}
+					{idx < current.length - 1 && <div style={prListStyles.divider} />}
 				</div>
 			))}
 
