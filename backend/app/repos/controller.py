@@ -2,7 +2,13 @@ from typing import Annotated
 from backend.app.repos.services import RepoService
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from backend.app.repos.schemas import CommitResponse, RepoResponse, PullRequestResponse
+from backend.app.repos.schemas import (
+    CommitResponse,
+    RepoResponse,
+    PullRequestResponse,
+    SummaryRequest,
+    SummaryResponse,
+)
 
 repo_router = APIRouter()
 
@@ -49,6 +55,7 @@ async def get_commits(
     ) for commit in commits
     ]
 
+
 @repo_router.get("/prs")
 async def get_pull_requests(
     owner: str,
@@ -60,6 +67,7 @@ async def get_pull_requests(
     prs = await repo_service.get_user_pull_requests(access_token, owner, repo)
     return [PullRequestResponse(
         id=pr["id"],
+        number=pr["number"],
         html_url=pr["html_url"],
         title=pr["title"],
         body=pr["body"],
@@ -71,3 +79,14 @@ async def get_pull_requests(
         author_avatar_url=pr["user"]["avatar_url"]
     ) for pr in prs
     ]
+
+
+@repo_router.post("/summary", response_model=SummaryResponse)
+async def generate_summary(
+    payload: SummaryRequest,
+    repo_service: Annotated[RepoService, Depends()],
+    token: HTTPAuthorizationCredentials = Depends(security_scheme),
+):
+    access_token = token.credentials
+    summary, truncated = await repo_service.generate_summary(access_token, payload)
+    return SummaryResponse(summary=summary, truncated=truncated)

@@ -19,3 +19,16 @@ class AuthSettings(BaseSettings):
         extra = "ignore"
 
 AUTH_SETTINGS = AuthSettings()
+
+
+class LLMSettings(BaseSettings):
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-1.5-flash"
+
+    class Config:
+        env_file = str(ENV_FILE)
+        env_file_encoding = "utf-8"
+        extra = "ignore"
+
+
+LLM_SETTINGS = LLMSettings()
