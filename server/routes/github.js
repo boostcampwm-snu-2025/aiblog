@@ -4,43 +4,51 @@ const router = express.Router();
 router.get("/activities", async (req, res) => {
   const { owner, repo } = req.query;
 
-  if (!owner || !repo) {
-    return res
-      .status(400)
-      .json({ error: "owner and repo query parameters are required." });
-  }
-
   try {
-    const url = `https://api.github.com/repos/${owner}/${repo}/commits`; // ★ 오타 수정
-
-    //디버깅
-    console.log("debug url:", url);
-
-    const response = await fetch(url, {
+    const listURL = `https://api.github.com/repos/${owner}/${repo}/commits`;
+    const listResponse = await fetch(listURL, {
       headers: {
-        Authorization: `token ${process.env.GITHUB_TOKEN}`,
-        "User-Agent": "node-app",
+        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
         Accept: "application/vnd.github.v3+json",
       },
     });
 
-    //디버깅
-    console.log("debug status:", response.status);
+    const commits = await listResponse.json();
 
-    if (!response.ok) {
-      //디버깅
-      const errorData = await response.text();
-      console.log("debug error data:", errorData);
+    // 각 커밋마다 diff 가져오기
+    const detailedCommits = await Promise.all(
+      commits.map(async (commit) => {
+        const detailURL = `https://api.github.com/repos/${owner}/${repo}/commits/${commit.sha}`;
+        const detailResponse = await fetch(detailURL, {
+          headers: {
+            Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+        });
 
-      throw new Error(`GitHub API responded with ${response.status}`);
-    }
+        const detail = await detailResponse.json();
 
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching GitHub activities:", error);
-    console.log("TOKEN:", process.env.GITHUB_TOKEN);
-    res.status(500).json({ error: "Failed to fetch data from GitHub API." });
+        // 모든 파일의 patch(diff)를 합치기
+        const diff = detail.files
+          ?.filter((f) => f.patch)
+          ?.map((f) => f.patch)
+          ?.join("\n\n");
+
+        return {
+          message: commit.commit.message,
+          sha: commit.sha,
+          diff: diff || "No diff available",
+          authorName: commit.commit?.author?.name ?? "Unknown",
+          authorLogin: commit.author?.login ?? "unknown",
+          date: commit.commmit?.author?.date ?? null,
+        };
+      })
+    );
+
+    res.json(detailedCommits);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "GitHub API failed" });
   }
 });
 

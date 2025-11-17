@@ -1,29 +1,29 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 function ActivityList({ activities, isLoading, error }) {
-  const [generatedBlog, setGeneratedBlog] = useState('');
+  const [generatedBlog, setGeneratedBlog] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState(null);
 
-  const handleGenerateBlog = async (commitMessage) => {
+  const handleGenerateBlog = async (commitMessage, diff) => {
     setIsGenerating(true);
-    setGeneratedBlog('');
+    setGeneratedBlog("");
     setGenerationError(null);
 
     try {
-      const response = await fetch('/api/blog/generate', {
-        method: 'POST',
+      const response = await fetch("/api/blog/generate", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           commitMessage: commitMessage,
-          diff: '', // Passing empty diff for now
+          diff: diff,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate blog post.');
+        throw new Error("Failed to generate blog post.");
       }
 
       const data = await response.json();
@@ -74,27 +74,29 @@ function ActivityList({ activities, isLoading, error }) {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <img
-                  src={activity.author?.avatar_url}
-                  alt={activity.commit.author.name}
+                  src={`https://github.com/${activity.authorLogin}.png`}
+                  alt={activity.authorName}
                   className="w-10 h-10 rounded-full mr-4 border-2 border-pink-200"
                 />
                 <span className="font-bold text-gray-800">
-                  {activity.commit.author.name}
+                  {activity.authorName}
                 </span>
               </div>
               <button
-                onClick={() => handleGenerateBlog(activity.commit.message)}
+                onClick={() =>
+                  handleGenerateBlog(activity.message, activity.diff)
+                }
                 disabled={isGenerating}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400"
               >
-                {isGenerating ? 'Generating...' : '블로그 생성'}
+                {isGenerating ? "Generating..." : "블로그 생성"}
               </button>
             </div>
-            <p className="text-gray-700 text-lg mb-3">
-              {activity.commit.message}
-            </p>
+            <p className="text-gray-700 text-lg mb-3">{activity.message}</p>
             <span className="text-sm text-gray-400">
-              {new Date(activity.commit.author.date).toLocaleString()}
+              {activity.date
+                ? new Date(activity.date).toLocaleString()
+                : "Unknown date"}
             </span>
           </div>
         ))}
