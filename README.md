@@ -77,7 +77,8 @@
 
 ### 3주차
 
-- 생성된 글 저장 및 불러오기 기능
+- 생성된 글 localstorage에 저장 및 불러오기 기능: `postStorage.ts`에 구현
+- 해당하는 UI 생성하기
 
 ## How to run this project
 
