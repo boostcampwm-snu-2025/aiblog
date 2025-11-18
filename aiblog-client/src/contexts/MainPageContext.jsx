@@ -23,6 +23,10 @@ export function MainPageProvider({ children }) {
   const [activeCommit, setActiveCommit] = useState(null);
   const [commitNotes, setCommitNotes] = useState({});
 
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedContent, setGeneratedContent] = useState(null);
+  const [generationError, setGenerationError] = useState(null);
+  
   const handleSubmit = useCallback(
     async (event) => {
       if (event) {
@@ -35,6 +39,8 @@ export function MainPageProvider({ children }) {
       setCheckedCommits(new Set());
       setActiveCommit(null);
       setCommitNotes({});
+      setGeneratedContent(null);
+      setGenerationError(null);
 
       try {
         const params = new URLSearchParams({
@@ -79,6 +85,13 @@ export function MainPageProvider({ children }) {
       commitNotes,
       setCommitNotes,
       handleSubmit,
+
+      isGenerating,
+      setIsGenerating,
+      generatedContent,
+      setGeneratedContent,
+      generationError,
+      setGenerationError,
     }),
     [
       repoName,
@@ -90,6 +103,10 @@ export function MainPageProvider({ children }) {
       activeCommit,
       commitNotes,
       handleSubmit,
+
+      isGenerating,
+      generatedContent,
+      generationError,
     ]
   );
 

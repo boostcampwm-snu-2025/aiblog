@@ -1,9 +1,11 @@
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useMainPageContext } from '@/contexts/MainPageContext';
+import { useBlogGenerator } from '@/hooks/useBlogGenerator';
 
-export function GenerateButton({ fullWidth = false }) {
-  const { checkedCommits } = useMainPageContext();
+export function GenerateButton({ fullWidth = false, sx = {} }) {
+  const { checkedCommits, isGenerating } = useMainPageContext();  
+  const { handleGenerateBlog } = useBlogGenerator();
   const count = checkedCommits.size;
 
   return (
@@ -11,15 +13,19 @@ export function GenerateButton({ fullWidth = false }) {
       variant="contained"
       color="primary"
       size="large"
-      startIcon={<AutoAwesomeIcon />}
-      disabled={count === 0}
+      startIcon={isGenerating ? null : <AutoAwesomeIcon />}
+      disabled={count === 0 || isGenerating}
+      onClick={handleGenerateBlog}
       sx={{
         width: fullWidth ? '100%' : '80%',
-        mt: fullWidth ? 1 : 3, // Adjust margin based on context
+        ...sx,
       }}
-      // onClick handler will be added in Week 2
     >
-      Generate Blog Post ({count})
+      {isGenerating ? (
+        <CircularProgress size={26} color="inherit" />
+      ) : (
+        `Generate Blog Post (${count})`
+      )}
     </Button>
   );
 }
