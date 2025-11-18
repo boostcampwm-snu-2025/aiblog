@@ -77,8 +77,21 @@
 
 ### 3주차
 
-- 생성된 글 localstorage에 저장 및 불러오기 기능: `postStorage.ts`에 구현
-- 해당하는 UI 생성하기
+- 생성된 글 (포스트) localstorage에 저장 및 불러오기 기능: `postStorage.ts`에 구현
+  - 포스트는 개수 제한 없이 모두 localstorage에 저장
+- 생성된 소개글 localstorage에 저장 및 불러오기 기능: `aboutStorage.ts`에 구현
+  - bio는 가장 최근에 생성한 1개만 localstorage에 저장
+- 해당하는 UI 생성하기: `PostsPage.tsx`, `AboutPage.tsx` 수정
+
+#### 완료 작업 사진
+
+- 저장된 post들:
+
+![SavedPosts](./assets/3rd_week/SavedPosts.png)
+
+- 저장된 bio:
+
+![SavedBio](./assets/3rd_week/SavedBio.png)
 
 ## How to run this project
 
