@@ -4,7 +4,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { getApiBase } from "../utils";
 import { type PostSummary } from "../types/post";
 import { formatDate } from "../utils/date";
-import { postHref } from "../utils/routes";
+import { getPostHref } from "../utils/routes";
 import { useFetchJson } from "../hooks/useFetchJson";
 
 export const MainPage = () => {
@@ -16,7 +16,7 @@ export const MainPage = () => {
   const posts = Array.isArray(data) ? data : [];
 
   const handleOpen = (id: string) => {
-    navigate(postHref(id));
+    navigate(getPostHref(id));
   };
 
   if (loading) {
@@ -74,7 +74,7 @@ export const MainPage = () => {
         >
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             <Link
-              to={postHref(post.id)}
+              to={getPostHref(post.id)}
               className="hover:text-blue-600 transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
@@ -93,7 +93,7 @@ export const MainPage = () => {
           </p>
 
           <Link
-            to={postHref(post.id)}
+            to={getPostHref(post.id)}
             className="text-blue-600 font-medium hover:underline inline-flex items-center"
             onClick={(e) => e.stopPropagation()}
             aria-label={`Read more about ${post.title}`}
