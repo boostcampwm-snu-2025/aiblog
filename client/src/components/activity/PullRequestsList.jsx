@@ -60,7 +60,12 @@ const PullRequestsList = ({ owner, repo }) => {
       </div>
       
       {processedPRs.map((pr) => (
-        <PullRequestItem key={pr.id} pullRequest={pr} />
+        <PullRequestItem 
+          key={pr.id} 
+          pullRequest={pr} 
+          owner={owner}
+          repo={repo}
+        />
       ))}
     </div>
   );
