@@ -1,42 +1,26 @@
-import Badge from "@/components/ui/Badge";
-import Button from "@/components/ui/Button";
-import type { PRStatus, PullRequest } from "@/types/pullrequest";
-import { customConsole } from "@/utils/console";
-import { formatDate } from "@/utils/format";
+import { Link } from "react-router";
 
-type SearchResultProps = {
-  repositoryName: string;
-  pullRequests: PullRequest[];
-};
-
-export default function SearchResult({ repositoryName, pullRequests }: SearchResultProps) {
-  return (
-    <section>
-      <Badge bgColor="bg-gray-200">{repositoryName}</Badge>
-      <ul className="mt-5 space-y-4">
-        {pullRequests.map((pr) => (
-          <SearchResultItem key={pr.id} pullRequest={pr} />
-        ))}
-      </ul>
-    </section>
-  );
-}
+import { PATHS } from "@/constants/path";
+import type { PRStatus, PullRequest } from "@/entities/pullrequest";
+import Badge from "@/shared/ui/Badge";
+import Button from "@/shared/ui/Button";
+import { formatDate } from "@/shared/utils/format";
 
 type SearchResultItemProps = {
+  owner: string;
+  repository: string;
   pullRequest: PullRequest;
 };
 
-function SearchResultItem({ pullRequest }: SearchResultItemProps) {
-  const handleButtonClick = () => {
-    customConsole.log(`PR #${pullRequest.id}로 글쓰기 버튼 클릭됨`);
-  };
+const CREATE_POST_HREF = PATHS.post.create.getHref();
 
+export default function SearchResultItem({ owner, repository, pullRequest }: SearchResultItemProps) {
   return (
     <li className="flex justify-between rounded-lg border border-gray-200 p-6">
       <div className="flex-1">
         <div className="mb-3 flex items-center gap-3">
           <PRStatusBadge status={pullRequest.prStatus} />
-          <span className="text-sm font-medium text-gray-500">#{pullRequest.id}</span>
+          <span className="text-sm font-medium text-gray-500">#{pullRequest.number}</span>
         </div>
         <h3 className="mb-3 text-lg font-semibold text-gray-900">{pullRequest.title}</h3>
         <div className="flex items-center gap-4 text-sm text-gray-600">
@@ -49,7 +33,11 @@ function SearchResultItem({ pullRequest }: SearchResultItemProps) {
           </div>
         </div>
       </div>
-      <Button text="이 PR로 글쓰기" onClick={handleButtonClick} />
+      <Button>
+        <Link to={`${CREATE_POST_HREF}?owner=${owner}&repository=${repository}&prNumber=${pullRequest.number}`}>
+          이 PR로 글쓰기
+        </Link>
+      </Button>
     </li>
   );
 }

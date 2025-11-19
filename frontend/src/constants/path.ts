@@ -1,15 +1,14 @@
 export const PATHS = {
   home: { path: "/", getHref: () => "/" },
-  posts: {
-    path: "/posts",
+  post: {
+    path: "/post",
     create: {
       path: "create",
-      getHref: () => "/posts/create",
-
-      search: {
-        path: "search",
-        getHref: () => "/posts/create/search",
-      },
+      getHref: () => "/post/create",
     },
+  },
+  search: {
+    path: "/search",
+    getHref: () => "/search",
   },
 } as const;

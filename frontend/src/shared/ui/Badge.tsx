@@ -1,8 +1,8 @@
 import type { PropsWithChildren } from "react";
 
-type BadgeProps = {
+type BadgeProps = PropsWithChildren<{
   bgColor?: string;
-} & PropsWithChildren;
+}>;
 
 export default function Badge({ bgColor, children }: BadgeProps) {
   return <div className={`w-fit rounded-full px-4 py-2 ${bgColor}`}>{children}</div>;
