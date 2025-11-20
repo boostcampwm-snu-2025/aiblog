@@ -3,17 +3,20 @@ import { Link } from "react-router";
 import { PATHS } from "@/constants/paths";
 import type { Post } from "@/entities/post";
 import { formatDate } from "@/shared/utils/format";
+import { stripMarkdown } from "@/shared/utils/markdown";
 
 type PostListItemProps = {
   post: Post;
 };
 
 export default function PostListItem({ post }: PostListItemProps) {
+  const plainContent = stripMarkdown(post.content);
+
   return (
     <Link to={PATHS.post.detail.getHref(post.id)}>
       <article className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-md">
         <Title title={post.title} />
-        <Content content={post.content} />
+        <Content content={plainContent} />
         <PostMetadata createdAt={post.createdAt} updatedAt={post.updatedAt} />
       </article>
     </Link>
