@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-import { PATHS } from "@/constants/path";
+import { PATHS } from "@/constants/paths";
 import type { PRStatus, PullRequest } from "@/entities/pullrequest";
 import Badge from "@/shared/ui/Badge";
 import Button from "@/shared/ui/Button";

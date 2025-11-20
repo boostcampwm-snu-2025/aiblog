@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 
-import { PATHS } from "@/constants/path";
+import { PATHS } from "@/constants/paths";
 
 export default function Header() {
   return (
