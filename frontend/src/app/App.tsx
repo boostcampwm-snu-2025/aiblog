@@ -1,4 +1,4 @@
-import AppProvider from "./routes/provider";
+import AppProvider from "./providers/provider";
 import AppRouter from "./routes/router";
 
 function App() {

@@ -1,12 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 
 import { PATHS } from "@/constants/path";
-import Layout from "@/shared/layout/Layout";
 
-import CreatePostPage from "./pages/CreatePostPage";
-import Home from "./pages/Home";
-import NotFound from "./pages/NotFound";
-import SearchPage from "./pages/Search";
+import CreatePostPage from "@/pages/CreatePostPage";
+import Home from "@/pages/Home";
+import NotFound from "@/pages/NotFound";
+import SearchPage from "@/pages/Search";
+import Layout from "@/shared/layout/Layout";
 
 const router = createBrowserRouter([
   {

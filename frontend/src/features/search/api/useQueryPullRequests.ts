@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 
 import type { PullRequest } from "@/entities/pullrequest";
-import type { QueryConfig } from "@/services/react-query";
-import { getRequest } from "@/services/request";
+import { getRequest } from "@/shared/services/api";
+import type { QueryConfig } from "@/shared/services/react-query";
 
 const BASE_URL = "/github";
 

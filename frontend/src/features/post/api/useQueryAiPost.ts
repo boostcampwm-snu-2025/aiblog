@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import type { QueryConfig } from "@/services/react-query";
-import { getRequest } from "@/services/request";
+import { getRequest } from "@/shared/services/api";
+import type { QueryConfig } from "@/shared/services/react-query";
 
 import { BASE_URL } from "./constants";
 
