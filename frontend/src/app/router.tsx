@@ -3,10 +3,10 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import { PATHS } from "@/constants/paths";
 
 import CreatePostPage from "@/pages/CreatePostPage";
-import Home from "@/pages/Home";
-import NotFound from "@/pages/NotFound";
+import HomePage from "@/pages/HomePAge";
+import NotFoundPage from "@/pages/NotFoundPage";
 import PostDetailPage from "@/pages/PostDetailPage";
-import SearchPage from "@/pages/Search";
+import SearchPage from "@/pages/SearchPage";
 import Layout from "@/shared/layout/Layout";
 
 const router = createBrowserRouter([
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: PATHS.home.path,
-        element: <Home />,
+        element: <HomePage />,
       },
       {
         path: PATHS.post.path,
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
       { path: PATHS.search.path, element: <SearchPage /> },
       {
         path: PATHS.notFound.path,
-        element: <NotFound />,
+        element: <NotFoundPage />,
       },
       {
         path: "*",

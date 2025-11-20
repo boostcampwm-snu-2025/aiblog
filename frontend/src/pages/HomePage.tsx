@@ -1,7 +1,7 @@
 import { getPosts } from "@/features/post/api/getPosts";
 import PostList from "@/features/post/components/PostList";
 
-export default function Home() {
+export default function HomePage() {
   const posts = getPosts();
 
   return (

@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-export default function NotFound() {
+export default function NotFoundPage() {
   return (
     <div>
       <h1 className="mb-4 text-4xl font-bold">404</h1>
