@@ -2,7 +2,7 @@ import { useSearchParams } from "react-router";
 
 import type { PostEditorData } from "@/entities/post";
 import { createPost } from "@/features/post/api/createPost";
-import { useAiPost } from "@/features/post/api/getAiPost";
+import { useAiPost } from "@/features/post/api/useQueryAiPost";
 import PostEditor from "@/features/post/components/PostEditor";
 import { ErrorFallback, LoadingFallback } from "@/shared/ui/Fallback";
 

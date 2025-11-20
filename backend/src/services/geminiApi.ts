@@ -1,28 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GenerateAiPostResponse } from "../types/post.js";
+import { config } from "../config/env.js";
 
-let genAI: GoogleGenerativeAI | null = null;
-
-const getGeminiClient = () => {
-  if (!genAI) {
-    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
-    if (!GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is not defined in environment variables");
-    }
-
-    genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-  }
-
-  return genAI;
-};
+const genAI = new GoogleGenerativeAI(config.gemini.apiKey);
 
 export const generateGeminiContent = async (
   prompt: string
 ): Promise<GenerateAiPostResponse> => {
-  const client = getGeminiClient();
-
-  const model = client.getGenerativeModel({
+  const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
     generationConfig: {
       responseMimeType: "application/json",

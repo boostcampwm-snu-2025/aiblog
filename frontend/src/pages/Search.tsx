@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router";
 
-import { usePullRequests } from "@/features/search/api/getPullRequests";
+import { usePullRequests } from "@/features/search/api/useQueryPullRequests";
 import RepositorySearchBar from "@/features/search/components/RepositorySearchBar";
 import SearchResult from "@/features/search/components/SearchResult";
 import Divider from "@/shared/ui/Divider";
