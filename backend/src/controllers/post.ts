@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { generateContent } from "../services/geminiApi.js";
+import { generateGeminiContent } from "../services/geminiApi.js";
 import { fetchGithubData } from "../services/githubApi.js";
 import { GitHubCommit, GitHubPullRequest } from "../types/github.js";
 import { GenerateAiPostResponse } from "../types/post.js";
@@ -35,8 +35,7 @@ export const generateAiPost = async (
 
     // 4. AI 콘텐츠 생성 요청
     const prompt = createBlogPostPrompt(prTitle, prBody, commitMessages);
-    const responseText = await generateContent(prompt);
-    const result = parseAiResponse(responseText);
+    const result = await generateGeminiContent(prompt);
     res.json(result);
   } catch (error) {
     console.error("Error generating blog post:", error);
@@ -101,46 +100,4 @@ JSON 규칙:
 - content의 큰따옴표는 \\"로 이스케이프
 - 일반 ASCII 공백(0x20)만 사용하고 특수 공백 문자 사용 금지
 `.trim();
-};
-
-const parseAiResponse = (responseText: string): GenerateAiPostResponse => {
-  try {
-    let cleanedText = responseText.trim();
-
-    // 1. 코드 블록 제거
-    if (cleanedText.startsWith("```json")) {
-      cleanedText = cleanedText.slice(7);
-    } else if (cleanedText.startsWith("```")) {
-      cleanedText = cleanedText.slice(3);
-    }
-    if (cleanedText.endsWith("```")) {
-      cleanedText = cleanedText.slice(0, -3);
-    }
-    cleanedText = cleanedText.trim();
-
-    // 2. 특수 공백 문자를 일반 공백으로 치환
-    // \u00A0: Non-breaking space
-    // \u2000-\u200B: 다양한 유니코드 공백
-    cleanedText = cleanedText
-      .replace(/\u00A0/g, " ")
-      .replace(/[\u2000-\u200B]/g, " ")
-      .replace(/\u3000/g, " "); // 전각 공백
-
-    // 3. JSON 파싱
-    const result = JSON.parse(cleanedText) as GenerateAiPostResponse;
-
-    return result;
-  } catch (error) {
-    console.error("❌ JSON 파싱 실패");
-    console.error("에러:", error);
-    console.error("응답 길이:", responseText.length);
-
-    // 디버깅: 제어 문자 찾기
-    const controlChars = responseText.match(/[\x00-\x1F\x7F-\x9F]/g);
-    if (controlChars) {
-      console.error("발견된 제어 문자:", controlChars);
-    }
-
-    throw new Error("AI 응답을 JSON으로 파싱할 수 없습니다");
-  }
 };
