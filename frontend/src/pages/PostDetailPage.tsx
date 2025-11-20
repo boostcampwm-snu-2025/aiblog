@@ -2,6 +2,7 @@ import { Navigate, useParams } from "react-router";
 
 import { PATHS } from "@/constants/paths";
 import { getPosts } from "@/features/post/api/getPosts";
+import Viewer from "@/shared/editor/Viewer";
 import { formatDate } from "@/shared/utils/format";
 
 export default function PostDetailPage() {
@@ -26,8 +27,7 @@ export default function PostDetailPage() {
       </header>
 
       <article className="prose max-w-none">
-        {/* 여기에 ToastUI Viewer가 들어갈 예정 */}
-        <div>{post.content}</div>
+        <Viewer content={post.content} />
       </article>
     </div>
   );
