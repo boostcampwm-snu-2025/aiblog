@@ -12,7 +12,7 @@ export default function PostList({ posts }: PostListProps) {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto flex max-w-4xl flex-col space-y-6">
       {posts.map((post) => (
         <PostListItem key={post.id} post={post} />
       ))}
