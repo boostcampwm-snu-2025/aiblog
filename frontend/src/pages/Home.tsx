@@ -1,8 +1,12 @@
+import { getPosts } from "@/features/post/api/getPosts";
+import PostList from "@/features/post/components/PostList";
+
 export default function Home() {
+  const posts = getPosts();
+
   return (
-    <div className="bg-amber-100 text-gray-800">
-      ai 블로그 서비스
-      <div>페이지</div>
+    <div className="min-h-screen bg-gray-50 px-4 py-8">
+      <PostList posts={posts} />
     </div>
   );
 }
