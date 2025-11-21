@@ -42,7 +42,7 @@ const RepoForm: React.FC<RepoFormProps> = ({
                     />
                     <div className="pt-7">
                         <Button
-                            variant="primary"
+                            variant="secondary"
                             type="submit"
                             disabled={loading}
                             size="base"
