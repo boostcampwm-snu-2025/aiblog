@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import type { Repository } from '../types/Repository';
 import './RepositoryList.css';
+import RepoDetails from './RepoDetails';
 
 export default function RepositoryList() {
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
+  const [blogContent, setBlogContent] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRepositories = async () => {
@@ -26,6 +29,44 @@ export default function RepositoryList() {
   if (loading) return <div>Loading repositories...</div>;
   if (error) return <div className="error">{error}</div>;
 
+  const handleCreateBlog = async (source: 'commit' | 'pr', item: any) => {
+    if (!selectedRepo) return;
+    try {
+      const payload = { source, item, repo: selectedRepo };
+      const resp = await axios.post('http://localhost:3000/api/create-blog', payload);
+      // Prefer different possible response shapes from backend
+      const generated = resp?.data?.result || resp?.data?.data || (typeof resp?.data === 'string' ? resp.data : null) || JSON.stringify(resp?.data);
+      console.log('Create blog result:', resp.data);
+      setBlogContent(generated);
+      // For now, just log result to console (frontend requirement)
+    } catch (err) {
+      console.error('Failed to create blog', err);
+    }
+  };
+
+  if (selectedRepo) {
+    return (
+      <div className="details-container">
+        <div className="details-left">
+          <RepoDetails repo={selectedRepo} onBack={() => { setSelectedRepo(null); setBlogContent(null); }} onCreateBlog={handleCreateBlog} />
+        </div>
+        <div className="blog-preview">
+          <div className="preview-header">
+            <h3>Generated Blog</h3>
+            <button className="close-preview" onClick={() => setBlogContent(null)}>Close</button>
+          </div>
+          <div className="preview-body">
+            {blogContent ? (
+              <pre style={{ whiteSpace: 'pre-wrap' }}>{blogContent}</pre>
+            ) : (
+              <div className="empty">생성된 블로그가 없습니다. Commit/PR 항목에서 "Create Blog"를 클릭하세요.</div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="repository-list">
       <h1>My Public Repositories</h1>
@@ -33,9 +74,9 @@ export default function RepositoryList() {
         {repositories.map(repo => (
           <div key={repo.id} className="repository-card">
             <h2>
-              <a href={repo.url} target="_blank" rel="noopener noreferrer">
+              <button className="repo-link" onClick={() => setSelectedRepo(repo)}>
                 {repo.name}
-              </a>
+              </button>
             </h2>
             {repo.description && <p className="description">{repo.description}</p>}
             <div className="repository-info">
