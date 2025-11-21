@@ -46,6 +46,7 @@ const transformPullRequest = (pr) => ({
   }),
   number: pr.number,
   status: pr.state, // 'open', 'closed'
+  description: pr.body || '', // PR 본문 추가
 })
 
 /**
