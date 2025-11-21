@@ -11,13 +11,14 @@
 		"build": "tsc",
 		"check": "biome check --write",
 		"clean": "rm -rf dist node_modules",
-		"dev": "nodemon",
+		"dev": "NODE_ENV=development nodemon",
 		"format": "biome format --write",
 		"lint": "biome lint --write",
 		"reporter": "biome check --reporter=summary",
-		"start": "node dist/app.js"
+		"start": "NODE_ENV=production node dist/app.js"
 	},
 	"dependencies": {
+		"@google/genai": "^1.29.1",
 		"cors": "^2.8.5",
 		"dotenv": "^17.2.3",
 		"express": "^5.1.0",
@@ -26,6 +27,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.4",
+		"@octokit/types": "^16.0.0",
 		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.5",
 		"@types/node": "^24.10.0",

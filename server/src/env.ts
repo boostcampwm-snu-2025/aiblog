@@ -5,8 +5,10 @@ dotenv.config();
 
 const env = z
 	.object({
-		PORT: z.string().default("3001"),
+		PORT: z.coerce.number().default(3001),
 		GITHUB_TOKEN: z.string(),
+		GEMINI_API_KEY: z.string(),
+		NODE_ENV: z.enum(["development", "production"]).default("development"),
 	})
 	.parse(process.env);
 
