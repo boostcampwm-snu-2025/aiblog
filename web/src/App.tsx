@@ -1,102 +1,45 @@
 // web/src/App.tsx
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { RepoForm } from './components/RepoForm';
 import { ActivityList } from './components/ActivityList';
 import { Loader } from './components/Loader';
 import { ErrorBanner } from './components/ErrorBanner';
 import { BlogPreview } from './components/BlogPreview';
 import { SavedPostList } from './components/SavedPostList';
-import {
-  createPost,
-  deletePost,
-  fetchRecent,
-  listPosts,
-  summarizeActivities,
-} from './api';
+import { fetchRecent, summarizeActivities } from './api';
 import type { Activity } from './types';
-import type { Post } from './api.types';
-
-type Settings = {
-  language: 'ko' | 'en';
-  tone: 'blog' | 'concise';
-  defaultSinceDays: number;
-};
+import { usePosts, type AsyncStatus } from './postsContext';
+import { useSettings } from './useSettings';
 
 export default function App() {
   const [view, setView] = useState<'activities' | 'saved' | 'settings'>(
     'activities',
   );
 
-  const [settings, setSettings] = useState<Settings>(() => {
-    if (typeof window === 'undefined') {
-      return { language: 'ko', tone: 'blog', defaultSinceDays: 90 };
-    }
-    try {
-      const raw = window.localStorage.getItem('smartblog:settings');
-      if (!raw) return { language: 'ko', tone: 'blog', defaultSinceDays: 90 };
-      const parsed = JSON.parse(raw) as Settings;
-      return {
-        language: parsed.language ?? 'ko',
-        tone: parsed.tone ?? 'blog',
-        defaultSinceDays: parsed.defaultSinceDays ?? 90,
-      };
-    } catch {
-      return { language: 'ko', tone: 'blog', defaultSinceDays: 90 };
-    }
-  });
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    window.localStorage.setItem('smartblog:settings', JSON.stringify(settings));
-  }, [settings]);
+  const { settings, setSettings } = useSettings();
+  const { state: postsState, addPost, deletePost, selectPost, reloadFromStorage } =
+    usePosts();
 
   const [items, setItems] = useState<Activity[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | undefined>();
+  const [activitiesStatus, setActivitiesStatus] =
+    useState<AsyncStatus>('idle');
+  const [activitiesError, setActivitiesError] = useState<string | undefined>();
   const [searched, setSearched] = useState(false);
 
   const [selected, setSelected] = useState<Activity | null>(null);
   const [summary, setSummary] = useState<string>('');
   const [summaryLoadingId, setSummaryLoadingId] = useState<string | null>(null);
   const [summaryError, setSummaryError] = useState<string | undefined>();
+  const [summaryStatus, setSummaryStatus] = useState<AsyncStatus>('idle');
 
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | undefined>();
 
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [postsLoading, setPostsLoading] = useState(false);
-  const [postsError, setPostsError] = useState<string | undefined>();
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-
-  useEffect(() => {
-    if (view === 'saved') {
-      void loadPosts();
-    }
-  }, [view]);
-
-  async function loadPosts() {
-    setPostsError(undefined);
-    setPostsLoading(true);
-    try {
-      const data = await listPosts();
-      setPosts(data);
-      if (data.length > 0) {
-        setSelectedPost((prev) => prev ?? data[0]);
-      } else {
-        setSelectedPost(null);
-      }
-    } catch (e: any) {
-      setPostsError(e?.message ?? '포스트 목록을 불러오지 못했습니다.');
-    } finally {
-      setPostsLoading(false);
-    }
-  }
-
   async function onSearch(owner: string, repo: string, sinceDays: number) {
-    setError(undefined);
+    setActivitiesError(undefined);
     setSummaryError(undefined);
     setSaveMessage(undefined);
-    setLoading(true);
+    setActivitiesStatus('loading');
     setItems([]);
     setSearched(true);
     setSelected(null);
@@ -104,10 +47,10 @@ export default function App() {
     try {
       const data = await fetchRecent(owner, repo, sinceDays);
       setItems(data);
+      setActivitiesStatus('success');
     } catch (e: any) {
-      setError(e?.message ?? '불러오기 실패');
-    } finally {
-      setLoading(false);
+      setActivitiesError(e?.message ?? '불러오기 실패');
+      setActivitiesStatus('error');
     }
   }
 
@@ -116,6 +59,7 @@ export default function App() {
     setSummary('');
     setSummaryError(undefined);
     setSaveMessage(undefined);
+    setSummaryStatus('loading');
     setSummaryLoadingId(item.id);
     try {
       const markdown = await summarizeActivities(
@@ -124,8 +68,10 @@ export default function App() {
         settings.tone,
       );
       setSummary(markdown);
+      setSummaryStatus('success');
     } catch (e: any) {
       setSummaryError(e?.message ?? 'AI 요약 생성 실패');
+      setSummaryStatus('error');
     } finally {
       setSummaryLoadingId(null);
     }
@@ -137,8 +83,7 @@ export default function App() {
     setSaveMessage(undefined);
     try {
       const title = selected.title || 'GitHub 업데이트';
-      const created = await createPost(title, summary, ['github', selected.type]);
-      setPosts((prev) => [created, ...prev]);
+      addPost({ title, markdown: summary, tags: ['github', selected.type] });
       setSaveMessage('블로그 포스트로 저장되었습니다.');
     } catch (e: any) {
       setSaveMessage(e?.message ?? '저장 중 오류가 발생했습니다.');
@@ -146,6 +91,14 @@ export default function App() {
       setSaving(false);
     }
   }
+
+  const selectedPost = useMemo(
+    () =>
+      postsState.selectedId
+        ? postsState.items.find((p) => p.id === postsState.selectedId) ?? null
+        : null,
+    [postsState.items, postsState.selectedId],
+  );
 
   return (
     <div className="app-root">
@@ -191,19 +144,21 @@ export default function App() {
                 onSearch={onSearch}
                 defaultSinceDays={settings.defaultSinceDays}
               />
-              {loading && <Loader />}
-              {error && <ErrorBanner msg={error} />}
+              {activitiesStatus === 'loading' && <Loader />}
+              {activitiesError && <ErrorBanner msg={activitiesError} />}
             </section>
 
             <section className="content-layout">
               <div className="column column-left">
                 <h2 className="column-title">Recent Commits</h2>
-                {!loading && !error && searched && items.length === 0 && (
+                {activitiesStatus === 'success' &&
+                  searched &&
+                  items.length === 0 && (
                   <div className="empty">
                     선택한 기간 내에 표시할 커밋/PR이 없습니다.
                   </div>
                 )}
-                {!loading && !error && items.length > 0 && (
+                {activitiesStatus === 'success' && items.length > 0 && (
                   <ActivityList
                     items={items}
                     selectedId={selected?.id}
@@ -234,14 +189,17 @@ export default function App() {
 
                     <div className="selected-body">
                       <div className="selected-label">AI Summary</div>
-                      {summaryLoadingId === selected.id && (
+                      {summaryStatus === 'loading' &&
+                        summaryLoadingId === selected.id && (
                         <div className="loading-inline">요약 생성 중…</div>
                       )}
                       {summaryError && (
                         <div className="error-inline">{summaryError}</div>
                       )}
                       {summary && <BlogPreview markdown={summary} />}
-                      {!summary && !summaryLoadingId && !summaryError && (
+                      {!summary &&
+                        summaryStatus !== 'loading' &&
+                        !summaryError && (
                         <div className="summary-placeholder">
                           이 커밋에 대한 요약을 생성하려면 왼쪽에서
                           <strong> Generate Summary</strong> 버튼을 눌러주세요.
@@ -277,34 +235,25 @@ export default function App() {
                 <button
                   type="button"
                   className="secondary-btn"
-                  onClick={() => loadPosts()}
-                  disabled={postsLoading}
+                  onClick={() => reloadFromStorage()}
+                  disabled={postsState.status === 'loading'}
                 >
                   새로고침
                 </button>
               </div>
-              {postsLoading && <Loader />}
-              {postsError && <ErrorBanner msg={postsError} />}
-              {!postsLoading && !postsError && (
+              {postsState.status === 'loading' && <Loader />}
+              {postsState.status === 'error' && postsState.error && (
+                <ErrorBanner msg={postsState.error} />
+              )}
+              {postsState.status !== 'loading' &&
+                postsState.status !== 'error' && (
                 <SavedPostList
-                  posts={posts}
-                  selectedId={selectedPost?.id}
-                  onSelect={(post) => setSelectedPost(post)}
-                  onDelete={async (post) => {
+                  posts={postsState.items}
+                  selectedId={postsState.selectedId ?? undefined}
+                  onSelect={(post) => selectPost(post.id)}
+                  onDelete={(post) => {
                     if (!window.confirm('이 포스트를 삭제할까요?')) return;
-                    try {
-                      await deletePost(post.id);
-                      setPosts((prev) =>
-                        prev.filter((p) => p.id !== post.id),
-                      );
-                      setSelectedPost((prev) =>
-                        prev && prev.id === post.id ? null : prev,
-                      );
-                    } catch (e: any) {
-                      setPostsError(
-                        e?.message ?? '포스트 삭제 중 오류가 발생했습니다.',
-                      );
-                    }
+                    deletePost(post.id);
                   }}
                 />
               )}
@@ -322,9 +271,7 @@ export default function App() {
                   <div className="selected-header">
                     <div className="selected-title">{selectedPost.title}</div>
                     <div className="selected-meta">
-                      {new Date(
-                        selectedPost.createdAt,
-                      ).toLocaleDateString()}
+                      {new Date(selectedPost.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                   <div className="selected-body">
