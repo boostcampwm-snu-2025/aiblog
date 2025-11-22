@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { summarizeCommit } from "~/api/gemini";
+import { createCommitSummary } from "~/api/gemini";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import {
@@ -22,7 +22,7 @@ interface Props {
 function Summary({ owner, ref, repo }: Props) {
   const [summary, setSummary] = useState("");
   const summarizeMutation = useMutation({
-    mutationFn: () => summarizeCommit(owner, repo, ref),
+    mutationFn: () => createCommitSummary(owner, repo, ref),
   });
 
   useEffect(() => {

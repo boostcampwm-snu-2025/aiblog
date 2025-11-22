@@ -1,8 +1,9 @@
+import fs from "node:fs/promises";
 import { GoogleGenAI } from "@google/genai";
 import { Router } from "express";
 import { Octokit } from "octokit";
-import z from "zod";
 import env from "../env.js";
+import { summarySchema } from "./schema.js";
 
 const router: Router = Router();
 
@@ -12,13 +13,35 @@ const octokit = new Octokit({
 	auth: env.GITHUB_TOKEN,
 });
 
+const DATA_PATH = "data";
+function getFilePath(owner: string, repo: string, ref: string) {
+	return `${DATA_PATH}/${owner}/${repo}/${ref}.txt`;
+}
+
 router.get("/summary/:owner/:repo/commits/:ref", async (req, res) => {
-	const schema = z.object({
-		owner: z.string(),
-		repo: z.string(),
-		ref: z.string(),
-	});
-	const params = schema.parse(req.params);
+	const params = summarySchema.parse(req.params);
+	const data = await fs.readFile(
+		getFilePath(params.owner, params.repo, params.ref),
+		{ encoding: "utf-8" },
+	);
+	res.status(200).send(data);
+});
+
+router.post("/summary/:owner/:repo/commits/:ref", async (req, res) => {
+	const params = summarySchema.parse(req.params);
+
+	const exists = await fs
+		.access(
+			getFilePath(params.owner, params.repo, params.ref),
+			fs.constants.F_OK,
+		)
+		.then(() => true)
+		.catch(() => false);
+	if (exists) {
+		res.status(409).json({ message: "Summary already exists" });
+		return;
+	}
+
 	const commitResponse = await octokit.rest.repos.getCommit(params);
 	const commitMessage = commitResponse.data.commit.message;
 	const filesWithDiffs =
@@ -45,11 +68,29 @@ Please generate a changelog entry in the following format:
 - Example: "feat: Add user authentication with OAuth2 support for Google and GitHub providers"
 
 Changelog Entry:`;
-	const response = await ai.models.generateContent({
+	const { text = "" } = await ai.models.generateContent({
 		model: "gemini-2.5-pro",
 		contents: prompt,
 	});
-	res.send(response.text);
+
+	await fs.writeFile(getFilePath(params.owner, params.repo, params.ref), text, {
+		encoding: "utf-8",
+	});
+	res.status(201).send(text);
+});
+
+router.delete("/summary/:owner/:repo/commits/:ref", async (req, res) => {
+	const params = summarySchema.parse(req.params);
+
+	const deleted = await fs
+		.rm(getFilePath(params.owner, params.repo, params.ref))
+		.then(() => true)
+		.catch(() => false);
+	if (!deleted) {
+		res.status(404).json({ message: "Summary not found" });
+		return;
+	}
+	res.status(204).send();
 });
 
 export default router;
