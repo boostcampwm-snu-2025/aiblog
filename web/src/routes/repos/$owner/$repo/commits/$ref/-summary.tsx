@@ -1,8 +1,16 @@
-import { useMutation } from "@tanstack/react-query";
-import { AlertCircle, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
+import { AlertCircle, Loader2, Trash2 } from "lucide-react";
 
-import { createCommitSummary } from "~/api/gemini";
+import {
+  createCommitSummary,
+  deleteCommitSummary,
+  existsCommitSummary,
+  readCommitSummary,
+} from "~/api/gemini";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import {
@@ -20,17 +28,27 @@ interface Props {
 }
 
 function Summary({ owner, ref, repo }: Props) {
-  const [summary, setSummary] = useState("");
-  const summarizeMutation = useMutation(createCommitSummary);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (summarizeMutation.isSuccess) {
-      setSummary(summarizeMutation.data);
-    }
-  }, [summarizeMutation.isSuccess, summarizeMutation.data]);
+  const { data: exists } = useSuspenseQuery(
+    existsCommitSummary(owner, repo, ref),
+  );
+
+  const { data: summary } = useSuspenseQuery({
+    ...readCommitSummary(owner, repo, ref),
+    // enabled: exists,
+  });
+
+  const createMutation = useMutation(createCommitSummary(queryClient));
+
+  const deleteMutation = useMutation(deleteCommitSummary(queryClient));
 
   const handleGenerateSummary = () => {
-    summarizeMutation.mutate({ owner, ref, repo });
+    createMutation.mutate({ owner, ref, repo });
+  };
+
+  const handleDeleteSummary = () => {
+    deleteMutation.mutate({ owner, ref, repo });
   };
 
   return (
@@ -38,32 +56,54 @@ function Summary({ owner, ref, repo }: Props) {
       <CardHeader>
         <CardTitle>AI Summary</CardTitle>
         <CardDescription>
-          Generate a summary of this commit using AI
+          {exists
+            ? "AI-generated summary of this commit"
+            : "Generate a summary of this commit using AI"}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Button
-          disabled={summarizeMutation.isPending}
-          onClick={handleGenerateSummary}
-        >
-          {summarizeMutation.isPending && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          )}
-          Generate Summary
-        </Button>
+        {exists ? (
+          <>
+            <Alert className="mb-4">
+              <AlertDescription className="whitespace-pre-wrap">
+                {summary}
+              </AlertDescription>
+            </Alert>
+            <Button
+              disabled={deleteMutation.isPending}
+              onClick={handleDeleteSummary}
+              variant="destructive"
+            >
+              {deleteMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete Summary
+            </Button>
+          </>
+        ) : (
+          <Button
+            disabled={createMutation.isPending}
+            onClick={handleGenerateSummary}
+          >
+            {createMutation.isPending && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Generate Summary
+          </Button>
+        )}
 
-        {summarizeMutation.isError && (
+        {createMutation.isError && (
           <Alert className="mt-4" variant="destructive">
-            <AlertCircle />
+            <AlertCircle className="h-4 w-4" />
             <AlertDescription>Failed to generate summary</AlertDescription>
           </Alert>
         )}
 
-        {summary && (
-          <Alert className="mt-4">
-            <AlertDescription className="whitespace-pre-wrap">
-              {summary}
-            </AlertDescription>
+        {deleteMutation.isError && (
+          <Alert className="mt-4" variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>Failed to delete summary</AlertDescription>
           </Alert>
         )}
       </CardContent>

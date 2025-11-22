@@ -1,52 +1,76 @@
-import { mutationOptions, queryOptions } from "@tanstack/react-query";
+import { mutationOptions, type QueryClient, queryOptions } from "@tanstack/react-query";
 
-export const createCommitSummary = mutationOptions({
-  mutationFn: async ({
-    owner,
-    ref,
-    repo,
-  }: {
-    owner: string;
-    ref: string;
-    repo: string;
-  }) => {
-    const response = await fetch(
-      `/api/gemini/summary/${owner}/${repo}/commits/${ref}`,
-      { method: "POST" },
-    );
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    const data = await response.text();
-    return data;
-  },
-});
+export function createCommitSummary(queryClient: QueryClient) {
+  return mutationOptions({
+    mutationFn: async ({
+      owner,
+      ref,
+      repo,
+    }: {
+      owner: string;
+      ref: string;
+      repo: string;
+    }) => {
+      const response = await fetch(
+        `/api/gemini/summaries/${owner}/${repo}/commits/${ref}`,
+        { method: "POST" },
+      );
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      const data = await response.text();
+      return data;
+    },
+    onSettled: async (_data, _error, { owner, ref, repo }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["summary-exists", owner, repo, ref],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["summary", owner, repo, ref],
+        }),
+      ]);
+    },
+  });
+}
 
-export const deleteCommitSummary = mutationOptions({
-  mutationFn: async ({
-    owner,
-    ref,
-    repo,
-  }: {
-    owner: string;
-    ref: string;
-    repo: string;
-  }) => {
-    const response = await fetch(
-      `/api/gemini/summary/${owner}/${repo}/commits/${ref}`,
-      { method: "DELETE" },
-    );
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-  },
-});
+export function deleteCommitSummary(queryClient: QueryClient) {
+  return mutationOptions({
+    mutationFn: async ({
+      owner,
+      ref,
+      repo,
+    }: {
+      owner: string;
+      ref: string;
+      repo: string;
+    }) => {
+      const response = await fetch(
+        `/api/gemini/summaries/${owner}/${repo}/commits/${ref}`,
+        { method: "DELETE" },
+      );
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+    },
+    onSettled: async (_data, _error, { owner, ref, repo }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["summary-exists", owner, repo, ref],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["summary", owner, repo, ref],
+        }),
+      ]);
+    },
+  });
+}
 
 export function existsCommitSummary(owner: string, repo: string, ref: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
       const response = await fetch(
-        `/api/gemini/summary/${owner}/${repo}/commits/${ref}`,
+        `/api/gemini/summaries/${owner}/${repo}/commits/${ref}`,
         { method: "HEAD", signal },
       );
       if (response.status === 204) {
@@ -65,7 +89,7 @@ export function readCommitSummary(owner: string, repo: string, ref: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
       const response = await fetch(
-        `/api/gemini/summary/${owner}/${repo}/commits/${ref}`,
+        `/api/gemini/summaries/${owner}/${repo}/commits/${ref}`,
         { signal },
       );
       if (!response.ok) {

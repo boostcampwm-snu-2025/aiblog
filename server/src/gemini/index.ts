@@ -18,7 +18,7 @@ function getFilePath(owner: string, repo: string, ref: string) {
 	return `${DATA_PATH}/${owner}/${repo}/${ref}.txt`;
 }
 
-router.get("/summary/:owner/:repo/commits/:ref", async (req, res) => {
+router.get("/summaries/:owner/:repo/commits/:ref", async (req, res) => {
 	const params = summarySchema.parse(req.params);
 	const data = await fs.readFile(
 		getFilePath(params.owner, params.repo, params.ref),
@@ -27,7 +27,7 @@ router.get("/summary/:owner/:repo/commits/:ref", async (req, res) => {
 	res.status(200).send(data);
 });
 
-router.head("/summary/:owner/:repo/commits/:ref", async (req, res) => {
+router.head("/summaries/:owner/:repo/commits/:ref", async (req, res) => {
 	const params = summarySchema.parse(req.params);
 	const exists = await fs
 		.access(
@@ -43,7 +43,7 @@ router.head("/summary/:owner/:repo/commits/:ref", async (req, res) => {
 	res.status(204).send();
 });
 
-router.post("/summary/:owner/:repo/commits/:ref", async (req, res) => {
+router.post("/summaries/:owner/:repo/commits/:ref", async (req, res) => {
 	const params = summarySchema.parse(req.params);
 
 	const exists = await fs
@@ -95,7 +95,7 @@ Changelog Entry:`;
 	res.status(201).send(text);
 });
 
-router.delete("/summary/:owner/:repo/commits/:ref", async (req, res) => {
+router.delete("/summaries/:owner/:repo/commits/:ref", async (req, res) => {
 	const params = summarySchema.parse(req.params);
 
 	const deleted = await fs
