@@ -105,3 +105,40 @@
     * onClose 핸들러는 () => setGeneratedContent(null) (모달 닫기)와 연결합니다.
     * 모달 내부에 generatedContent에 담긴 블로그 글 텍스트를 <Typography> 등으로 렌더링합니다. (줄바꿈(\n)이 잘 표시되도록 whiteSpace: 'pre-wrap' 스타일 적용)
 * 모달 적용: aiblog-client/src/pages/MainPage.jsx 파일의 MainPageContent 반환(return) 부분에 <BlogResultModal /> 컴포넌트를 추가합니다.
+
+# ai blog 3주차
+1. 아키텍처 리팩토링 (State Management)
+* Action 타입 정의: 상태 변경을 위한 Action 상수 정의 (예: FETCH_INIT, FETCH_SUCCESS, ADD_POST, DELETE_POST)
+* Reducer 함수 구현:
+  * 기존 useState로 흩어져 있던 상태들을 하나의 initialState 객체로 통합
+  * action.type에 따라 상태를 불변적으로 업데이트하는 reducer 함수 작성
+  * 비동기 상태 패턴 (status: 'idle' | 'loading' | 'success' | 'error') 적용
+* Context API 업데이트:
+  * MainPageContext (또는 새로운 BlogContext)를 useReducer 기반으로 재작성
+  * dispatch 함수를 통해 상태를 업데이트하도록 로직 변경
+
+2. 데이터 영속성 (LocalStorage)
+* Storage 유틸리티 구현: localStorage에 접근하는 헬퍼 함수 작성 (saveItem, getItem, removeItem)
+* 초기화 로직: 앱 실행 시 localStorage에서 저장된 글 목록을 불러와 Context 초기 상태(savedPosts)에 주입
+* 동기화: savedPosts 상태가 변경될 때마다 localStorage에도 자동으로 반영되도록 useEffect 또는 미들웨어 로직 구현
+
+3. 기능 구현: 글 저장 (Save)
+* UI 업데이트: BlogResultModal.jsx에 "저장하기(Save Post)" 버튼 구현
+* 저장 로직: 버튼 클릭 시 현재 생성된 블로그 내용(제목, 본문, 날짜 등)을 객체화하여 Context의 ADD_POST 액션 디스패치
+* 피드백: 저장 완료 시 "저장되었습니다" 알림(Toast 또는 SnackBar) 표시 및 모달 닫기
+
+4. 기능 구현: 저장된 글 목록 (Saved Posts Page)
+* 페이지 레이아웃: SavedPostsPage.jsx의 기본 UI 구성 (MUI Grid/List 활용)
+* 목록 렌더링: Context에서 savedPosts 배열을 가져와 카드 리스트 형태로 표시
+  * 각 카드에 제목, 생성일, 요약(본문 앞부분) 표시
+  * 삭제 버튼 구현 (클릭 시 DELETE_POST 액션 디스패치)
+* 상세 보기 구현:
+  * 목록 아이템 클릭 시 상세 내용을 볼 수 있는 UI 구현 (페이지 이동 또는 모달 재사용)
+  * (선택) Markdown 렌더링 적용
+
+5. 리팩토링 및 마무리
+* 커스텀 훅 분리: 중복되는 로직(예: useAsync 등)이 있다면 별도 훅으로 분리
+* 코드 정리: 사용하지 않는 useState, import 문 제거
+* 최종 테스트:
+  * 블로그 생성 -> 저장 -> 목록 확인 -> 상세 보기 -> 삭제 흐름이 매끄러운지 확인
+  * 새로고침 후에도 저장된 글이 남아있는지 확인 (localStorage 작동 확인)
