@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
 import type { Activity } from '../types';
-import { fetchActivities, type BlogGenerationResponse } from '../lib/api';
+import { fetchActivities } from '../lib/api';
 import ActivityItem from './ActivityItem';
 
 type Props = {
   owner: string;
   repo: string;
   onLoadingChange?: (loading: boolean) => void;
-  onBlogGenerate?: (blogData: BlogGenerationResponse['data']) => void;
 };
 
-export default function ActivityList({ owner, repo, onLoadingChange, onBlogGenerate }: Props) {
+export default function ActivityList({ owner, repo, onLoadingChange }: Props) {
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,7 +44,6 @@ export default function ActivityList({ owner, repo, onLoadingChange, onBlogGener
           item={it}
           owner={owner}
           repo={repo}
-          onBlogGenerate={onBlogGenerate}
         />
       ))}
       {loading && <div>로딩중…</div>}

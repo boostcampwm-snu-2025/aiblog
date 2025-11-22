@@ -634,9 +634,176 @@ N8N_WEBHOOK_URL=http://localhost:5678/webhook/...
   - CSS 애니메이션 (fadeIn 효과)
   - 레이아웃 일관성 개선
 
-### 🚀 다음 단계: Phase 5
+### ✅ 완료: Phase 6 (3주차 미션)
 
-#### Phase 5: n8n 자동화 (선택 사항)
+#### Phase 6: 3주차 리팩토링 및 상태 관리 개선 ✅ 완료
+**목표**: localStorage 기반 클라이언트 저장 및 전역 상태 관리 도입
+
+**학습 목표**:
+- 다양한 외부 API를 연동해서 서비스를 구현할 수 있다
+- LLM을 연동한 AI 서비스를 만들 수 있다
+- AI를 활용해서 애플리케이션을 설계하고 구현할 수 있다
+
+**작업 내용**:
+
+##### 1. 전역 상태 관리 도입 (Context API + useReducer)
+- [ ] BlogContext 생성 (`src/contexts/BlogContext.tsx`)
+  - 상태: `blogs`, `currentBlog`, `loading`, `error`
+  - Actions: `GENERATE_BLOG`, `SAVE_BLOG`, `DELETE_BLOG`, `LOAD_BLOGS`
+- [ ] BlogProvider로 App 래핑
+- [ ] useReducer를 활용한 상태 관리 로직 구현
+- [ ] 타입 정의: `BlogState`, `BlogAction`, `BlogContextType`
+
+##### 2. localStorage 기반 저장 시스템
+- [ ] 서버 저장 방식에서 클라이언트 localStorage로 마이그레이션
+  - 기존: `POST /api/blog/publish` → 서버 JSON 파일
+  - 변경: localStorage에 직접 저장
+- [ ] localStorage 동기화 유틸리티 함수 작성
+  - `saveToLocalStorage(key, data)`
+  - `loadFromLocalStorage(key)`
+  - `removeFromLocalStorage(key)`
+- [ ] useEffect로 localStorage 변경 감지 및 동기화
+- [ ] 파일: `src/lib/localStorage.ts`
+
+##### 3. 비동기 상태 패턴 적용
+- [ ] AsyncState 타입 정의
+  ```typescript
+  type AsyncState<T> =
+    | { status: 'idle' }
+    | { status: 'loading' }
+    | { status: 'success'; data: T }
+    | { status: 'error'; error: string };
+  ```
+- [ ] 모든 비동기 작업에 상태 패턴 적용
+  - 블로그 생성 (LLM API 호출)
+  - 블로그 저장/삭제
+  - 블로그 목록 조회
+- [ ] UI에 상태별 렌더링
+  - `idle`: 기본 상태
+  - `loading`: 스피너 또는 로딩 메시지
+  - `success`: 데이터 표시
+  - `error`: 에러 메시지 표시
+
+##### 4. 커스텀 훅 분리
+- [ ] `useBlogGeneration` - 블로그 생성 로직
+  - LLM API 호출
+  - 로딩 상태 관리
+  - 에러 핸들링
+  - 파일: `src/hooks/useBlogGeneration.ts`
+
+- [ ] `useLocalStorage` - localStorage 관리
+  - 상태와 localStorage 동기화
+  - 제네릭 타입 지원
+  - 파일: `src/hooks/useLocalStorage.ts`
+
+- [ ] `useBlogList` - 블로그 목록 관리
+  - 페이지네이션 로직
+  - 필터링/정렬
+  - 파일: `src/hooks/useBlogList.ts`
+
+##### 5. 코드 리팩토링
+- [ ] 컴포넌트 책임 분리
+  - 비즈니스 로직을 커스텀 훅으로 추출
+  - 프레젠테이션 컴포넌트와 컨테이너 컴포넌트 분리
+- [ ] 중복 코드 제거
+  - API 호출 로직 통합
+  - 공통 UI 컴포넌트 추출 (Button, Card, Spinner 등)
+- [ ] 타입 정의 개선
+  - 공통 타입을 `src/types/` 디렉토리로 분리
+  - interface vs type 일관성 유지
+- [ ] 에러 바운더리 추가
+  - 전역 에러 처리
+  - fallback UI 구현
+
+##### 6. 기타 미구현 기능 개발
+- [ ] 블로그 편집 기능
+  - 저장된 블로그 내용 수정
+  - Markdown 에디터 통합 (선택)
+- [ ] 블로그 검색 기능
+  - 제목, 내용으로 검색
+  - 커밋 SHA로 필터링
+- [ ] 블로그 내보내기
+  - Markdown 파일로 다운로드
+  - JSON 형식 내보내기
+- [ ] 태그/카테고리 시스템 (선택)
+  - 블로그에 태그 추가
+  - 태그별 필터링
+
+**예상 소요 시간**: 3-4일
+
+**구현 완료일**: 2025-11-22
+
+**주요 구현 내용**:
+
+#### 📁 새로 생성된 파일
+1. `src/types/index.ts` - 통합 타입 정의
+   - Activity, Blog, AsyncState, Context 타입 등 모든 타입 통합
+
+2. `src/lib/localStorage.ts` - localStorage 유틸리티
+   - `saveToLocalStorage()`, `loadFromLocalStorage()`, `removeFromLocalStorage()`
+   - 다중 탭/창 동기화 지원
+
+3. `src/contexts/BlogContext.tsx` - 전역 상태 관리
+   - Context API + useReducer 패턴
+   - 9가지 액션: GENERATE_BLOG_*, SAVE_BLOG, DELETE_BLOG, UPDATE_BLOG, LOAD_BLOGS_*, CLEAR_CURRENT_BLOG
+   - localStorage 자동 동기화
+
+4. `src/hooks/useLocalStorage.ts` - localStorage 동기화 훅
+   - 제네릭 타입 지원
+   - storage 이벤트 리스닝 (다른 탭 감지)
+
+5. `src/hooks/useBlogGeneration.ts` - 블로그 생성 훅
+   - LLM API 호출 로직 추상화
+   - 로딩/에러 상태 관리
+
+6. `src/hooks/useBlogList.ts` - 블로그 목록 관리 훅
+   - 페이지네이션 (currentPage, totalPages, hasNext/hasPrev)
+   - 검색 필터링 (제목, 내용, 커밋, 작성자)
+   - 블로그 삭제 액션
+
+#### 🔧 수정된 파일
+1. `src/main.tsx` - BlogProvider로 App 래핑
+2. `src/App.tsx` - Context 사용으로 리팩토링, props drilling 제거
+3. `src/components/Header.tsx` - ViewMode 타입 import 경로 수정
+4. `src/components/ActivityList.tsx` - onBlogGenerate prop 제거
+5. `src/components/ActivityItem.tsx` - useBlogGeneration 훅 사용
+6. `src/components/BlogListPage.tsx` - useBlogList 훅 사용 + 검색 기능 추가
+7. `src/components/BlogDetailModal.tsx` - Context에서 직접 데이터 조회 + 편집 기능 추가
+8. `src/components/BlogPreviewPanel.tsx` - BlogGenerationData 타입 사용
+
+#### 🎯 주요 기능 개선
+1. **서버 저장 → localStorage 전환**
+   - 기존: `POST /api/blog/publish` → 서버 JSON 파일 저장
+   - 변경: Context reducer에서 localStorage에 직접 저장
+   - 즉시 반영, 새로고침 시에도 데이터 유지
+
+2. **비동기 상태 패턴 적용**
+   - idle/loading/success/error 4가지 상태로 명확한 UI 표시
+   - `generationState`: 블로그 생성 상태
+   - `listState`: 블로그 목록 로딩 상태
+
+3. **블로그 편집 기능**
+   - BlogDetailModal에서 제목/내용 직접 수정
+   - Context의 `UPDATE_BLOG` 액션 활용
+   - localStorage 자동 동기화
+
+4. **블로그 검색 기능**
+   - 실시간 검색 (제목, 내용, 커밋 SHA, 작성자)
+   - 검색 결과 0건일 때 "🔍 검색 결과가 없습니다" 표시
+   - 검색창 항상 유지 (검색 결과 없어도 사라지지 않음)
+
+5. **페이지네이션 개선**
+   - 검색 결과에도 페이지네이션 적용
+   - 페이지 정보: currentPage, totalPages, hasNext, hasPrev
+
+#### 🐛 버그 수정
+- **검색 결과 없을 때 검색창 사라지는 문제 수정**
+  - `useBlogList`의 `allBlogs`가 `state.blogs` (전체 목록)를 반환하도록 수정
+  - 검색 결과 0건과 실제 블로그 0건을 구분하여 UI 표시
+
+---
+
+### Phase 5: n8n 자동화 (선택 사항)
 **목표**: GitHub 푸시 시 자동 블로그 생성
 
 **작업 내용**:
@@ -648,7 +815,34 @@ N8N_WEBHOOK_URL=http://localhost:5678/webhook/...
 
 ---
 
-**문서 버전**: 1.4
+## 학습 체크리스트 (업데이트)
+
+### React Hooks
+- [x] useState - 상태 관리 기본
+- [x] useEffect - 사이드 이펙트 처리
+- [ ] **useReducer - 복잡한 상태 로직** ⭐ Phase 6 목표
+- [ ] **useContext - 전역 상태 공유** ⭐ Phase 6 목표
+- [ ] useMemo - 성능 최적화
+- [ ] useCallback - 함수 메모이제이션
+- [x] 커스텀 훅 - 로직 재사용 (useDarkMode 구현 완료)
+- [ ] **고급 커스텀 훅** ⭐ Phase 6 목표
+
+### 상태 관리
+- [ ] **Context API 패턴** ⭐ Phase 6 목표
+- [ ] **useReducer 패턴** ⭐ Phase 6 목표
+- [ ] **localStorage 동기화** ⭐ Phase 6 목표
+- [ ] **비동기 상태 패턴 (idle/loading/success/error)** ⭐ Phase 6 목표
+
+### Backend
+- [x] Express 라우팅 기본
+- [x] GitHub API 연동 (@octokit/rest)
+- [x] LLM API 연동 (Google Gemini)
+- [ ] 에러 핸들링 미들웨어
+- [x] 환경 변수 관리 (dotenv)
+
+---
+
+**문서 버전**: 1.6
 **작성일**: 2025-11-15
-**마지막 업데이트**: 2025-11-15 (Phase 3, 4 완료)
+**마지막 업데이트**: 2025-11-22 (Phase 6: 3주차 미션 완료)
 **참고 이슈**: [#22 코딩 컨벤션](https://github.com/boostcampwm-snu-2025/aiblog/issues/22)

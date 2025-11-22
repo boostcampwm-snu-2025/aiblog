@@ -1,41 +1,20 @@
-import { useEffect, useState } from 'react';
-import { fetchBlogList, type BlogListResponse } from '../lib/api';
+import { useState } from 'react';
 import { useDarkMode } from '../hooks/useDarkMode';
+import { useBlogList } from '../hooks/useBlogList';
 import BlogDetailModal from './BlogDetailModal';
 
 export default function BlogListPage() {
-  const [blogs, setBlogs] = useState<BlogListResponse['items']>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    perPage: 10,
-    total: 0,
-    totalPages: 0,
-  });
   const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const isDarkMode = useDarkMode();
 
-  useEffect(() => {
-    loadBlogs(page);
-  }, [page]);
+  // useBlogList 훅 사용
+  const { blogs, allBlogs, isLoading, hasError, error, pagination, actions } = useBlogList({
+    itemsPerPage: 10,
+    searchQuery,
+  });
 
-  const loadBlogs = async (pageNum: number) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetchBlogList(pageNum, 10);
-      setBlogs(response.items);
-      setPagination(response.pagination);
-    } catch (err: any) {
-      setError(err.message || '블로그 목록을 불러올 수 없습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading && blogs.length === 0) {
+  if (isLoading) {
     return (
       <div style={{
         display: 'flex',
@@ -49,7 +28,7 @@ export default function BlogListPage() {
     );
   }
 
-  if (error) {
+  if (hasError && error) {
     return (
       <div style={{
         display: 'flex',
@@ -63,7 +42,8 @@ export default function BlogListPage() {
     );
   }
 
-  if (blogs.length === 0) {
+  // 실제로 블로그가 하나도 없는 경우
+  if (allBlogs.length === 0) {
     return (
       <div style={{
         display: 'flex',
@@ -87,18 +67,70 @@ export default function BlogListPage() {
 
   return (
     <div>
-      <h2 style={{
-        fontSize: 24,
-        fontWeight: 700,
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 24,
-        marginTop: 0,
-        color: isDarkMode ? '#e5e7eb' : '#111'
+        gap: 16,
       }}>
-        게시된 블로그 ({pagination.total}개)
-      </h2>
+        <h2 style={{
+          fontSize: 24,
+          fontWeight: 700,
+          margin: 0,
+          color: isDarkMode ? '#e5e7eb' : '#111'
+        }}>
+          게시된 블로그 ({pagination.totalItems}개)
+        </h2>
 
-      <div style={{ display: 'grid', gap: 16 }}>
-        {blogs.map(blog => (
+        {/* 검색창 */}
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="제목, 내용, 커밋, 작성자로 검색..."
+          style={{
+            flex: 1,
+            maxWidth: 400,
+            padding: '10px 16px',
+            fontSize: 14,
+            border: isDarkMode ? '1px solid #444' : '1px solid #d1d5db',
+            borderRadius: 8,
+            backgroundColor: isDarkMode ? '#1e1e1e' : '#fff',
+            color: isDarkMode ? '#e5e7eb' : '#333',
+            outline: 'none',
+          }}
+        />
+      </div>
+
+      {/* 검색 결과가 없는 경우 */}
+      {blogs.length === 0 && allBlogs.length > 0 && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: 300,
+          color: isDarkMode ? '#999' : '#666',
+          textAlign: 'center',
+          padding: 40,
+          backgroundColor: isDarkMode ? '#1a1a1a' : '#f9fafb',
+          borderRadius: 12,
+        }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
+          <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
+            검색 결과가 없습니다
+          </div>
+          <div style={{ fontSize: 14 }}>
+            다른 검색어를 입력해보세요
+          </div>
+        </div>
+      )}
+
+      {/* 블로그 목록 */}
+      {blogs.length > 0 && (
+        <div style={{ display: 'grid', gap: 16 }}>
+          {blogs.map(blog => (
           <div
             key={blog.id}
             onClick={() => setSelectedBlogId(blog.id)}
@@ -173,11 +205,12 @@ export default function BlogListPage() {
               )}
             </div>
           </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* 페이지네이션 */}
-      {pagination.totalPages > 1 && (
+      {blogs.length > 0 && pagination.totalPages > 1 && (
         <div style={{
           display: 'flex',
           justifyContent: 'center',
@@ -186,34 +219,34 @@ export default function BlogListPage() {
           marginTop: 32
         }}>
           <button
-            onClick={() => setPage(page - 1)}
-            disabled={page === 1}
+            onClick={actions.prevPage}
+            disabled={!pagination.hasPrev}
             style={{
               padding: '8px 16px',
               fontSize: 14,
               borderRadius: 6,
               border: isDarkMode ? '1px solid #444' : '1px solid #d1d5db',
               backgroundColor: isDarkMode ? '#1e1e1e' : 'white',
-              color: page === 1 ? (isDarkMode ? '#555' : '#ccc') : (isDarkMode ? '#e5e7eb' : '#333'),
-              cursor: page === 1 ? 'not-allowed' : 'pointer'
+              color: !pagination.hasPrev ? (isDarkMode ? '#555' : '#ccc') : (isDarkMode ? '#e5e7eb' : '#333'),
+              cursor: !pagination.hasPrev ? 'not-allowed' : 'pointer'
             }}
           >
             이전
           </button>
           <span style={{ color: isDarkMode ? '#e5e7eb' : '#333' }}>
-            {page} / {pagination.totalPages}
+            {pagination.currentPage} / {pagination.totalPages}
           </span>
           <button
-            onClick={() => setPage(page + 1)}
-            disabled={page === pagination.totalPages}
+            onClick={actions.nextPage}
+            disabled={!pagination.hasNext}
             style={{
               padding: '8px 16px',
               fontSize: 14,
               borderRadius: 6,
               border: isDarkMode ? '1px solid #444' : '1px solid #d1d5db',
               backgroundColor: isDarkMode ? '#1e1e1e' : 'white',
-              color: page === pagination.totalPages ? (isDarkMode ? '#555' : '#ccc') : (isDarkMode ? '#e5e7eb' : '#333'),
-              cursor: page === pagination.totalPages ? 'not-allowed' : 'pointer'
+              color: !pagination.hasNext ? (isDarkMode ? '#555' : '#ccc') : (isDarkMode ? '#e5e7eb' : '#333'),
+              cursor: !pagination.hasNext ? 'not-allowed' : 'pointer'
             }}
           >
             다음
@@ -228,7 +261,6 @@ export default function BlogListPage() {
           onClose={() => setSelectedBlogId(null)}
           onDeleted={() => {
             setSelectedBlogId(null);
-            loadBlogs(page); // 목록 새로고침
           }}
         />
       )}

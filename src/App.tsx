@@ -5,11 +5,16 @@ import RepositoryList from './components/RepositoryList';
 import TwoColumnLayout from './components/TwoColumnLayout';
 import BlogPreviewPanel from './components/BlogPreviewPanel';
 import BlogListPage from './components/BlogListPage';
-import Header, { type ViewMode } from './components/Header';
-import type { BlogGenerationResponse } from './lib/api';
-import { publishBlog as publishBlogAPI } from './lib/api';
+import Header from './components/Header';
+import type { ViewMode, BlogGenerationData } from './types';
+import { useBlog } from './contexts/BlogContext';
+import { useBlogGeneration } from './hooks/useBlogGeneration';
 
 export default function App() {
+  // 전역 상태 관리
+  const { saveBlog } = useBlog();
+  const { currentBlog, clearBlog } = useBlogGeneration();
+
   // 뷰 모드 상태
   const [currentView, setCurrentView] = useState<ViewMode>('commits');
 
@@ -23,7 +28,6 @@ export default function App() {
 
   const [loading, setLoading] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [generatedBlog, setGeneratedBlog] = useState<BlogGenerationResponse['data'] | null>(null);
 
   // repo가 변경되면 dataLoaded를 false로 리셋
   useEffect(() => {
@@ -37,35 +41,12 @@ export default function App() {
     }
   };
 
-  const handleBlogGenerate = (blogData: BlogGenerationResponse['data']) => {
-    if (blogData) {
-      setGeneratedBlog(blogData);
-      console.log('블로그 생성 완료:', blogData);
-    }
-  };
-
   const handlePublish = async () => {
-    if (!generatedBlog) return;
+    if (!currentBlog) return;
 
     try {
-      const response = await publishBlogAPI({
-        title: generatedBlog.title,
-        content: generatedBlog.content,
-        summary: generatedBlog.summary,
-        commitSha: generatedBlog.metadata.commitSha,
-        owner,
-        repo,
-        author: generatedBlog.metadata.author,
-        filesChanged: generatedBlog.metadata.filesChanged,
-        stats: generatedBlog.metadata.stats,
-      });
-
-      if (response.success) {
-        alert(`블로그가 게시되었습니다!\n\nID: ${response.data?.id}\n제목: ${generatedBlog.title}`);
-        setGeneratedBlog(null); // 게시 후 미리보기 초기화
-      } else {
-        alert(`게시 실패: ${response.error}`);
-      }
+      await saveBlog(owner, repo);
+      alert(`블로그가 게시되었습니다!\n\n제목: ${currentBlog.title}`);
     } catch (error: any) {
       alert(`블로그 게시 중 오류가 발생했습니다: ${error.message}`);
     }
@@ -73,7 +54,7 @@ export default function App() {
 
   const handleCancel = () => {
     if (confirm('생성된 블로그를 취소하시겠습니까?')) {
-      setGeneratedBlog(null);
+      clearBlog();
     }
   };
 
@@ -109,7 +90,7 @@ export default function App() {
                 // 불러오기 버튼 클릭 시에만 실제 검색 실행
                 setOwner(o);
                 setRepo(r);
-                setGeneratedBlog(null); // 새로 검색할 때 이전 블로그 초기화
+                clearBlog(); // 새로 검색할 때 이전 블로그 초기화
               }}
             />
             <span>현재: <b>{repo ? `${owner}/${repo}` : owner}</b></span>
@@ -138,12 +119,11 @@ export default function App() {
                   owner={owner}
                   repo={repo}
                   onLoadingChange={handleLoadingChange}
-                  onBlogGenerate={handleBlogGenerate}
                 />
               }
               rightPanel={
                 <BlogPreviewPanel
-                  blogData={generatedBlog}
+                  blogData={currentBlog}
                   onPublish={handlePublish}
                   onCancel={handleCancel}
                 />

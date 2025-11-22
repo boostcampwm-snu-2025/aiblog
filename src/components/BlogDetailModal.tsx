@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useDarkMode } from '../hooks/useDarkMode';
-import { fetchBlogDetail, deleteBlog, type BlogDetailResponse } from '../lib/api';
+import { useBlog } from '../contexts/BlogContext';
 
 interface Props {
   blogId: string;
@@ -12,29 +12,47 @@ interface Props {
 
 export default function BlogDetailModal({ blogId, onClose, onDeleted }: Props) {
   const isDarkMode = useDarkMode();
-  const [blog, setBlog] = useState<BlogDetailResponse['data'] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { state, deleteBlog, updateBlog } = useBlog();
   const [deleting, setDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
+  const [editedContent, setEditedContent] = useState('');
 
-  useEffect(() => {
-    loadBlogDetail();
-  }, [blogId]);
+  // Context에서 블로그 찾기
+  const blog = useMemo(() => {
+    return state.blogs.find((b) => b.id === blogId);
+  }, [state.blogs, blogId]);
 
-  const loadBlogDetail = async () => {
+  // 편집 모드 진입 시 초기값 설정
+  const handleEditStart = () => {
+    if (blog) {
+      setEditedTitle(blog.title);
+      setEditedContent(blog.content);
+      setIsEditing(true);
+    }
+  };
+
+  // 편집 취소
+  const handleEditCancel = () => {
+    setIsEditing(false);
+    setEditedTitle('');
+    setEditedContent('');
+  };
+
+  // 편집 저장
+  const handleEditSave = async () => {
+    if (!blog) return;
+
     try {
-      setLoading(true);
-      setError(null);
-      const response = await fetchBlogDetail(blogId);
-      if (response.success && response.data) {
-        setBlog(response.data);
-      } else {
-        setError(response.error || '블로그를 불러올 수 없습니다.');
-      }
+      await updateBlog({
+        ...blog,
+        title: editedTitle,
+        content: editedContent,
+      });
+      setIsEditing(false);
+      alert('블로그가 수정되었습니다.');
     } catch (err: any) {
-      setError(err.message || '블로그를 불러올 수 없습니다.');
-    } finally {
-      setLoading(false);
+      alert(`블로그 수정 중 오류가 발생했습니다: ${err.message}`);
     }
   };
 
@@ -45,14 +63,10 @@ export default function BlogDetailModal({ blogId, onClose, onDeleted }: Props) {
 
     try {
       setDeleting(true);
-      const response = await deleteBlog(blogId);
-      if (response.success) {
-        alert('블로그가 삭제되었습니다.');
-        onDeleted?.();
-        onClose();
-      } else {
-        alert(`삭제 실패: ${response.error}`);
-      }
+      await deleteBlog(blogId);
+      alert('블로그가 삭제되었습니다.');
+      onDeleted?.();
+      onClose();
     } catch (err: any) {
       alert(`블로그 삭제 중 오류가 발생했습니다: ${err.message}`);
     } finally {
@@ -134,19 +148,7 @@ export default function BlogDetailModal({ blogId, onClose, onDeleted }: Props) {
           overflow: 'auto',
           padding: 24,
         }}>
-          {loading && (
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: 200,
-              color: isDarkMode ? '#999' : '#666',
-            }}>
-              로딩 중...
-            </div>
-          )}
-
-          {error && (
+          {!blog && (
             <div style={{
               padding: 20,
               backgroundColor: isDarkMode ? '#2a1a1a' : '#fee',
@@ -154,21 +156,44 @@ export default function BlogDetailModal({ blogId, onClose, onDeleted }: Props) {
               color: 'crimson',
               textAlign: 'center',
             }}>
-              {error}
+              블로그를 찾을 수 없습니다.
             </div>
           )}
 
-          {!loading && !error && blog && (
+          {blog && (
             <>
-              <h1 style={{
-                fontSize: 28,
-                fontWeight: 700,
-                marginTop: 0,
-                marginBottom: 16,
-                color: isDarkMode ? '#e5e7eb' : '#111',
-              }}>
-                {blog.title}
-              </h1>
+              {/* 편집 모드: 제목 입력 */}
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  style={{
+                    width: '100%',
+                    fontSize: 28,
+                    fontWeight: 700,
+                    marginTop: 0,
+                    marginBottom: 16,
+                    padding: '8px 12px',
+                    border: isDarkMode ? '1px solid #444' : '1px solid #d1d5db',
+                    borderRadius: 6,
+                    backgroundColor: isDarkMode ? '#2a2a2a' : '#fff',
+                    color: isDarkMode ? '#e5e7eb' : '#111',
+                    outline: 'none',
+                  }}
+                  placeholder="블로그 제목"
+                />
+              ) : (
+                <h1 style={{
+                  fontSize: 28,
+                  fontWeight: 700,
+                  marginTop: 0,
+                  marginBottom: 16,
+                  color: isDarkMode ? '#e5e7eb' : '#111',
+                }}>
+                  {blog.title}
+                </h1>
+              )}
 
               {/* 메타데이터 */}
               <div style={{
@@ -205,14 +230,35 @@ export default function BlogDetailModal({ blogId, onClose, onDeleted }: Props) {
                 )}
               </div>
 
-              {/* Markdown 내용 */}
-              <div style={{
-                lineHeight: 1.7,
-                color: isDarkMode ? '#d4d4d4' : '#333',
-              }}>
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={{
+              {/* Markdown 내용 또는 편집 모드 */}
+              {isEditing ? (
+                <textarea
+                  value={editedContent}
+                  onChange={(e) => setEditedContent(e.target.value)}
+                  style={{
+                    width: '100%',
+                    minHeight: 400,
+                    padding: 16,
+                    fontSize: 14,
+                    lineHeight: 1.7,
+                    fontFamily: 'monospace',
+                    border: isDarkMode ? '1px solid #444' : '1px solid #d1d5db',
+                    borderRadius: 6,
+                    backgroundColor: isDarkMode ? '#0d1117' : '#f9fafb',
+                    color: isDarkMode ? '#d4d4d4' : '#333',
+                    resize: 'vertical',
+                    outline: 'none',
+                  }}
+                  placeholder="Markdown 형식으로 작성..."
+                />
+              ) : (
+                <div style={{
+                  lineHeight: 1.7,
+                  color: isDarkMode ? '#d4d4d4' : '#333',
+                }}>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
                     code: ({ className, children }) => {
                       const isInline = !className;
                       return isInline ? (
@@ -273,13 +319,14 @@ export default function BlogDetailModal({ blogId, onClose, onDeleted }: Props) {
                 >
                   {blog.content}
                 </ReactMarkdown>
-              </div>
+                </div>
+              )}
             </>
           )}
         </div>
 
         {/* 푸터 (버튼들) */}
-        {!loading && !error && blog && (
+        {blog && (
           <div style={{
             padding: '16px 24px',
             borderTop: isDarkMode ? '1px solid #444' : '1px solid #e5e7eb',
@@ -287,38 +334,92 @@ export default function BlogDetailModal({ blogId, onClose, onDeleted }: Props) {
             gap: 12,
             justifyContent: 'flex-end',
           }}>
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              style={{
-                padding: '10px 20px',
-                fontSize: 14,
-                fontWeight: 500,
-                borderRadius: 6,
-                border: 'none',
-                backgroundColor: deleting ? (isDarkMode ? '#3a1a1a' : '#fee') : (isDarkMode ? '#5a1a1a' : '#dc2626'),
-                color: '#fff',
-                cursor: deleting ? 'not-allowed' : 'pointer',
-                opacity: deleting ? 0.6 : 1,
-              }}
-            >
-              {deleting ? '삭제 중...' : '🗑️ 삭제하기'}
-            </button>
-            <button
-              onClick={onClose}
-              style={{
-                padding: '10px 20px',
-                fontSize: 14,
-                fontWeight: 500,
-                borderRadius: 6,
-                border: isDarkMode ? '1px solid #444' : '1px solid #d1d5db',
-                backgroundColor: isDarkMode ? '#2a2a2a' : '#f9fafb',
-                color: isDarkMode ? '#e5e7eb' : '#333',
-                cursor: 'pointer',
-              }}
-            >
-              닫기
-            </button>
+            {isEditing ? (
+              <>
+                {/* 편집 모드 버튼들 */}
+                <button
+                  onClick={handleEditSave}
+                  style={{
+                    padding: '10px 20px',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    borderRadius: 6,
+                    border: 'none',
+                    backgroundColor: '#0066cc',
+                    color: '#fff',
+                    cursor: 'pointer',
+                  }}
+                >
+                  💾 저장하기
+                </button>
+                <button
+                  onClick={handleEditCancel}
+                  style={{
+                    padding: '10px 20px',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    borderRadius: 6,
+                    border: isDarkMode ? '1px solid #444' : '1px solid #d1d5db',
+                    backgroundColor: isDarkMode ? '#2a2a2a' : '#f9fafb',
+                    color: isDarkMode ? '#e5e7eb' : '#333',
+                    cursor: 'pointer',
+                  }}
+                >
+                  취소
+                </button>
+              </>
+            ) : (
+              <>
+                {/* 일반 모드 버튼들 */}
+                <button
+                  onClick={handleEditStart}
+                  style={{
+                    padding: '10px 20px',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    borderRadius: 6,
+                    border: 'none',
+                    backgroundColor: '#0066cc',
+                    color: '#fff',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✏️ 수정하기
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  style={{
+                    padding: '10px 20px',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    borderRadius: 6,
+                    border: 'none',
+                    backgroundColor: deleting ? (isDarkMode ? '#3a1a1a' : '#fee') : (isDarkMode ? '#5a1a1a' : '#dc2626'),
+                    color: '#fff',
+                    cursor: deleting ? 'not-allowed' : 'pointer',
+                    opacity: deleting ? 0.6 : 1,
+                  }}
+                >
+                  {deleting ? '삭제 중...' : '🗑️ 삭제하기'}
+                </button>
+                <button
+                  onClick={onClose}
+                  style={{
+                    padding: '10px 20px',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    borderRadius: 6,
+                    border: isDarkMode ? '1px solid #444' : '1px solid #d1d5db',
+                    backgroundColor: isDarkMode ? '#2a2a2a' : '#f9fafb',
+                    color: isDarkMode ? '#e5e7eb' : '#333',
+                    cursor: 'pointer',
+                  }}
+                >
+                  닫기
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
