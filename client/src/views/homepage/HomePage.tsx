@@ -56,8 +56,15 @@ const HomePage: React.FC = () => {
 
     const handleGenerateSummary = async (commit: CommitNode) => {
         setSelectedCommit(commit);
-        // 훅의 함수 호출
-        await generateSummary(commit.node.messageHeadline, customPrompt);
+
+        // [수정] 훅 호출 시 필요한 모든 정보를 객체로 전달
+        await generateSummary({
+            commitMessage: commit.node.messageHeadline,
+            sha: commit.node.oid, // GitHub Context의 commit 객체에 oid가 있습니다.
+            owner: owner, // GitHub Context의 owner
+            repo: repo, // GitHub Context의 repo
+            customPrompt: customPrompt,
+        });
     };
 
     const handleSelectCommit = (commit: CommitNode) => {

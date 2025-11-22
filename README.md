@@ -43,7 +43,7 @@
 
 ## 3주차: 콘텐츠 저장 및 관리 (LocalStorage)
 
-- [ ] 생성된 글 저장 및 '내 블로그' 기능 구현
+- [x] 생성된 글 저장 및 '내 블로그' 기능 구현
     - Client (Vite + React + TypeScript)
         - [x] 저장 기능: '블로그로 저장' 버튼 UI 및 로직 구현
         - [x] 데이터 영속성: 생성된 요약 글을 LocalStorage에 저장 (JSON.stringify) 및 로드 (JSON.parse)
@@ -51,8 +51,8 @@
         - [x] '내 저장 글' UI: 저장된 글 목록을 보여주는 별도 탭 또는 페이지 구현
         - [x] 상세 보기: 저장된 글을 클릭 시, 상세 내용을 볼 수 있는 기능
     - Server (Express)
-        - [ ] SHA를 이용한 Github diff 파일 비교 및 변경 사항을 커밋 메세지와 같이 Gemini로 전달
+        - [x] SHA를 이용한 Github diff 파일 비교 및 변경 사항을 커밋 메세지와 같이 Gemini로 전달
 
-- [ ] 2주차 피드백 반영
+- [x] 2주차 피드백 반영
     - [x] API 호출 로직을 hook으로 분리
     - [x] Error를 던질 때, Error가 상위로 전파되지 않게 구조 개선

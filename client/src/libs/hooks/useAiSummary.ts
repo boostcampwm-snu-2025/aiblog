@@ -6,15 +6,26 @@ const API_BASE_URL =
         ? import.meta.env.VITE_API_BASE_URL
         : "";
 
+interface GenerateSummaryParams {
+    commitMessage: string;
+    sha: string;
+    owner: string;
+    repo: string;
+    customPrompt?: string;
+}
+
 export const useAiSummary = () => {
     const [aiSummary, setAiSummary] = useState<string>("");
     const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
     const [aiError, setAiError] = useState<string | null>(null);
 
-    const generateSummary = async (
-        commitMessage: string,
-        customPrompt?: string
-    ) => {
+    const generateSummary = async ({
+        commitMessage,
+        sha,
+        owner,
+        repo,
+        customPrompt,
+    }: GenerateSummaryParams) => {
         setIsAiLoading(true);
         setAiSummary("");
         setAiError(null);
@@ -22,6 +33,9 @@ export const useAiSummary = () => {
         try {
             const response = await axios.post(`${API_BASE_URL}/api/summarize`, {
                 commitMessage,
+                sha, // [추가] 커밋 해시
+                owner, // [추가] 레포 주인
+                repo, // [추가] 레포 이름
                 customPrompt,
             });
 
