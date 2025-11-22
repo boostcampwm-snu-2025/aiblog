@@ -21,9 +21,7 @@ interface Props {
 
 function Summary({ owner, ref, repo }: Props) {
   const [summary, setSummary] = useState("");
-  const summarizeMutation = useMutation({
-    mutationFn: () => createCommitSummary(owner, repo, ref),
-  });
+  const summarizeMutation = useMutation(createCommitSummary);
 
   useEffect(() => {
     if (summarizeMutation.isSuccess) {
@@ -32,7 +30,7 @@ function Summary({ owner, ref, repo }: Props) {
   }, [summarizeMutation.isSuccess, summarizeMutation.data]);
 
   const handleGenerateSummary = () => {
-    summarizeMutation.mutate();
+    summarizeMutation.mutate({ owner, ref, repo });
   };
 
   return (
