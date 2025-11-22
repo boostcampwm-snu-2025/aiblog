@@ -33,7 +33,6 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [selectedCommit, setSelectedCommit] = useState<CommitItem | null>(null);
     const [selectedPullRequest, setSelectedPullRequest] = useState<PRItem | null>(null);
 
-    // Use custom hooks
     const { data: repos = [], isLoading: reposLoading, error: reposError } = useRepos();
 
     const {
