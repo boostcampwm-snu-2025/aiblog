@@ -27,6 +27,22 @@ router.get("/summary/:owner/:repo/commits/:ref", async (req, res) => {
 	res.status(200).send(data);
 });
 
+router.head("/summary/:owner/:repo/commits/:ref", async (req, res) => {
+	const params = summarySchema.parse(req.params);
+	const exists = await fs
+		.access(
+			getFilePath(params.owner, params.repo, params.ref),
+			fs.constants.F_OK,
+		)
+		.then(() => true)
+		.catch(() => false);
+	if (!exists) {
+		res.status(404).send();
+		return;
+	}
+	res.status(204).send();
+});
+
 router.post("/summary/:owner/:repo/commits/:ref", async (req, res) => {
 	const params = summarySchema.parse(req.params);
 

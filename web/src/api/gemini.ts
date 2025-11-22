@@ -30,6 +30,25 @@ export async function deleteCommitSummary(
   }
 }
 
+export async function existsCommitSummary(
+  owner: string,
+  repo: string,
+  ref: string,
+  signal?: AbortSignal | null,
+) {
+  const response = await fetch(
+    `/api/gemini/summary/${owner}/${repo}/commits/${ref}`,
+    { method: "HEAD", signal },
+  );
+  if (response.status === 204) {
+    return true;
+  }
+  if (response.status === 404) {
+    return false;
+  }
+  throw new Error(response.statusText);
+}
+
 export async function readCommitSummary(
   owner: string,
   repo: string,
