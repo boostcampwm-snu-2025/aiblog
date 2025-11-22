@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Search } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { BookOpen, Search } from "lucide-react";
 import { Suspense } from "react";
 
 import { Button } from "~/components/ui/button";
@@ -41,9 +41,16 @@ function IndexPage() {
     <div className="p-8">
       <div className="mx-auto max-w-4xl">
         <div className="mb-8">
-          <h1 className="mb-4 text-4xl font-bold">
-            GitHub Repository Activity
-          </h1>
+          <div className="mb-4 flex items-center justify-between">
+            <h1 className="text-4xl font-bold">GitHub Repository Activity</h1>
+            <Link
+              className="flex items-center gap-2 text-sm text-blue-600 hover:underline"
+              to="/summaries"
+            >
+              <BookOpen className="h-4 w-4" />
+              View AI Summaries
+            </Link>
+          </div>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <RadioGroup onValueChange={handleTypeChange} value={searchType}>
               <div className="flex gap-6">

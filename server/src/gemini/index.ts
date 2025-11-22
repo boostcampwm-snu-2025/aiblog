@@ -26,10 +26,11 @@ router.get("/summaries", async (_req, res) => {
 	const summaries: { owner: string; repo: string; ref: string }[] = [];
 	dirs.forEach((dir) => {
 		const [owner, repo, ref] = dir.split("/", 3);
-			if (owner === undefined || repo === undefined || ref === undefined) {
-				return;
-			}
-			summaries.push({ owner, repo, ref });
+
+		if (owner === undefined || repo === undefined || ref === undefined) {
+			return;
+		}
+		summaries.push({ owner, repo, ref });
 	});
 	res.status(200).json(summaries);
 });
