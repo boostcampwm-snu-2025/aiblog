@@ -2,6 +2,12 @@
 
 Transform GitHub commits into blog posts using AI-powered summaries.
 
+## Demo
+
+https://github.com/user-attachments/assets/demo.mp4
+
+*Full demo video: [docs/assets/demo.mp4](docs/assets/demo.mp4)*
+
 ## Project Structure
 
 ```
