@@ -23,7 +23,7 @@ AUTH_SETTINGS = AuthSettings()
 
 class LLMSettings(BaseSettings):
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-1.5-flash"
+    GEMINI_MODEL: str = "gemini-2.5-flash"
 
     class Config:
         env_file = str(ENV_FILE)
@@ -32,3 +32,15 @@ class LLMSettings(BaseSettings):
 
 
 LLM_SETTINGS = LLMSettings()
+
+
+class DatabaseSettings(BaseSettings):
+    DATABASE_URL: str = "postgresql://user:password@localhost:5432/aiblog"
+
+    class Config:
+        env_file = str(ENV_FILE)
+        env_file_encoding = "utf-8"
+        extra = "ignore"
+
+
+DB_SETTINGS = DatabaseSettings()

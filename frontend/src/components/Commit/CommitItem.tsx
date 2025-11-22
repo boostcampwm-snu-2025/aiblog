@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack';
 import type { CommitItem as CommitItemType } from '../../types/githubCommit';
 import { formatDateTime } from '../../utils/date';
 import { useRepoContext } from '../../contexts/Repocontext';
-
+import { memo } from 'react';
 interface CommitItemProps {
     commit: CommitItemType;
 }
@@ -97,4 +97,4 @@ const CommitItem: React.FC<CommitItemProps> = ({ commit }) => {
     );
 };
 
-export default CommitItem;
+export default memo(CommitItem);

@@ -6,18 +6,18 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { useAppContext } from '../contexts/Appcontext';
 import { authApi } from '../api/auth';
-import { useRepoContext } from '../contexts/Repocontext';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Header: React.FC = () => {
     const { currentTab, setCurrentTab, isLoggedIn, setIsLoggedIn } = useAppContext();
-    const { setRepos } = useRepoContext();
+    const queryClient = useQueryClient();
 
     const handleLoginClick = () => {
         if (isLoggedIn) {
             // Logout logic will be implemented later
             if (setIsLoggedIn) {
                 setIsLoggedIn(false);
-                setRepos([]);
+                queryClient.removeQueries();
             }
             localStorage.removeItem('access_token');
         } else {

@@ -1,14 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import { useAppContext } from '../../contexts/Appcontext';
-import { useRepoContext } from '../../contexts/Repocontext';
 import { authApi } from '../../api/auth';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 
+import { useQueryClient } from '@tanstack/react-query';
+
 export const LoginCallbackPage: React.FC = () => {
     const { setCurrentTab, setIsLoggedIn } = useAppContext();
-    const { fetchRepos } = useRepoContext();
+    const queryClient = useQueryClient();
     const hasRun = useRef(false);
 
     useEffect(() => {
@@ -30,15 +31,15 @@ export const LoginCallbackPage: React.FC = () => {
                 const response = await authApi.handleCallback(code);
                 if (response.access_token) {
                     localStorage.setItem('access_token', response.access_token);
-                    
+
                     if (setIsLoggedIn) {
                         setIsLoggedIn(true);
                     }
 
-                    await fetchRepos();
+                    await queryClient.invalidateQueries({ queryKey: ['repos'] });
 
                     setCurrentTab('github');
-                    
+
                     window.history.replaceState({}, document.title, '/');
                 } else {
                     console.error('No access token received');
@@ -51,7 +52,7 @@ export const LoginCallbackPage: React.FC = () => {
         };
 
         handleCallback();
-    }, [setCurrentTab, setIsLoggedIn, fetchRepos]);
+    }, [setCurrentTab, setIsLoggedIn, queryClient]);
 
     return (
         <Box

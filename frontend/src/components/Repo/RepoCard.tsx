@@ -29,8 +29,6 @@ const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
         selectRepo,
         selectedFeed,
         setSelectedFeed,
-        fetchRepoCommits,
-        fetchRepoPullRequests,
     } = useRepoContext();
 
     const isActive = selectedRepo?.id === repo.id;
@@ -48,11 +46,6 @@ const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
             selectRepo(repo.id);
         }
         setSelectedFeed(feed);
-        if (feed === 'commits') {
-            void fetchRepoCommits(repo);
-        } else {
-            void fetchRepoPullRequests(repo);
-        }
     };
 
     const formattedUpdatedAt = formatDateTime(repo.updated_at!, true);

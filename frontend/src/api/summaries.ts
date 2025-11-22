@@ -1,3 +1,5 @@
+import { fetchWithTimeout } from "../utils/fetch";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 export type ChangeType = 'commit' | 'pull_request';
@@ -24,28 +26,14 @@ export const summaryApi = {
         accessToken: string,
         payload: SummaryRequestPayload
     ): Promise<SummaryResponsePayload> => {
-        const response = await fetch(`${API_BASE_URL}/api/repos/summary`, {
+        const response = await fetchWithTimeout(`${API_BASE_URL}/api/repos/summary`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            let errorMessage = 'Failed to generate summary';
-            try {
-                const errorBody = await response.json();
-                errorMessage = errorBody.detail || errorMessage;
-            } catch {
-                const fallback = await response.text();
-                if (fallback) {
-                    errorMessage = fallback;
-                }
-            }
-            throw new Error(errorMessage);
-        }
+            body: JSON.stringify(payload),
+        }, 60000);
 
         return response.json();
     }
