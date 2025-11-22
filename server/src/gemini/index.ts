@@ -14,23 +14,23 @@ const octokit = new Octokit({
 });
 
 const DATA_PATH = "data";
+function getDirPath(owner: string, repo: string) {
+	return `${DATA_PATH}/${owner}/${repo}`;
+}
 function getFilePath(owner: string, repo: string, ref: string) {
-	return `${DATA_PATH}/${owner}/${repo}/${ref}.txt`;
+	return `${getDirPath(owner, repo)}/${ref}.txt`;
 }
 
-router.get("/summaries", async (req, res) => {
+router.get("/summaries", async (_req, res) => {
 	const dirs = await fs.readdir(DATA_PATH, { recursive: true });
-	const summaries = dirs.reduce<{ owner: string; repo: string; ref: string }[]>(
-		(acc, dir) => {
-			const [owner, repo, ref] = dir.split("/", 3);
+	const summaries: { owner: string; repo: string; ref: string }[] = [];
+	dirs.forEach((dir) => {
+		const [owner, repo, ref] = dir.split("/", 3);
 			if (owner === undefined || repo === undefined || ref === undefined) {
-				return acc;
+				return;
 			}
-			return [...acc, { owner, repo, ref }];
-		},
-		[],
-	);
-
+			summaries.push({ owner, repo, ref });
+	});
 	res.status(200).json(summaries);
 });
 
@@ -89,6 +89,7 @@ Changelog Entry:`;
 		contents: prompt,
 	});
 
+	await fs.mkdir(getDirPath(params.owner, params.repo), { recursive: true });
 	await fs.writeFile(getFilePath(params.owner, params.repo, params.ref), text, {
 		encoding: "utf-8",
 	});
