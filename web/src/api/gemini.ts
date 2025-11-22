@@ -70,25 +70,6 @@ export function deleteCommitSummary(queryClient: QueryClient) {
   });
 }
 
-export function existsCommitSummary(owner: string, repo: string, ref: string) {
-  return queryOptions({
-    queryFn: async ({ signal }) => {
-      const response = await fetch(
-        `/api/gemini/summaries/${owner}/${repo}/commits/${ref}`,
-        { method: "HEAD", signal },
-      );
-      if (response.status === 204) {
-        return true;
-      }
-      if (response.status === 404) {
-        return false;
-      }
-      throw new Error(response.statusText);
-    },
-    queryKey: ["summary-exists", owner, repo, ref],
-  });
-}
-
 export function readCommitSummaries() {
   return queryOptions({
     queryFn: async ({ signal }) => {
