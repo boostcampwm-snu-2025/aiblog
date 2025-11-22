@@ -9,7 +9,7 @@ import SummariesList from "./-summaries-list";
 export const Route = createFileRoute("/summaries/")({
   component: SummariesPage,
   loader: ({ context: { queryClient } }) => {
-    queryClient.prefetchQuery(readCommitSummaries()).catch(console.error);
+    void queryClient.prefetchQuery(readCommitSummaries());
   },
 });
 

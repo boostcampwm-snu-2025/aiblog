@@ -41,7 +41,7 @@ function SummariesList() {
               className="block"
               key={`${owner}/${repo}/${ref}`}
               params={{ owner, ref, repo }}
-              to="/repos/$owner/$repo/commits/$ref"
+              to="/summaries/$owner/$repo/$ref"
             >
               <Card className="cursor-pointer transition-colors hover:bg-accent">
                 <CardHeader>

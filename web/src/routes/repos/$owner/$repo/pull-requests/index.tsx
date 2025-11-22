@@ -9,7 +9,7 @@ import PullRequests from "./-pull-requests";
 export const Route = createFileRoute("/repos/$owner/$repo/pull-requests/")({
   component: PullRequestsPage,
   loader: ({ context: { queryClient }, params: { owner, repo } }) => {
-    queryClient.prefetchQuery(readPulls(owner, repo)).catch(console.error);
+    void queryClient.prefetchQuery(readPulls(owner, repo));
   },
 });
 

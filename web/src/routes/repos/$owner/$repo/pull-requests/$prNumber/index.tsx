@@ -19,9 +19,9 @@ export const Route = createFileRoute(
 )({
   component: PullRequestDetail,
   loader: ({ context: { queryClient }, params: { owner, prNumber, repo } }) => {
-    queryClient
-      .prefetchQuery(readPullCommits(owner, repo, Number(prNumber)))
-      .catch(console.error);
+    void queryClient.prefetchQuery(
+      readPullCommits(owner, repo, Number(prNumber)),
+    );
   },
 });
 

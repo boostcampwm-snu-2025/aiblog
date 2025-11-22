@@ -31,10 +31,10 @@ function IndexPage() {
   const navigate = useNavigate();
 
   const handleSelectRepo = (owner: string, repo: string) => {
-    navigate({
+    void navigate({
       params: { owner, repo },
       to: "/repos/$owner/$repo",
-    }).catch(console.error);
+    });
   };
 
   return (

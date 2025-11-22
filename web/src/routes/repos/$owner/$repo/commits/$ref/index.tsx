@@ -9,9 +9,7 @@ import Commit from "./-commit";
 export const Route = createFileRoute("/repos/$owner/$repo/commits/$ref/")({
   component: CommitDetailPage,
   loader: ({ context: { queryClient }, params: { owner, ref, repo } }) => {
-    queryClient
-      .prefetchQuery(readCommit(owner, repo, ref))
-      .catch(console.error);
+    void queryClient.prefetchQuery(readCommit(owner, repo, ref));
   },
 });
 

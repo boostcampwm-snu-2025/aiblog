@@ -10,9 +10,11 @@ import RepositoryContent from "./-repository-content";
 export const Route = createFileRoute("/repos/$owner/$repo/")({
   component: RepositoryDetailPage,
   loader: ({ context: { queryClient }, params: { owner, repo } }) => {
-    queryClient.prefetchQuery(readRepository(owner, repo)).catch(console.error);
-    queryClient.prefetchQuery(readBranches(owner, repo)).catch(console.error);
-    queryClient.prefetchQuery(readPulls(owner, repo)).catch(console.error);
+    void Promise.all([
+      queryClient.prefetchQuery(readRepository(owner, repo)),
+      queryClient.prefetchQuery(readBranches(owner, repo)),
+      queryClient.prefetchQuery(readPulls(owner, repo)),
+    ]);
   },
 });
 
