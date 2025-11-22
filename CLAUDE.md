@@ -48,18 +48,28 @@ In production, the server serves the built web frontend from `web/dist` as stati
 ### Server Architecture
 
 **Entry point**: [server/src/app.ts](server/src/app.ts)
-- Mounts two routers: `/api/github` and `/api/gemini`
+- Mounts two routers: `/api/github` and `/api/summaries`
 - Serves static web frontend from `../../web/dist`
 - CORS enabled for development
+- Includes development delay middleware (3000ms) to simulate network latency
 
-**GitHub API Proxy** ([server/src/github/index.ts](server/src/github/index.ts)):
-- Uses `asyncGithubHandler` wrapper pattern for all routes
-- This wrapper:
+**Layered Architecture**:
+The server follows a clean layered architecture pattern:
+1. **Routes** ([server/src/routes/](server/src/routes/)) - Define API endpoints and wire up middleware
+2. **Controllers** ([server/src/controllers/](server/src/controllers/)) - Handle requests, validate params with Zod, call services, format responses
+3. **Services** ([server/src/services/](server/src/services/)) - Contain business logic, orchestrate operations across multiple services
+4. **Repositories** ([server/src/repositories/](server/src/repositories/)) - Handle data persistence (file system operations)
+
+**GitHub API Proxy**:
+- Routes: [server/src/routes/github.routes.ts](server/src/routes/github.routes.ts)
+- Controller: [server/src/controllers/github.controller.ts](server/src/controllers/github.controller.ts)
+- Service: [server/src/services/github.service.ts](server/src/services/github.service.ts)
+- Uses `asyncGithubHandler` wrapper ([server/src/middleware/async-handler.ts](server/src/middleware/async-handler.ts)) that:
   - Executes async GitHub API calls
   - Preserves GitHub API status codes in responses
-  - Forwards rate limit headers from Octokit
+  - Forwards rate limit headers from Octokit to client
   - Centralizes error handling
-- All request parameters validated with Zod schemas in [server/src/github/schema.ts](server/src/github/schema.ts)
+- Request parameters validated with Zod schemas in [server/src/schemas/github.schema.ts](server/src/schemas/github.schema.ts)
 - Reusable schemas: `repoSchema`, `branchSchema`, `commitSchema`, `pullRequestSchema`, `pageSchema`
 
 **Available GitHub endpoints**:
@@ -73,14 +83,31 @@ In production, the server serves the built web frontend from `web/dist` as stati
 - `/api/github/users/:username/repos` - User repositories
 - `/api/github/orgs/:org/repos` - Organization repositories
 
-**AI Integration** ([server/src/gemini/index.ts](server/src/gemini/index.ts)):
-- Single endpoint: `/api/gemini/summary/:owner/:repo/commits/:ref`
-- Fetches commit data from GitHub, constructs prompt with message and diffs
-- Calls Gemini 2.5 Pro to generate changelog-style summaries
+**AI Summary Feature**:
+- Routes: [server/src/routes/summary.routes.ts](server/src/routes/summary.routes.ts)
+- Controller: [server/src/controllers/summary.controller.ts](server/src/controllers/summary.controller.ts)
+- Service: [server/src/services/summary.service.ts](server/src/services/summary.service.ts)
+- Repository: [server/src/repositories/summary.repository.ts](server/src/repositories/summary.repository.ts)
+- AI Service: [server/src/services/ai.service.ts](server/src/services/ai.service.ts)
+
+**Summary endpoints**:
+- `GET /api/summaries` - List all saved summaries with metadata
+- `GET /api/summaries/:owner/:repo/commits/:ref` - Get a specific summary
+- `POST /api/summaries/:owner/:repo/commits/:ref` - Generate and save new summary
+- `DELETE /api/summaries/:owner/:repo/commits/:ref` - Delete a summary
+
+**Summary workflow**:
+1. Controller validates params and calls service
+2. Service checks if summary exists (409 Conflict if it does)
+3. Service fetches commit data from GitHub via `githubService`
+4. Service calls `aiService.generateCommitSummary()` with commit message and file diffs
+5. AI service constructs prompt and calls Gemini 2.5 Pro
+6. Repository saves summary to file system (`data/:owner/:repo/:ref.txt`)
 
 **Error Handling**:
 - Layered: `ZodError` → 400, `RequestError` (Octokit) → preserves status, others → 500
-- Error middleware applied at end of each router
+- Error middleware ([server/src/middleware/error-handler.ts](server/src/middleware/error-handler.ts)) applied at end of each router
+- Custom service errors: `SummaryExistsError` (409), `SummaryNotFoundError` (404)
 
 ### Web Architecture
 
@@ -99,14 +126,20 @@ In production, the server serves the built web frontend from `web/dist` as stati
 - [routes/repos/$owner/$repo/commits/$ref/index.tsx](web/src/routes/repos/$owner/$repo/commits/$ref/index.tsx) - Commit detail with AI summary
 - [routes/repos/$owner/$repo/pull-requests/index.tsx](web/src/routes/repos/$owner/$repo/pull-requests/index.tsx) - PR list
 - [routes/repos/$owner/$repo/pull-requests/$prNumber/index.tsx](web/src/routes/repos/$owner/$repo/pull-requests/$prNumber/index.tsx) - PR detail
+- [routes/summaries/index.tsx](web/src/routes/summaries/index.tsx) - List all saved summaries
+- [routes/summaries/$owner/$repo/$ref/index.tsx](web/src/routes/summaries/$owner/$repo/$ref/index.tsx) - View saved summary
 
 **API Integration** ([web/src/api/](web/src/api/)):
 - [api/github.ts](web/src/api/github.ts) - Query options factory for GitHub endpoints
   - Each function returns TanStack Query `queryOptions` object
   - Type-safe with Octokit types
   - Uses native `fetch` with abort signal support
-- [api/gemini.ts](web/src/api/gemini.ts) - Mutation function for AI summaries
-- [api/index.ts](web/src/api/index.ts) - Base URL configuration (localhost:3001 in dev)
+- [api/summaries.ts](web/src/api/summaries.ts) - Query and mutation options for AI summaries
+  - `readCommitSummaries()` - List all summaries
+  - `readCommitSummary()` - Get specific summary
+  - `createCommitSummary()` - Generate new summary (POST)
+  - `deleteCommitSummary()` - Delete summary (DELETE)
+  - Mutations automatically invalidate relevant queries on success
 
 **Data Fetching Pattern**:
 1. Route loaders prefetch queries before navigation:
@@ -138,10 +171,14 @@ In production, the server serves the built web frontend from `web/dist` as stati
 
 ### Adding New API Endpoints
 
-1. **Server**: Add route in [server/src/github/index.ts](server/src/github/index.ts) using `asyncGithubHandler`
-2. **Validation**: Create/reuse Zod schema in [server/src/github/schema.ts](server/src/github/schema.ts)
-3. **Client**: Add query function in [web/src/api/github.ts](web/src/api/github.ts) returning `queryOptions`
-4. **Types**: Use Octokit types for response typing
+Follow the layered architecture pattern:
+
+1. **Schema**: Define/reuse Zod validation schema in [server/src/schemas/](server/src/schemas/)
+2. **Service**: Add business logic in [server/src/services/](server/src/services/)
+3. **Controller**: Create controller function that validates params and calls service
+4. **Route**: Wire up route in [server/src/routes/](server/src/routes/) with appropriate middleware
+5. **Client**: Add query/mutation function in [web/src/api/](web/src/api/) returning `queryOptions` or `mutationOptions`
+6. **Types**: Use Octokit types for GitHub responses, define custom types for other endpoints
 
 ### Adding New Routes
 
@@ -205,12 +242,25 @@ const { data } = useSuspenseQuery(readSomething(id))
 
 ### Mutations with Loading States
 ```tsx
-const mutation = useMutation({ mutationFn: doSomething })
+const mutation = useMutation(createCommitSummary(queryClient))
 <Button
   disabled={mutation.isPending}
-  onClick={() => mutation.mutate()}
+  onClick={() => mutation.mutate({ owner, repo, ref })}
 >
   {mutation.isPending && <LoaderCircle className="animate-spin" />}
-  Action
+  Generate Summary
 </Button>
+```
+
+### File-Based Data Storage
+Summaries are stored in the file system at `server/data/:owner/:repo/:ref.txt`. The repository layer abstracts file operations:
+```tsx
+// Save
+await summaryRepository.save(owner, repo, ref, content)
+
+// Read
+const content = await summaryRepository.read(owner, repo, ref)
+
+// Check existence
+const exists = await summaryRepository.exists(owner, repo, ref)
 ```
