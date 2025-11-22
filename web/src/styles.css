@@ -74,6 +74,11 @@ body {
   text-decoration: underline;
 }
 
+.nav-btn--active {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
 .app-main {
   max-width: 1120px;
   margin: 24px auto;
@@ -140,6 +145,13 @@ body {
   font-size: 16px;
   font-weight: 600;
   margin: 0 0 12px;
+}
+
+.column-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 
 .loader {
@@ -276,6 +288,53 @@ body {
 .generate-btn:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+.secondary-btn {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.secondary-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.saved-item {
+  align-items: center;
+}
+
+.saved-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1d4ed8;
+}
+
+.saved-tags {
+  margin-left: 4px;
+}
+
+.link-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
+.delete-btn {
+  min-width: 72px;
 }
 
 .selected-empty {

@@ -3,7 +3,11 @@ const API = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
 import type { Activity } from './types';
 import type { Post } from './api.types';
 
-export async function fetchRecent(owner: string, repo: string, sinceDays = 90) {
+export async function fetchRecent(
+  owner: string,
+  repo: string,
+  sinceDays = 90,
+) {
   const res = await fetch(
     `${API}/api/github/${owner}/${repo}/recent?sinceDays=${sinceDays}`,
   );
@@ -38,6 +42,18 @@ export async function summarizeActivities(
   return json.markdown as string;
 }
 
+export async function listPosts(): Promise<Post[]> {
+  const res = await fetch(`${API}/api/posts`);
+  if (!res.ok) throw new Error(await res.text().catch(() => res.statusText));
+  return (await res.json()) as Post[];
+}
+
+export async function getPost(id: string): Promise<Post> {
+  const res = await fetch(`${API}/api/posts/${id}`);
+  if (!res.ok) throw new Error(await res.text().catch(() => res.statusText));
+  return (await res.json()) as Post;
+}
+
 export async function createPost(
   title: string,
   markdown: string,
@@ -51,3 +67,11 @@ export async function createPost(
   if (!res.ok) throw new Error(await res.text().catch(() => res.statusText));
   return (await res.json()) as Post;
 }
+
+export async function deletePost(id: string): Promise<void> {
+  const res = await fetch(`${API}/api/posts/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error(await res.text().catch(() => res.statusText));
+}
+

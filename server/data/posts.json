@@ -1,0 +1,24 @@
+[
+  {
+    "id": "VlXQ7GUp5-Ph",
+    "createdAt": "2025-11-22T13:37:48.490Z",
+    "updatedAt": "2025-11-22T13:37:48.490Z",
+    "title": "Add pull request template with checklist and guidelines",
+    "markdown": "# Pull Request 템플릿 추가: 체크리스트 및 가이드라인\n\n## Executive Summary\n이번 포스팅에서는 GitHub 리포지토리에 Pull Request 템플릿을 추가한 내용을 공유합니다. 이 템플릿은 팀원들이 코드 리뷰를 더 쉽고 효율적으로 진행할 수 있도록 체크리스트와 가이드라인을 포함하고 있습니다. 이를 통해 코드 품질을 향상시키고, 협업의 일관성을 높이는 것이 목표입니다.\n\n## Highlights\n- **Pull Request 템플릿 추가**: 모든 PR에 사용할 수 있는 템플릿을 설정하여 효율적인 리뷰 프로세스 구축\n- **체크리스트 포함**: 코드 품질 검토를 위한 필수 항목을 체크리스트 형태로 제공\n- **가이드라인 제공**: PR 작성 시 유의해야 할 사항들을 명시하여 팀원들이 참고할 수 있도록 함\n- **GitHub 커밋 링크**: [변경 사항 보기](https://github.com/joosung03/aiblog/commit/ea4f158e4b717b4f30f622cceaf4cb347d81330c)\n\n## What I Learned\n- **표준화의 중요성**: Pull Request 템플릿을 사용함으로써 팀 내에서 PR 작성 과정이 표준화되어, 코드 리뷰가 더 원활하게 진행된다는 것을 확인했습니다.\n- **팀 커뮤니케이션 개선**: 명확한 가이드라인과 체크리스트 덕분에 팀원들이 서로의 작업을 이해하고, 필요한 피드백을 제공하는 데 도움이 되었습니다.\n- **코드 품질 향상**: 체계적인 리뷰 프로세스가 코드 품질을 높이는 데 기여하며, 잠재적인 버그를 사전에 방지할 수 있음을 배웠습니다.\n\n이와 같은 템플릿은 팀의 개발 환경을 개선하는 데 큰 도움이 될 것이며, 앞으로도 지속적으로 발전시켜 나가야 할 중요한 요소입니다.",
+    "tags": [
+      "github",
+      "commit"
+    ]
+  },
+  {
+    "id": "aZ6rkz1iHll5",
+    "createdAt": "2025-11-17T14:04:21.633Z",
+    "updatedAt": "2025-11-17T14:04:21.633Z",
+    "title": "feat: add search.ts and searchPage.ts",
+    "markdown": "# Executive Summary\n이번 포스팅에서는 Netflix 클론 프로젝트에 새로운 기능으로 추가된 `search.ts`와 `searchPage.ts` 파일에 대해 소개하겠습니다. 이 두 파일은 검색 기능을 구현하여 사용자 경험을 향상시키는 데 기여합니다. 신규 기능의 구현 과정과 배운 점을 공유하겠습니다.\n\n## 주요 내용\n- `search.ts` 파일: 검색 로직 및 API 호출을 담당\n- `searchPage.ts` 파일: 검색 결과를 표시하는 UI 구성\n- GitHub 커밋 링크: [commit details](https://github.com/joosung03/netflix-clone/commit/f8e3df7853e324d560f61c0455400173efeca258)\n- 검색 기능을 통해 사용자 편의성 증가\n\n## What I Learned\n- **검색 기능 구현**: 검색 기능을 구현하면서 API와의 연동을 통해 실시간으로 데이터를 가져오는 방법을 배웠습니다. 이는 사용자 경험을 개선하는 데 중요한 요소임을 느꼈습니다.\n- **UI 구성**: `searchPage.ts`에서 검색 결과를 효과적으로 표시하기 위한 UI 디자인의 중요성을 다시 한번 깨달았습니다. 사용자 친화적인 인터페이스가 필수적이라는 점을 다시 한 번 상기시켰습니다.\n- **코드 관리**: 새로운 기능을 추가하면서 코드의 가독성과 유지보수성을 중요하게 생각해야 한다는 점도 다시 느꼈습니다. 잘 구조화된 코드가 향후 작업을 수월하게 만들어 줄 것입니다.\n\n이 포스팅이 여러분에게 유용한 정보가 되길 바랍니다!",
+    "tags": [
+      "github",
+      "commit"
+    ]
+  }
+]
