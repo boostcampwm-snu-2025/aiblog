@@ -1,5 +1,3 @@
-import { baseUrl } from ".";
-
 export async function summarizeCommit(
   owner: string,
   repo: string,
@@ -7,7 +5,7 @@ export async function summarizeCommit(
   signal?: AbortSignal | null,
 ) {
   const response = await fetch(
-    `${baseUrl}/api/gemini/summary/${owner}/${repo}/commits/${ref}`,
+    `/api/gemini/summary/${owner}/${repo}/commits/${ref}`,
     { signal },
   );
   if (!response.ok) {
