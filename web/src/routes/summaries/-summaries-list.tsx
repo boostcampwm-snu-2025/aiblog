@@ -2,7 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Clock, GitCommit } from "lucide-react";
 
-import { readCommitSummaries } from "~/api/gemini";
+import { readCommitSummaries } from "~/api/summaries";
 import {
   Card,
   CardContent,

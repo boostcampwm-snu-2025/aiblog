@@ -6,7 +6,7 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AlertCircle, GitCommit, Loader2, Trash2 } from "lucide-react";
 
-import { deleteCommitSummary, readCommitSummary } from "~/api/gemini";
+import { deleteCommitSummary, readCommitSummary } from "~/api/summaries";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import {

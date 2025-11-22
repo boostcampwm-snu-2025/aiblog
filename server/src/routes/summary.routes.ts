@@ -6,20 +6,20 @@ import { errorHandler } from "../middleware/error-handler";
 
 const router: Router = ExpressRouter();
 
-router.get("/summaries", asyncHandler(summaryController.listSummaries));
+router.get("/", asyncHandler(summaryController.listSummaries));
 
 router.get(
-	"/summaries/:owner/:repo/commits/:ref",
+	"/:owner/:repo/commits/:ref",
 	asyncHandler(summaryController.getSummary),
 );
 
 router.post(
-	"/summaries/:owner/:repo/commits/:ref",
+	"/:owner/:repo/commits/:ref",
 	asyncHandler(summaryController.createSummary),
 );
 
 router.delete(
-	"/summaries/:owner/:repo/commits/:ref",
+	"/:owner/:repo/commits/:ref",
 	asyncHandler(summaryController.deleteSummary),
 );
 

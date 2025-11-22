@@ -21,7 +21,7 @@ if (env.NODE_ENV === "development") {
 app.use(express.json());
 
 app.use("/api/github", githubRouter);
-app.use("/api/gemini", summaryRouter);
+app.use("/api/summaries", summaryRouter);
 
 app.use((_req, res) => {
 	res.sendFile(path.join(__dirname, "../../web/dist/index.html"));

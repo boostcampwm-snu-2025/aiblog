@@ -17,7 +17,7 @@ export function createCommitSummary(queryClient: QueryClient) {
       repo: string;
     }) => {
       const response = await fetch(
-        `/api/gemini/summaries/${owner}/${repo}/commits/${ref}`,
+        `/api/summaries/${owner}/${repo}/commits/${ref}`,
         { method: "POST" },
       );
       if (!response.ok) {
@@ -51,7 +51,7 @@ export function deleteCommitSummary(queryClient: QueryClient) {
       repo: string;
     }) => {
       const response = await fetch(
-        `/api/gemini/summaries/${owner}/${repo}/commits/${ref}`,
+        `/api/summaries/${owner}/${repo}/commits/${ref}`,
         { method: "DELETE" },
       );
       if (!response.ok) {
@@ -74,7 +74,7 @@ export function deleteCommitSummary(queryClient: QueryClient) {
 export function readCommitSummaries() {
   return queryOptions({
     queryFn: async ({ signal }) => {
-      const response = await fetch(`/api/gemini/summaries`, { signal });
+      const response = await fetch(`/api/summaries`, { signal });
       if (!response.ok) {
         throw new Error(response.statusText);
       }
@@ -97,7 +97,7 @@ export function readCommitSummary(owner: string, repo: string, ref: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
       const response = await fetch(
-        `/api/gemini/summaries/${owner}/${repo}/commits/${ref}`,
+        `/api/summaries/${owner}/${repo}/commits/${ref}`,
         { signal },
       );
       if (!response.ok) {

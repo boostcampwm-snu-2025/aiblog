@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Suspense } from "react";
 
-import { readCommitSummaries } from "~/api/gemini";
+import { readCommitSummaries } from "~/api/summaries";
 import { Skeleton } from "~/components/ui/skeleton";
 
 import SummariesList from "./-summaries-list";

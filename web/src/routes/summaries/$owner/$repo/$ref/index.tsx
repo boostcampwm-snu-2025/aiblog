@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { Suspense } from "react";
 
-import { readCommitSummary } from "~/api/gemini";
+import { readCommitSummary } from "~/api/summaries";
 
 import SummaryDetail from "./-summary-detail";
 
