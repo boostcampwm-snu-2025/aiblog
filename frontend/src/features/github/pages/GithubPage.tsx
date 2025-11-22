@@ -20,7 +20,13 @@ import type {
 } from "../../../shared/api/github";
 import { useState, useEffect } from "react";
 
+interface Summary {
+  title: string;
+  content: string;
+}
+
 export default function GithubPage() {
+  const ITEMS_PER_PAGE = 10;
   const [owner, setOwner] = useState("");
   const [repo, setRepo] = useState("");
   const [activeTab, setActiveTab] = useState<"commits" | "prs">("commits");
@@ -28,8 +34,7 @@ export default function GithubPage() {
 
   const [commitPage, setCommitPage] = useState(1);
   const [prPage, setPrPage] = useState(1);
-  const [summaryTitle, setSummaryTitle] = useState<string | null>(null);
-  const [summaryResult, setSummaryResult] = useState<string | null>(null);
+  const [selectedSummary, setSelectedSummary] = useState<Summary | null>(null);
 
   const commitsFetch = useFetch<Commit[], [string, string]>(getCommits);
   const prsFetch = useFetch<PullRequest[], [string, string]>(getPRs);
@@ -92,12 +97,12 @@ export default function GithubPage() {
   };
 
   const handleSaveSummary = () => {
-    if (!summaryTitle || !summaryResult) return;
+    if (!selectedSummary) return;
 
     const posts = JSON.parse(localStorage.getItem("blog-posts") || "[]");
     posts.push({
-      title: summaryTitle,
-      content: summaryResult,
+      title: selectedSummary.title,
+      content: selectedSummary.content,
       createdAt: new Date().toISOString(),
     });
     localStorage.setItem("blog-posts", JSON.stringify(posts));
@@ -181,11 +186,10 @@ export default function GithubPage() {
                     owner={owner}
                     repo={repo}
                     onSummary={(title, summary) => {
-                      setSummaryTitle(title);
-                      setSummaryResult(summary);
+                      setSelectedSummary({ title, content: summary })
                     }}
                   />
-                  {commitsFetch.data.length >= 10 && (
+                  {commitsFetch.data.length >= ITEMS_PER_PAGE && (
                     <button
                       onClick={handleLoadMoreCommits}
                       className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
@@ -204,8 +208,7 @@ export default function GithubPage() {
                     repo={repo}
                     onOpenDetail={openPRDetail}
                     onSummary={(title, summary) => {
-                      setSummaryTitle(title);
-                      setSummaryResult(summary);
+                      setSelectedSummary({ title, content: summary })
                     }}
                   />
                   {prsFetch.data.length >= 10 && (
@@ -221,8 +224,8 @@ export default function GithubPage() {
             </div>
 
             <SummaryPanel
-              title={summaryTitle}
-              summary={summaryResult}
+              title={selectedSummary?.title ?? ""}
+              summary={selectedSummary?.content ?? ""}
               onSave={handleSaveSummary}
             />
           </div>
