@@ -16,8 +16,39 @@ import {
 import type { Activity } from './types';
 import type { Post } from './api.types';
 
+type Settings = {
+  language: 'ko' | 'en';
+  tone: 'blog' | 'concise';
+  defaultSinceDays: number;
+};
+
 export default function App() {
-  const [view, setView] = useState<'activities' | 'saved'>('activities');
+  const [view, setView] = useState<'activities' | 'saved' | 'settings'>(
+    'activities',
+  );
+
+  const [settings, setSettings] = useState<Settings>(() => {
+    if (typeof window === 'undefined') {
+      return { language: 'ko', tone: 'blog', defaultSinceDays: 90 };
+    }
+    try {
+      const raw = window.localStorage.getItem('smartblog:settings');
+      if (!raw) return { language: 'ko', tone: 'blog', defaultSinceDays: 90 };
+      const parsed = JSON.parse(raw) as Settings;
+      return {
+        language: parsed.language ?? 'ko',
+        tone: parsed.tone ?? 'blog',
+        defaultSinceDays: parsed.defaultSinceDays ?? 90,
+      };
+    } catch {
+      return { language: 'ko', tone: 'blog', defaultSinceDays: 90 };
+    }
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem('smartblog:settings', JSON.stringify(settings));
+  }, [settings]);
 
   const [items, setItems] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
@@ -87,7 +118,11 @@ export default function App() {
     setSaveMessage(undefined);
     setSummaryLoadingId(item.id);
     try {
-      const markdown = await summarizeActivities([item], 'ko', 'blog');
+      const markdown = await summarizeActivities(
+        [item],
+        settings.language,
+        settings.tone,
+      );
       setSummary(markdown);
     } catch (e: any) {
       setSummaryError(e?.message ?? 'AI 요약 생성 실패');
@@ -136,7 +171,13 @@ export default function App() {
           >
             Recent Commits
           </button>
-          <button type="button" className="nav-btn" disabled>
+          <button
+            type="button"
+            className={`nav-btn${
+              view === 'settings' ? ' nav-btn--active' : ''
+            }`}
+            onClick={() => setView('settings')}
+          >
             Settings
           </button>
         </nav>
@@ -146,7 +187,10 @@ export default function App() {
         {view === 'activities' && (
           <>
             <section className="search-section">
-              <RepoForm onSearch={onSearch} />
+              <RepoForm
+                onSearch={onSearch}
+                defaultSinceDays={settings.defaultSinceDays}
+              />
               {loading && <Loader />}
               {error && <ErrorBanner msg={error} />}
             </section>
@@ -289,6 +333,107 @@ export default function App() {
                   </div>
                 </div>
               )}
+            </div>
+          </section>
+        )}
+
+        {view === 'settings' && (
+          <section className="settings-section">
+            <div className="column settings-column">
+              <h2 className="column-title">Settings</h2>
+              <form className="settings-form" onSubmit={(e) => e.preventDefault()}>
+                <div className="settings-group">
+                  <div className="settings-label">요약 언어 (Language)</div>
+                  <div className="settings-row">
+                    <label className="settings-option">
+                      <input
+                        type="radio"
+                        name="language"
+                        value="ko"
+                        checked={settings.language === 'ko'}
+                        onChange={() =>
+                          setSettings((s) => ({ ...s, language: 'ko' }))
+                        }
+                      />
+                      <span>한국어</span>
+                    </label>
+                    <label className="settings-option">
+                      <input
+                        type="radio"
+                        name="language"
+                        value="en"
+                        checked={settings.language === 'en'}
+                        onChange={() =>
+                          setSettings((s) => ({ ...s, language: 'en' }))
+                        }
+                      />
+                      <span>English</span>
+                    </label>
+                  </div>
+                  <p className="settings-help">
+                    AI Summary가 생성되는 언어를 선택합니다.
+                  </p>
+                </div>
+
+                <div className="settings-group">
+                  <div className="settings-label">요약 톤 (Tone)</div>
+                  <div className="settings-row">
+                    <label className="settings-option">
+                      <input
+                        type="radio"
+                        name="tone"
+                        value="blog"
+                        checked={settings.tone === 'blog'}
+                        onChange={() =>
+                          setSettings((s) => ({ ...s, tone: 'blog' }))
+                        }
+                      />
+                      <span>Blog (자유로운 블로그 스타일)</span>
+                    </label>
+                    <label className="settings-option">
+                      <input
+                        type="radio"
+                        name="tone"
+                        value="concise"
+                        checked={settings.tone === 'concise'}
+                        onChange={() =>
+                          setSettings((s) => ({ ...s, tone: 'concise' }))
+                        }
+                      />
+                      <span>Concise (간결한 요약)</span>
+                    </label>
+                  </div>
+                  <p className="settings-help">
+                    블로그 글 느낌의 자유로운 요약 또는 간결한 요약 중 선택할 수
+                    있습니다.
+                  </p>
+                </div>
+
+                <div className="settings-group">
+                  <div className="settings-label">기본 조회 기간</div>
+                  <select
+                    className="repo-since"
+                    value={settings.defaultSinceDays}
+                    onChange={(e) =>
+                      setSettings((s) => ({
+                        ...s,
+                        defaultSinceDays: Number(e.target.value),
+                      }))
+                    }
+                  >
+                    <option value={14}>최근 14일</option>
+                    <option value={30}>최근 30일</option>
+                    <option value={90}>최근 90일</option>
+                    <option value={180}>최근 180일</option>
+                    <option value={365}>최근 1년</option>
+                    <option value={0}>전체</option>
+                  </select>
+                  <p className="settings-help">
+                    새로 검색할 때 기본으로 선택되는 기간입니다. Repo 입력창 오른쪽
+                    드롭다운과 연동됩니다.
+                  </p>
+                </div>
+              </form>
             </div>
           </section>
         )}

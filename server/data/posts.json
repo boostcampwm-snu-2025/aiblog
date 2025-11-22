@@ -1,5 +1,27 @@
 [
   {
+    "id": "wpquVmSpQb6n",
+    "createdAt": "2025-11-22T13:43:46.046Z",
+    "updatedAt": "2025-11-22T13:43:46.046Z",
+    "title": "[컴퓨터공학부_유주성] 가계부 만들기 2주차",
+    "markdown": "# Executive Summary\n\nIn the second week of developing a personal finance management application, significant progress was made in enhancing the user interface, implementing core features, and refactoring the codebase for improved readability and maintainability. The integration of AI tools facilitated a more efficient development process, particularly in code refactoring and documentation.\n\n## Highlights\n- **Completed Tasks:**\n  - Main screen components: Header, input box, and list view.\n  - Calendar and statistics features implemented.\n  - Comprehensive code refactoring using AI:\n    - Improved variable name readability.\n    - Documented components and functions.\n    - Organized code structure and formatting.\n  - Enhanced functionality:\n    - Improved modal event handler.\n    - Optimized component dependencies.\n\n- **Challenges and Solutions:**\n  - Addressed readability issues caused by abbreviated variable names.\n  - Managed dependencies in the Modal component's `useEffect` to prevent unnecessary re-renders.\n  - Standardized comment styles across files using JSDoc.\n\n- **AI Utilization:**\n  - Leveraged AI for consistent refactoring across a large codebase.\n  - Received assistance in explaining complex logic.\n  - Actively used AI for code review and improvement suggestions.\n\n## What I Learned\nThis week reinforced the importance of code readability and maintainability, especially when working in a team setting. The feedback regarding variable names highlighted the need for clarity, which can significantly ease future maintenance. Additionally, managing dependencies in React components is crucial to avoid performance issues. The use of AI tools proved invaluable in streamlining the refactoring process and ensuring consistency across the codebase.\n\nFor more details, check out the [GitHub Pull Request](https://github.com/boostcampwm-snu-2025/bye2money/pull/29).",
+    "tags": [
+      "github",
+      "pr"
+    ]
+  },
+  {
+    "id": "o24f3Gu63NRg",
+    "createdAt": "2025-11-22T13:40:30.578Z",
+    "updatedAt": "2025-11-22T13:40:30.578Z",
+    "title": "[컴퓨터공학부_유주성] 넷플릭스 검색 기능 구현",
+    "markdown": "# 넷플릭스 검색 기능 구현\n\n## Executive Summary\n이번 포스트에서는 넷플릭스의 검색 기능 구현 과정에 대해 다루고, 주요 작업 목록 및 고민했던 점들을 공유하고자 합니다. 검색창 애니메이션, 검색 결과 노출, 최근 검색어 기능을 포함하여, 개발 과정에서의 AI 활용 경험도 함께 언급하겠습니다.\n\n## Highlights\n- **완료 작업 목록**\n  - 서버 응답 처리\n  - 검색 결과 노출 기능 구현\n  - 검색창 기능 구현\n    - 애니메이션 추가\n    - 최근 검색어 기능 구현\n- **고민과 해결 과정**\n  - 초기 설계서와 변경 사항 반영\n  - Express 환경 구성에 대한 이해\n  - AI의 도움을 통한 구현 아이디어 도출\n- **AI 활용 경험**\n  - Express 서버 생성 도움\n  - 검색 결과창 대체 아이디어\n  - 최근 검색어 레이어 구현 아이디어\n\n## What I Learned\n이번 프로젝트를 통해 데이터 통신과 서버 환경에 대한 이해를 높일 수 있었습니다. 특히, AI를 활용하여 다양한 구현 아이디어를 얻을 수 있었고, 설계서를 수정하는 과정에서 유연한 사고의 중요성을 깨달았습니다. 이러한 경험들은 앞으로의 개발 작업에 큰 도움이 될 것이라 확신합니다.\n\n더 자세한 내용은 [여기서 확인하세요](https://github.com/boostcampwm-snu-2025/netflix-clone/pull/113).",
+    "tags": [
+      "github",
+      "pr"
+    ]
+  },
+  {
     "id": "VlXQ7GUp5-Ph",
     "createdAt": "2025-11-22T13:37:48.490Z",
     "updatedAt": "2025-11-22T13:37:48.490Z",

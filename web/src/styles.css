@@ -90,6 +90,10 @@ body {
   margin-bottom: 16px;
 }
 
+.settings-section {
+  margin-top: 8px;
+}
+
 .repo-form {
   display: flex;
   gap: 8px;
@@ -139,6 +143,10 @@ body {
   border: 1px solid var(--border-subtle);
   padding: 16px;
   min-height: 360px;
+}
+
+.settings-column {
+  max-width: 640px;
 }
 
 .column-title {
@@ -412,6 +420,43 @@ body {
 }
 
 .save-message {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.settings-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.settings-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.settings-help {
+  margin: 0;
   font-size: 12px;
   color: var(--text-muted);
 }

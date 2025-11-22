@@ -1,12 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export function RepoForm({
   onSearch,
+  defaultSinceDays = 90,
 }: {
   onSearch: (owner: string, repo: string, sinceDays: number) => void;
+  defaultSinceDays?: number;
 }) {
   const [repoPath, setRepoPath] = useState('');
-  const [since, setSince] = useState(90); // 기본 90일
+  const [since, setSince] = useState(defaultSinceDays); // 기본 값
+
+  useEffect(() => {
+    setSince(defaultSinceDays);
+  }, [defaultSinceDays]);
 
   return (
     <form
