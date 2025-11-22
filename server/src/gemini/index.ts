@@ -20,14 +20,17 @@ function getFilePath(owner: string, repo: string, ref: string) {
 
 router.get("/summaries", async (req, res) => {
 	const dirs = await fs.readdir(DATA_PATH, { recursive: true });
-	const summaries = dirs.reduce<{ owner: string; repo: string; ref: string }[]>((acc, dir) => {
-		const [owner, repo, ref] = dir.split("/", 3);
-		if (owner === undefined || repo === undefined || ref === undefined) {
-			return acc;
-		}
-		return [...acc, { owner, repo, ref }];
-	}, []);
-	
+	const summaries = dirs.reduce<{ owner: string; repo: string; ref: string }[]>(
+		(acc, dir) => {
+			const [owner, repo, ref] = dir.split("/", 3);
+			if (owner === undefined || repo === undefined || ref === undefined) {
+				return acc;
+			}
+			return [...acc, { owner, repo, ref }];
+		},
+		[],
+	);
+
 	res.status(200).json(summaries);
 });
 

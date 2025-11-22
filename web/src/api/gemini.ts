@@ -1,4 +1,8 @@
-import { mutationOptions, type QueryClient, queryOptions } from "@tanstack/react-query";
+import {
+  mutationOptions,
+  type QueryClient,
+  queryOptions,
+} from "@tanstack/react-query";
 
 export function createCommitSummary(queryClient: QueryClient) {
   return mutationOptions({
@@ -92,8 +96,11 @@ export function readCommitSummaries() {
       if (!response.ok) {
         throw new Error(response.statusText);
       }
-      const data =
-        (await response.json()) as { owner: string; ref: string; repo: string; }[];
+      const data = (await response.json()) as {
+        owner: string;
+        ref: string;
+        repo: string;
+      }[];
       return data;
     },
     queryKey: ["summaries"],
