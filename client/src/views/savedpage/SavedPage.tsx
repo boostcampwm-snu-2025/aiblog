@@ -1,7 +1,7 @@
 import React from "react";
 import SectionTitle from "../../components/SectionTitle";
 import Typography from "../../components/Typography";
-import { useSavedPosts } from "../context/SavedPostContext";
+import { useSavedPosts } from "../contexts/SavedPostContext";
 import SavedPostItem from "./SavedPostItem";
 
 const SavedPostsPage: React.FC = () => {

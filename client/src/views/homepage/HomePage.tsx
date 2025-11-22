@@ -6,7 +6,8 @@ import CommitListSection from "./CommitListSection";
 import SummarySection from "./SummarySection";
 import PromptModal from "./PromptModal";
 import { type CommitNode, type GitHubApiResponse } from "../../libs/types";
-import { useSavedPosts } from "../context/SavedPostContext";
+import { useGitHub } from "../contexts/GitHubContext";
+import { useSavedPosts } from "../contexts/SavedPostContext";
 
 // 개발 환경(DEV)에서는 Vite 프록시를 사용하므로 상대 경로('')를 사용합니다.
 // 프로덕션 빌드(PROD) 시에만 .env의 실제 API 주소를 사용합니다.
@@ -23,11 +24,7 @@ Respond in 1-2 sentences. Keep the summary technical but clear.
 `.trim();
 
 const HomePage: React.FC = () => {
-    const [owner, setOwner] = useState<string>("");
-    const [repo, setRepo] = useState<string>("");
-    const [commits, setCommits] = useState<CommitNode[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
+    const { owner, repo, commits, loading, error, dispatch } = useGitHub();
 
     const [selectedCommit, setSelectedCommit] = useState<CommitNode | null>(
         null
@@ -42,9 +39,7 @@ const HomePage: React.FC = () => {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        setLoading(true);
-        setError(null);
-        setCommits([]);
+        dispatch({ type: "FETCH_START" });
         setSelectedCommit(null);
         setAiSummary("");
 
@@ -66,18 +61,22 @@ const HomePage: React.FC = () => {
                     ?.history?.edges;
 
             if (data) {
-                setCommits(data);
+                dispatch({ type: "FETCH_SUCCESS", payload: data });
                 if (data.length > 0) {
                     setSelectedCommit(data[0]);
                 }
             } else {
-                setError("Repository not found or no commits.");
+                dispatch({
+                    type: "FETCH_ERROR",
+                    payload: "Repository not found or no commits.",
+                });
             }
         } catch (err) {
-            setError("Failed to fetch data from server.");
+            dispatch({
+                type: "FETCH_ERROR",
+                payload: "Failed to fetch data from server.",
+            });
             console.error(err);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -138,8 +137,18 @@ const HomePage: React.FC = () => {
                 repo={repo}
                 loading={loading}
                 onSubmit={handleSubmit}
-                onOwnerChange={setOwner}
-                onRepoChange={setRepo}
+                onOwnerChange={(val) =>
+                    dispatch({
+                        type: "SET_INPUTS",
+                        payload: { owner: val, repo },
+                    })
+                }
+                onRepoChange={(val) =>
+                    dispatch({
+                        type: "SET_INPUTS",
+                        payload: { owner, repo: val },
+                    })
+                }
             />
 
             <div className="flex items-start divide-x justify-between py-8">
