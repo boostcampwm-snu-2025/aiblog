@@ -18,6 +18,7 @@ class RepoService:
             self._gemini_model = genai.GenerativeModel(self._gemini_model_name)
 
     async def get_user_public_repos(self, access_token: str) -> list[dict]:
+        print(f"Using Access Token: {access_token[:10]}...")
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 f"{AUTH_SETTINGS.GITHUB_API_URL}/user/repos?type=public",
