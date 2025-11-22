@@ -10,7 +10,8 @@ type PostsState = Post[];
 
 type Action =
   | { type: "ADD_POST"; payload: Post }
-  | { type: "DELETE_POST"; payload: string }; // createdAt or id
+  | { type: "DELETE_POST"; payload: string }
+  | { type: "EDIT_POST"; payload: Post };
 
 function postsReducer(state: PostsState, action: Action): PostsState {
   switch (action.type) {
@@ -19,6 +20,11 @@ function postsReducer(state: PostsState, action: Action): PostsState {
 
     case "DELETE_POST":
       return state.filter(post => post.createdAt !== action.payload);
+
+    case "EDIT_POST":
+      return state.map(post =>
+        post.createdAt === action.payload.createdAt ? action.payload : post
+      );
 
     default:
       return state;
