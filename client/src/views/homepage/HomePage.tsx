@@ -5,6 +5,7 @@ import RepoForm from "./RepoForm";
 import CommitListSection from "./CommitListSection";
 import SummarySection from "./SummarySection";
 import PromptModal from "./PromptModal";
+import AlertModal from "../../components/AlertModal";
 import { type CommitNode, type GitHubApiResponse } from "../../libs/types";
 import { useGitHub } from "../contexts/GitHubContext";
 import { useSavedPosts } from "../contexts/SavedPostContext";
@@ -33,6 +34,9 @@ const HomePage: React.FC = () => {
     const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
 
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isSuccessModalOpen, setIsSuccessModalOpen] =
+        useState<boolean>(false);
+
     const [customPrompt, setCustomPrompt] = useState<string>(DEFAULT_PROMPT);
 
     const { addPost } = useSavedPosts();
@@ -115,7 +119,7 @@ const HomePage: React.FC = () => {
         addPost(newPost);
 
         // 사용자 알림
-        alert("블로그 글이 저장되었습니다! (Saved Posts 메뉴에서 확인 가능)");
+        setIsSuccessModalOpen(true);
     };
 
     // 커밋을 선택하고, 기존 AI 요약 내용과 로딩 상태를 초기화합니다.
@@ -174,6 +178,12 @@ const HomePage: React.FC = () => {
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleSavePrompt}
                 currentPrompt={customPrompt}
+            />
+            <AlertModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => setIsSuccessModalOpen(false)}
+                title="저장 완료"
+                message="블로그 글이 성공적으로 저장되었습니다! Saved Posts 메뉴에서 확인하실 수 있습니다."
             />
         </>
     );
