@@ -150,10 +150,15 @@ class RepoService:
 
         prompt = f"""
 You are an assistant helping developers summarize key GitHub changes.
-Summarize the {descriptor} below in Korean with the following structure:
-1. **요약** – 2 문장으로 전체 변화를 설명합니다.
-2. **주요 변경 사항** – bullet 리스트 (최대 4개)로 핵심 수정 사항을 적습니다.
-3. **영향 및 후속 조치** – 잠재적인 영향이나 필요한 후속 작업을 1문장으로 설명합니다.
+Please write a {descriptor} summary with Korean that:
+1. Has an engaging title
+2. Provides an overview of the changes
+3. Explains the technical details in an accessible way
+4. Highlights the key improvements or features
+5. Is written in a professional but friendly tone
+6. Is approximately 300-500 words
+
+Format the output as markdown with the title as an H1 heading.
 
 Repository: {repo_path}
 Author: {author}
