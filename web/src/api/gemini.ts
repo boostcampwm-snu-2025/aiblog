@@ -24,10 +24,10 @@ export function createCommitSummary(queryClient: QueryClient) {
     onSettled: async (_data, _error, { owner, ref, repo }) => {
       await Promise.all([
         queryClient.invalidateQueries({
-          queryKey: ["summary-exists", owner, repo, ref],
+          queryKey: ["summaries"],
         }),
         queryClient.invalidateQueries({
-          queryKey: ["summary", owner, repo, ref],
+          queryKey: ["summary-exists", owner, repo, ref],
         }),
       ]);
     },
@@ -56,10 +56,10 @@ export function deleteCommitSummary(queryClient: QueryClient) {
     onSettled: async (_data, _error, { owner, ref, repo }) => {
       await Promise.all([
         queryClient.invalidateQueries({
-          queryKey: ["summary-exists", owner, repo, ref],
+          queryKey: ["summaries"],
         }),
         queryClient.invalidateQueries({
-          queryKey: ["summary", owner, repo, ref],
+          queryKey: ["summary-exists", owner, repo, ref],
         }),
       ]);
     },
@@ -85,6 +85,21 @@ export function existsCommitSummary(owner: string, repo: string, ref: string) {
   });
 }
 
+export function readCommitSummaries() {
+  return queryOptions({
+    queryFn: async ({ signal }) => {
+      const response = await fetch(`/api/gemini/summaries`, { signal });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      const data =
+        (await response.json()) as { owner: string; ref: string; repo: string; }[];
+      return data;
+    },
+    queryKey: ["summaries"],
+  });
+}
+
 export function readCommitSummary(owner: string, repo: string, ref: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
@@ -98,6 +113,6 @@ export function readCommitSummary(owner: string, repo: string, ref: string) {
       const data = await response.text();
       return data;
     },
-    queryKey: ["summary", owner, repo, ref],
+    queryKey: ["summaries", owner, repo, ref],
   });
 }

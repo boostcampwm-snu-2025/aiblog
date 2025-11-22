@@ -18,6 +18,19 @@ function getFilePath(owner: string, repo: string, ref: string) {
 	return `${DATA_PATH}/${owner}/${repo}/${ref}.txt`;
 }
 
+router.get("/summaries", async (req, res) => {
+	const dirs = await fs.readdir(DATA_PATH, { recursive: true });
+	const summaries = dirs.reduce<{ owner: string; repo: string; ref: string }[]>((acc, dir) => {
+		const [owner, repo, ref] = dir.split("/", 3);
+		if (owner === undefined || repo === undefined || ref === undefined) {
+			return acc;
+		}
+		return [...acc, { owner, repo, ref }];
+	}, []);
+	
+	res.status(200).json(summaries);
+});
+
 router.get("/summaries/:owner/:repo/commits/:ref", async (req, res) => {
 	const params = summarySchema.parse(req.params);
 	const data = await fs.readFile(
