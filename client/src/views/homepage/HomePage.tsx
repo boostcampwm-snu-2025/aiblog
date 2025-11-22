@@ -6,6 +6,7 @@ import CommitListSection from "./CommitListSection";
 import SummarySection from "./SummarySection";
 import PromptModal from "./PromptModal";
 import { type CommitNode, type GitHubApiResponse } from "../../libs/types";
+import { useSavedPosts } from "../context/SavedPostContext";
 
 // 개발 환경(DEV)에서는 Vite 프록시를 사용하므로 상대 경로('')를 사용합니다.
 // 프로덕션 빌드(PROD) 시에만 .env의 실제 API 주소를 사용합니다.
@@ -36,6 +37,8 @@ const HomePage: React.FC = () => {
 
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [customPrompt, setCustomPrompt] = useState<string>(DEFAULT_PROMPT);
+
+    const { addPost } = useSavedPosts();
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -99,7 +102,21 @@ const HomePage: React.FC = () => {
     };
 
     const handleSavePost = () => {
-        alert("Blog post saved!");
+        if (!selectedCommit || !aiSummary) return;
+
+        // 저장할 데이터 객체 생성
+        const newPost = {
+            id: selectedCommit.node.oid, // 커밋 해시를 ID로 사용
+            commit: selectedCommit,
+            aiSummary: aiSummary,
+            savedAt: new Date().toISOString(),
+        };
+
+        // Context(전역 상태)에 추가
+        addPost(newPost);
+
+        // 사용자 알림
+        alert("블로그 글이 저장되었습니다! (Saved Posts 메뉴에서 확인 가능)");
     };
 
     // 커밋을 선택하고, 기존 AI 요약 내용과 로딩 상태를 초기화합니다.
