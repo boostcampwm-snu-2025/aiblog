@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { GitCommit } from "lucide-react";
+import { Clock, GitCommit } from "lucide-react";
 
 import { readCommitSummaries } from "~/api/gemini";
 import {
@@ -36,7 +36,7 @@ function SummariesList() {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {summaries.map(({ owner, ref, repo }) => (
+          {summaries.map(({ generatedAt, owner, ref, repo }) => (
             <Link
               className="block"
               key={`${owner}/${repo}/${ref}`}
@@ -48,11 +48,17 @@ function SummariesList() {
                   <CardTitle className="text-lg">
                     {owner}/{repo}
                   </CardTitle>
-                  <CardDescription className="flex items-center gap-2">
-                    <GitCommit className="h-4 w-4" />
-                    <code className="rounded bg-muted px-2 py-1 text-xs">
-                      {ref.slice(0, 7)}
-                    </code>
+                  <CardDescription className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <GitCommit className="h-4 w-4" />
+                      <code className="rounded bg-muted px-2 py-1 text-xs">
+                        {ref.slice(0, 7)}
+                      </code>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs">
+                      <Clock className="h-3 w-3" />
+                      {generatedAt.fromNow()}
+                    </div>
                   </CardDescription>
                 </CardHeader>
               </Card>

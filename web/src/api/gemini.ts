@@ -3,6 +3,7 @@ import {
   type QueryClient,
   queryOptions,
 } from "@tanstack/react-query";
+import dayjs from "dayjs";
 
 export function createCommitSummary(queryClient: QueryClient) {
   return mutationOptions({
@@ -78,11 +79,15 @@ export function readCommitSummaries() {
         throw new Error(response.statusText);
       }
       const data = (await response.json()) as {
+        generatedAt: string;
         owner: string;
         ref: string;
         repo: string;
       }[];
-      return data;
+      return data.map((item) => ({
+        ...item,
+        generatedAt: dayjs(item.generatedAt),
+      }));
     },
     queryKey: ["summaries"],
   });

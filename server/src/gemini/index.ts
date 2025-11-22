@@ -22,15 +22,33 @@ function getFilePath(owner: string, repo: string, ref: string) {
 }
 
 router.get("/summaries", async (_req, res) => {
-	const dirs = await fs.readdir(DATA_PATH, { recursive: true });
-	const summaries: { owner: string; repo: string; ref: string }[] = [];
-	dirs.forEach((dir) => {
-		const [owner, repo, ref] = dir.split("/", 3);
-
-		if (owner === undefined || repo === undefined || ref === undefined) {
-			return;
+	const dirs = await fs.readdir(DATA_PATH, {
+		recursive: true,
+		withFileTypes: true,
+	});
+	const summaries: {
+		generatedAt: string;
+		owner: string;
+		ref: string;
+		repo: string;
+	}[] = [];
+	const info = await Promise.all(
+		dirs.map(async (dir) => {
+			const [owner, repo] = dir.parentPath.split("/", 2);
+			const filename = dir.name;
+			if (owner === undefined || repo === undefined || !dir.isFile()) {
+				return null;
+			}
+			const ref = filename.replace(/\.txt$/, "");
+			const stat = await fs.stat(getFilePath(owner, repo, ref));
+			const generatedAt = stat.mtime.toISOString();
+			return { owner, repo, ref, generatedAt };
+		}),
+	);
+	info.forEach((item) => {
+		if (item !== null) {
+			summaries.push(item);
 		}
-		summaries.push({ owner, repo, ref });
 	});
 	res.status(200).json(summaries);
 });
