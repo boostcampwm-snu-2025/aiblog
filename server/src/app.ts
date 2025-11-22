@@ -25,6 +25,11 @@ app.use(express.json());
 app.use("/api/github", githubRouter);
 app.use("/api/gemini", geminiRouter);
 
+// SPA fallback: serve index.html for all non-API routes
+app.use((_req, res) => {
+	res.sendFile(path.join(__dirname, "../../web/dist/index.html"));
+});
+
 app.listen(env.PORT, () => {
 	console.log(` Server on http://localhost:${env.PORT}`);
 });
