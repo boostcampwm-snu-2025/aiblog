@@ -1,7 +1,8 @@
-# Server - Backend API (2주차: LLM 연동)
+# Server - Backend API (2–3주차: LLM 연동 & 포스트 API)
 
-Smart Blog의 백엔드 API 서버입니다. Express.js와 TypeScript로 구축되었으며, GitHub API 통합 및 **LLM 기반 블로그 요약 생성** 기능을 제공합니다.  
-프론트엔드에서 선택한 커밋/PR 정보로 AI 블로그 글을 만들고, 이를 로컬 JSON 스토리지에 포스트로 저장합니다.
+Smart Blog의 백엔드 API 서버입니다. Express.js와 TypeScript로 구축되었으며, GitHub API 통합 및 LLM 기반 블로그 요약 생성 기능을 제공합니다.  
+프론트엔드에서 선택한 커밋/PR 정보로 AI 블로그 글을 만들고, 이를 로컬 JSON 스토리지(`data/posts.json`)에 포스트로 저장하는 API도 제공합니다.  
+3주차 기준 웹 애플리케이션은 기본적으로 브라우저 `localStorage`를 사용해 포스트를 저장하지만, 서버 API는 확장/공유 목적에 맞게 선택적으로 사용할 수 있습니다.
 
 ## 디렉토리 구조
 
@@ -36,7 +37,7 @@ ETag를 활용한 캐싱으로 GitHub API 호출을 최적화합니다.
 
 ### AI 요약 / 블로그 생성
 
-`summarize.ts` 모듈은 OpenAI Chat Completions API를 사용하여 **선택한 GitHub 활동(커밋/PR)** 을 분석하고, 블로그 포스트 형식의 마크다운을 생성합니다.  
+`summarize.ts` 모듈은 OpenAI Chat Completions API를 사용하여 선택한 GitHub 활동(커밋/PR)을 분석하고, 블로그 포스트 형식의 마크다운을 생성합니다.  
 Smart Blog UI에서 *Generate Summary* 버튼을 클릭하면 이 엔드포인트가 호출되고, 생성된 마크다운은 웹에서 미리보기 후 *Save as Blog Post* 로 저장할 수 있습니다.
 
 ### 포스트 관리
