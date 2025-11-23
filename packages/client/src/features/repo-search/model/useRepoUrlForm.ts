@@ -1,6 +1,13 @@
 import { useState, type FormEventHandler } from "react";
 
-export function useRepoUrlForm() {
+export type UseRepoUrlFormReturn = {
+  repoUrl: string;
+  setRepoUrl: (url: string) => void;
+  submittedRepoUrl: string | undefined;
+  onSubmitUrl: FormEventHandler<HTMLFormElement>;
+};
+
+export function useRepoUrlForm(): UseRepoUrlFormReturn {
   const [repoUrl, setRepoUrl] = useState("");
   const [submittedRepoUrl, setSubmittedRepoUrl] = useState<string>();
 
