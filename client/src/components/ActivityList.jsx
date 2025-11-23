@@ -1,6 +1,10 @@
+import { useAppContext } from '../contexts/AppContext';
 import './ActivityList.css';
 
-function ActivityList({ activities, repoInfo, onSelectActivity, selectedActivity }) {
+function ActivityList() {
+  // ========== Context에서 필요한 상태와 함수 가져오기 ==========
+  const { activities, repoInfo, selectedActivity, selectActivity } = useAppContext();
+
   if (activities.length === 0) {
     return null;
   }
@@ -17,7 +21,7 @@ function ActivityList({ activities, repoInfo, onSelectActivity, selectedActivity
           <div
             key={activity.id}
             className={`activity-item ${selectedActivity?.id === activity.id ? 'selected' : ''}`}
-            onClick={() => onSelectActivity(activity)}
+            onClick={() => selectActivity(activity)}
           >
             <div className="activity-type-badge">
               {activity.type === 'commit' ? '📝 커밋' : '🔀 PR'}

@@ -1,8 +1,18 @@
+import { useAppContext } from '../contexts/AppContext';
 import BlogPost from './BlogPost';
 import './ActivityDetail.css';
 
-function ActivityDetail({ activity, onGenerateBlog, isGenerating, generatedBlog, onCloseBlog }) {
-  if (!activity && !generatedBlog) {
+function ActivityDetail({ onSaveBlog }) {
+  // ========== Context에서 필요한 상태와 함수 가져오기 ==========
+  const {
+    selectedActivity,
+    generatedBlog,
+    isGenerating,
+    generateBlog,
+    closeBlog
+  } = useAppContext();
+
+  if (!selectedActivity && !generatedBlog) {
     return (
       <div className="activity-detail-empty">
         <div className="empty-content">
@@ -16,8 +26,10 @@ function ActivityDetail({ activity, onGenerateBlog, isGenerating, generatedBlog,
 
   // 블로그가 생성되면 블로그를 보여줌
   if (generatedBlog) {
-    return <BlogPost blog={generatedBlog} onClose={onCloseBlog} />;
+    return <BlogPost onSave={onSaveBlog} />;
   }
+
+  const activity = selectedActivity;
 
   // 선택된 활동의 상세 정보 표시
   return (
@@ -66,7 +78,7 @@ function ActivityDetail({ activity, onGenerateBlog, isGenerating, generatedBlog,
       <div className="detail-actions">
         <button
           className="btn-generate-blog"
-          onClick={() => onGenerateBlog(activity)}
+          onClick={() => generateBlog(activity)}
           disabled={isGenerating}
         >
           {isGenerating ? (
