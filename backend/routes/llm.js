@@ -3,6 +3,7 @@ import { ai } from '../lib.js';
 
 const router = express.Router();
 
+// POST /llm/create-blog: Generate blog content using Gemini API 
 router.post('/create-blog', express.json(), async (req, res) => {
   const { source, item, repo } = req.body || {};
 

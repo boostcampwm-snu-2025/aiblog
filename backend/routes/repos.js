@@ -3,7 +3,7 @@ import { octokit } from '../lib.js';
 
 const router = express.Router();
 
-// GET /api/repos
+// GET /github/repos
 router.get('/repos', async (req, res) => {
   try {
     const response = await octokit.request('GET /user/repos', {

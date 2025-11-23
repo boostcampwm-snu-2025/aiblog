@@ -3,7 +3,7 @@ import { readBlogs, writeBlogs } from '../lib.js';
 
 const router = express.Router();
 
-// Save a generated blog
+// POST /blogs: Save a generated blog
 router.post('/', async (req, res) => {
   const { title, content, source, repo, item } = req.body || {};
   if (!title || !content) return res.status(400).json({ error: 'Missing title or content' });
