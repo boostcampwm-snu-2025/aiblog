@@ -1,20 +1,24 @@
 import { useSearchParams } from "react-router";
 
-import { usePullRequests } from "@/features/search/api/useQueryPullRequests";
+import { useQueryPullRequests } from "@/features/search/api/useQueryPullRequests";
 import RepositorySearchBar from "@/features/search/components/RepositorySearchBar";
 import SearchResult from "@/features/search/components/SearchResult";
 import Divider from "@/shared/ui/Divider";
 import { ErrorFallback, LoadingFallback } from "@/shared/ui/Fallback";
+import Pagination from "@/shared/ui/Pagination";
+
+const DEFAULT_PAGE = 1;
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const owner = searchParams.get("owner") ?? "";
   const repository = searchParams.get("repository") ?? "";
+  const page = Number(searchParams.get("page") ?? DEFAULT_PAGE.toString());
 
   const hasSearchParams = owner !== "" && repository !== "";
 
-  const { data: pullRequests, status } = usePullRequests({
-    params: { owner, repository },
+  const { data, status } = useQueryPullRequests({
+    params: { owner, repository, page },
     queryConfig: { enabled: hasSearchParams },
   });
 
@@ -26,6 +30,15 @@ export default function SearchPage() {
     setSearchParams({
       owner,
       repository,
+      page: DEFAULT_PAGE.toString(), // 새 검색 시 기본 페이지로
+    });
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setSearchParams({
+      owner,
+      repository,
+      page: newPage.toString(),
     });
   };
 
@@ -38,7 +51,12 @@ export default function SearchPage() {
           <>
             {status === "pending" && <LoadingFallback message="PR 목록을 불러오는 중..." />}
             {status === "error" && <ErrorFallback />}
-            {status === "success" && <SearchResult owner={owner} repository={repository} pullRequests={pullRequests} />}
+            {status === "success" && (
+              <div className="space-y-6">
+                <SearchResult owner={owner} repository={repository} pullRequests={data.data} />
+                <Pagination pagination={data.pagination} onPageChange={handlePageChange} />
+              </div>
+            )}
           </>
         ) : (
           <div>레포지토리를 검색해보세요.</div>

@@ -25,8 +25,7 @@ type UseAiPostOptions = {
   queryConfig?: QueryConfig<GetAiPostResponse>;
 };
 
-// TODO: 쿼리키 상수로 관리
-export const useAiPost = ({ params, queryConfig }: UseAiPostOptions) => {
+export const useQueryAiPost = ({ params, queryConfig }: UseAiPostOptions) => {
   return useQuery({
     queryKey: ["aiPost", ...Object.values(params)] as const,
     queryFn: () => getAiPost(params),
