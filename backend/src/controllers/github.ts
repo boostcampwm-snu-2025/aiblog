@@ -7,7 +7,9 @@ import {
   SimplifiedCommit,
   SimplifiedPullRequest,
   SimplifiedPullRequestDetail,
+  PaginatedResponse,
 } from "../types/github.js";
+import { createPaginationInfo } from "../utils/linkHeader.js";
 
 // PR 상태 판별 함수
 const getPRStatus = (
@@ -34,6 +36,8 @@ type GetPRListParams = {
 
 type GetPRListQuery = {
   state?: string;
+  page?: string;
+  per_page?: string;
 };
 
 // PR 목록 조회
@@ -43,12 +47,24 @@ export const getPRList = async (
 ) => {
   try {
     const { owner, repo } = req.params;
-    const { state = "all" } = req.query;
+    const { state = "all", page = "1", per_page = "30" } = req.query;
 
-    const data = await fetchGithubData<GitHubPullRequest[]>(
-      `/repos/${owner}/${repo}/pulls?state=${state}&per_page=10`
+    // 페이지네이션 파라미터 검증
+    const pageNum = parseInt(page, 10);
+    const perPageNum = parseInt(per_page, 10);
+
+    if (pageNum < 1 || perPageNum < 1 || perPageNum > 100) {
+      res.status(400).json({
+        error: "Invalid pagination parameters",
+      });
+      return;
+    }
+
+    const { data, headers } = await fetchGithubData<GitHubPullRequest[]>(
+      `/repos/${owner}/${repo}/pulls?state=${state}&page=${pageNum}&per_page=${perPageNum}`
     );
 
+    // PR 데이터 간소화
     const simplified: SimplifiedPullRequest[] = data.map((pr) => ({
       id: pr.id,
       number: pr.number,
@@ -63,7 +79,17 @@ export const getPRList = async (
       draft: pr.draft,
     }));
 
-    res.json(simplified);
+    // 페이지네이션 정보 생성
+    const linkHeader = headers.get("link");
+    const pagination = createPaginationInfo(linkHeader, pageNum);
+
+    // 페이지네이션 포함한 응답
+    const response: PaginatedResponse<SimplifiedPullRequest[]> = {
+      data: simplified,
+      pagination,
+    };
+
+    res.json(response);
   } catch (error) {
     console.error("Error fetching PRs:", error);
     res.status(500).json({ error: "Failed to fetch pull requests" });
@@ -84,7 +110,7 @@ export const getPRDetail = async (
   try {
     const { owner, repo, pull_number } = req.params;
 
-    const pr = await fetchGithubData<GitHubPullRequest>(
+    const { data: pr } = await fetchGithubData<GitHubPullRequest>(
       `/repos/${owner}/${repo}/pulls/${pull_number}`
     );
 
@@ -125,7 +151,7 @@ export const getPRCommits = async (
   try {
     const { owner, repo, pull_number } = req.params;
 
-    const data = await fetchGithubData<GitHubCommit[]>(
+    const { data } = await fetchGithubData<GitHubCommit[]>(
       `/repos/${owner}/${repo}/pulls/${pull_number}/commits`
     );
 

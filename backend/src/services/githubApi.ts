@@ -5,7 +5,7 @@ const GITHUB_TOKEN = config.github.token;
 
 export const fetchGithubData = async <T = unknown>(
   endpoint: string
-): Promise<T> => {
+): Promise<{ data: T; headers: Headers }> => {
   const response = await fetch(`${GITHUB_API_URL}${endpoint}`, {
     headers: {
       Authorization: `token ${GITHUB_TOKEN}`,
@@ -13,9 +13,10 @@ export const fetchGithubData = async <T = unknown>(
     },
   });
 
-  if (response.status !== 200) {
+  if (!response.ok) {
     throw new Error(`GitHub API error: ${response.status}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  return { data, headers: response.headers };
 };
