@@ -44,7 +44,7 @@ export const useFetchData = ({
       const data = await getRepositories()
       setRepositories(data)
     } catch (err) {
-      console.error('Failed to fetch repositories:', err)
+      // 에러 처리
     } finally {
       setLoading(false)
     }
@@ -64,7 +64,7 @@ export const useFetchData = ({
       setCommits(commitsData)
       setPullRequests(prsData)
     } catch (err) {
-      console.error('Failed to fetch commits and PRs:', err)
+      // 에러 처리
     } finally {
       setLoading(false)
     }

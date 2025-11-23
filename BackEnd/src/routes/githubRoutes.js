@@ -4,8 +4,6 @@ const { authMiddleware, githubTokenMiddleware } = require('../middleware/authMid
 
 const router = express.Router()
 
-console.log('=== GitHub Routes 초기화 ===')
-
 /**
  * 사용자의 GitHub 저장소 목록 조회 (소유 + Collaborator)
  * GET /api/github/repositories
@@ -56,13 +54,5 @@ router.get('/pull/:owner/:repo/:number/details', authMiddleware, githubTokenMidd
  * 응답: { files }
  */
 router.get('/commit/:owner/:repo/:sha/details', authMiddleware, githubTokenMiddleware, getCommitDetails)
-
-console.log('=== GitHub Routes 등록 완료 ===')
-console.log('등록된 라우트:')
-console.log('- GET /api/github/repositories')
-console.log('- GET /api/github/commits')
-console.log('- GET /api/github/pulls')
-console.log('- GET /api/github/pull/:owner/:repo/:number/details')
-console.log('- GET /api/github/commit/:owner/:repo/:sha/details')
 
 module.exports = router

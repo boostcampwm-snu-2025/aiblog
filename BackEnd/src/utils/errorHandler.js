@@ -5,8 +5,6 @@
  * @param {string} context - 에러 컨텍스트 (로깅용)
  */
 const handleGitHubError = (error, res, context = 'GitHub API') => {
-  console.error(`${context} error:`, error.message)
-
   if (error.status === 401) {
     return res.status(401).json({
       success: false,
@@ -43,7 +41,6 @@ const handleGitHubError = (error, res, context = 'GitHub API') => {
  * @param {number} statusCode - HTTP 상태 코드 (기본: 500)
  */
 const handleError = (error, res, message = 'Internal server error', statusCode = 500) => {
-  console.error(message, error)
   return res.status(statusCode).json({
     success: false,
     message,
