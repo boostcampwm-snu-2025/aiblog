@@ -17,7 +17,7 @@
 3. LLM API 연동
 
 ## 3주차 구현 목표
-- [ ] 미구현 기능: LLM call loading 표시 기능 구현
+- [x] 미구현 기능: LLM call loading 표시 기능 구현
 - [x] 생성된 블로그 저장 기능 구현
 - [ ] 1,2주차 review 반영하여 코드 리팩토링
 

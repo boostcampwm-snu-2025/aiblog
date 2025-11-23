@@ -13,6 +13,8 @@ export default function RepositoryList() {
   const [blogContent, setBlogContent] = useState<string | null>(null);
   const [lastMeta, setLastMeta] = useState<{ source: 'commit' | 'pr'; item: any } | null>(null);
   const [viewSaved, setViewSaved] = useState(false);
+  const [blogLoading, setBlogLoading] = useState(false);
+  const [blogError, setBlogError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRepositories = async () => {
@@ -35,6 +37,9 @@ export default function RepositoryList() {
   const handleCreateBlog = async (source: 'commit' | 'pr', item: any) => {
     if (!selectedRepo) return;
     try {
+      setBlogLoading(true);
+      setBlogError(null);
+      setBlogContent(null);
       const payload = { source, item, repo: selectedRepo };
       const resp = await axios.post('http://localhost:3000/api/create-blog', payload);
       // Prefer different possible response shapes from backend
@@ -42,9 +47,14 @@ export default function RepositoryList() {
       console.log('Create blog result:', resp.data);
       setBlogContent(generated);
       setLastMeta({ source, item });
+      setBlogLoading(false);
       // For now, just log result to console (frontend requirement)
     } catch (err) {
       console.error('Failed to create blog', err);
+      const e = err as any;
+      const msg = e?.response?.data?.error || e?.message || 'LLM call failed';
+      setBlogError(String(msg));
+      setBlogLoading(false);
     }
   };
 
@@ -58,7 +68,7 @@ export default function RepositoryList() {
           <div className="preview-header">
             <h3>Generated Blog</h3>
             <div>
-              <button className="save-preview" onClick={async () => {
+              <button className="save-preview" disabled={blogLoading || !blogContent} onClick={async () => {
                 if (!blogContent) return;
                 try {
                   const title = `${selectedRepo?.name || 'blog'} - ${lastMeta?.source || ''} - ${lastMeta?.item?.sha || lastMeta?.item?.number || ''}`;
@@ -69,11 +79,15 @@ export default function RepositoryList() {
                   alert('Failed to save');
                 }
               }}>Save</button>
-              <button className="close-preview" onClick={() => setBlogContent(null)}>Close</button>
+              <button className="close-preview" onClick={() => { setBlogContent(null); setBlogError(null); }}>Close</button>
             </div>
           </div>
           <div className="preview-body">
-            {blogContent ? (
+            {blogLoading ? (
+              <div className="loading">LLM 요청 실행중... 잠시만 기다려주세요.</div>
+            ) : blogError ? (
+              <div className="error">오류 발생: {blogError}</div>
+            ) : blogContent ? (
               <pre style={{ whiteSpace: 'pre-wrap' }}>{blogContent}</pre>
             ) : (
               <div className="empty">생성된 블로그가 없습니다. Commit/PR 항목에서 "Create Blog"를 클릭하세요.</div>
