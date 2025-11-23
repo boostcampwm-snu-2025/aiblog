@@ -45,9 +45,7 @@ export function BlogResultModal() {
     };
 
     savePost(newPost);
-
     setOpenSnackbar(true);
-  
     handleClose();
   };
 
