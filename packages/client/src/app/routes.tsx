@@ -4,8 +4,8 @@ import {
   createRouter,
   Outlet,
 } from "@tanstack/react-router";
-import { Header } from "../widgets";
-import { HomePage, SavedPostsPage, SettingsPage } from "../pages/ui";
+import { Header } from "@widgets/Header";
+import { HomePage, SavedPostsPage, SettingsPage } from "@pages";
 
 const rootRoute = createRootRoute({
   component: () => (

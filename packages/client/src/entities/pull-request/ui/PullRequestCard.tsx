@@ -1,8 +1,6 @@
-import { Card, CardTitle } from "../../../shared";
-import { Badge } from "../../../shared";
-import { Button } from "../../../shared";
-import { SHA_DISPLAY_LENGTH } from "../../../shared/lib/constants";
-import type { PullRequestInfo } from "../../../shared/api/types";
+import { Card, CardTitle, Badge, Button } from "@shared";
+import { SHA_DISPLAY_LENGTH } from "@shared/lib/constants";
+import type { PullRequestInfo } from "@shared/api/types";
 
 type PullRequestCardProps = {
   pullRequest: PullRequestInfo;

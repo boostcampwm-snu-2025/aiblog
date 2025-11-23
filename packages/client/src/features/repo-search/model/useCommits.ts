@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchCommits } from "../../../shared/api";
-import type { CommitsResponse } from "../../../shared/api/types";
+import { fetchCommits } from "@shared/api";
+import type { CommitsResponse } from "@shared/api/types";
 
 export function useCommits(
   url: string | undefined,

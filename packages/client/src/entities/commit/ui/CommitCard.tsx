@@ -1,5 +1,5 @@
-import { Card, CardTitle } from "../../../shared";
-import type { CommitInfo } from "../../../shared/api/types";
+import { Card, CardTitle } from "@shared";
+import type { CommitInfo } from "@shared/api/types";
 
 type CommitCardProps = {
   commit: CommitInfo;

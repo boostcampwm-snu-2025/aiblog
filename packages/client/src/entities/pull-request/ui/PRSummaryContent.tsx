@@ -1,4 +1,4 @@
-import { LoadingSpinner, MarkdownContent } from "../../../shared";
+import { LoadingSpinner, MarkdownContent } from "@shared";
 
 type PRSummaryContentProps = {
   summary: string | null;

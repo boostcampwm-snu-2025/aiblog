@@ -1,4 +1,4 @@
-import type { PullRequestInfo } from "../../../shared/api/types";
+import type { PullRequestInfo } from "@shared/api/types";
 import { PullRequestCard } from "./PullRequestCard";
 
 interface PullRequestListProps {

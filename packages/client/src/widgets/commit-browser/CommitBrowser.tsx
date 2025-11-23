@@ -1,15 +1,14 @@
-import { useRepoUrlForm } from "../../features/repo-search/model/useRepoUrlForm";
-import { useCommits } from "../../features/repo-search/model/useCommits";
-import { usePullRequests } from "../../features/repo-search/model/usePullRequests";
-import { usePRSummaryModal } from "../../features/repo-search/model/usePRSummaryModal";
-import { extractErrorMessage, QueryState } from "../../shared";
-
-import { RepoSearchForm } from "../../features/repo-search/ui/RepoSearchForm";
-import { CommitList } from "../../entities/commit/ui/CommitList";
 import {
-  PullRequestList,
-  PRSummaryModal,
-} from "../../entities/pull-request/ui";
+  useRepoUrlForm,
+  useCommits,
+  usePullRequests,
+  usePRSummaryModal,
+  RepoSearchForm,
+} from "@features/repo-search";
+import { extractErrorMessage, QueryState } from "@shared";
+import { CommitList } from "@entities/commit";
+import { PullRequestList } from "@entities/pull-request";
+import { PRSummaryModal } from "@widgets/pr-summary";
 
 export function CommitBrowser() {
   const { repoUrl, setRepoUrl, submittedRepoUrl, onSubmitUrl } =

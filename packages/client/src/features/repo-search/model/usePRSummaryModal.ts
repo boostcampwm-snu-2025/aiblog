@@ -3,8 +3,8 @@ import {
   generatePRSummary,
   generateBlogPost,
   saveBlogPost,
-} from "../../../shared/api";
-import { extractErrorMessage } from "../../../shared/lib/errorUtils";
+} from "@shared/api";
+import { extractErrorMessage } from "@shared/lib/errorUtils";
 
 type PRSummaryModalState = {
   isOpen: boolean;

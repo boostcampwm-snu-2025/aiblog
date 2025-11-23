@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchPullRequests } from "../../../shared/api";
-import type { PullRequestsResponse } from "../../../shared/api/types";
+import { fetchPullRequests } from "@shared/api";
+import type { PullRequestsResponse } from "@shared/api/types";
 
 export function usePullRequests(
   url: string | undefined,

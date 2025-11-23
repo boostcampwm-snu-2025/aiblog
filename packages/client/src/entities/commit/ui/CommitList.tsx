@@ -1,4 +1,4 @@
-import type { CommitInfo } from "../../../shared/api/types";
+import type { CommitInfo } from "@shared/api/types";
 import { CommitCard } from "./CommitCard";
 
 interface CommitListProps {
@@ -13,7 +13,6 @@ export function CommitList({ commits, onGenerateSummary }: CommitListProps) {
         <CommitCard
           key={commit.sha}
           commit={commit}
-          onGenerateSummary={onGenerateSummary}
         />
       ))}
     </div>

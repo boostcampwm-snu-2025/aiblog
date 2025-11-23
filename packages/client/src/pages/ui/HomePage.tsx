@@ -1,4 +1,4 @@
-import { CommitBrowser } from "../../widgets/commit-browser/CommitBrowser";
+import { CommitBrowser } from "@widgets/commit-browser";
 
 export function HomePage() {
   return (

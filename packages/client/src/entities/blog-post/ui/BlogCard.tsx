@@ -1,4 +1,4 @@
-import { Card, Button } from "../../../shared";
+import { Card, Button } from "@shared";
 
 type BlogCardProps = {
   title: string;
