@@ -3,6 +3,7 @@ import axios from 'axios';
 import type { Repository } from '../types/Repository';
 import './RepositoryList.css';
 import RepoDetails from './RepoDetails';
+import SavedBlogs from './SavedBlogs';
 
 export default function RepositoryList() {
   const [repositories, setRepositories] = useState<Repository[]>([]);
@@ -10,6 +11,8 @@ export default function RepositoryList() {
   const [error, setError] = useState<string | null>(null);
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
   const [blogContent, setBlogContent] = useState<string | null>(null);
+  const [lastMeta, setLastMeta] = useState<{ source: 'commit' | 'pr'; item: any } | null>(null);
+  const [viewSaved, setViewSaved] = useState(false);
 
   useEffect(() => {
     const fetchRepositories = async () => {
@@ -38,6 +41,7 @@ export default function RepositoryList() {
       const generated = resp?.data?.result || resp?.data?.data || (typeof resp?.data === 'string' ? resp.data : null) || JSON.stringify(resp?.data);
       console.log('Create blog result:', resp.data);
       setBlogContent(generated);
+      setLastMeta({ source, item });
       // For now, just log result to console (frontend requirement)
     } catch (err) {
       console.error('Failed to create blog', err);
@@ -53,7 +57,20 @@ export default function RepositoryList() {
         <div className="blog-preview">
           <div className="preview-header">
             <h3>Generated Blog</h3>
-            <button className="close-preview" onClick={() => setBlogContent(null)}>Close</button>
+            <div>
+              <button className="save-preview" onClick={async () => {
+                if (!blogContent) return;
+                try {
+                  const title = `${selectedRepo?.name || 'blog'} - ${lastMeta?.source || ''} - ${lastMeta?.item?.sha || lastMeta?.item?.number || ''}`;
+                  await axios.post('http://localhost:3000/api/blogs', { title, content: blogContent, source: lastMeta?.source, repo: selectedRepo, item: lastMeta?.item });
+                  alert('Saved blog');
+                } catch (e) {
+                  console.error('Failed to save blog', e);
+                  alert('Failed to save');
+                }
+              }}>Save</button>
+              <button className="close-preview" onClick={() => setBlogContent(null)}>Close</button>
+            </div>
           </div>
           <div className="preview-body">
             {blogContent ? (
@@ -66,10 +83,18 @@ export default function RepositoryList() {
       </div>
     );
   }
+  if (viewSaved) {
+    return <SavedBlogs onBack={() => setViewSaved(false)} />;
+  }
 
   return (
     <div className="repository-list">
-      <h1>My Public Repositories</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>My Public Repositories</h1>
+        <div>
+          <button onClick={() => setViewSaved(true)}>Saved Blogs</button>
+        </div>
+      </div>
       <div className="repositories">
         {repositories.map(repo => (
           <div key={repo.id} className="repository-card">

@@ -3,6 +3,8 @@ import express from 'express';
 import { Octokit } from 'octokit';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import fs from 'fs/promises';
+import path from 'path';
 
 dotenv.config({ path: '../.env' });
 
@@ -25,6 +27,34 @@ const ai = new GoogleGenAI({ apiKey: geminiAPIKey });
 const octokit = new Octokit({
   auth: githubToken
 });
+
+// Path to store saved blogs
+const dataDir = path.resolve('./data');
+const blogsFile = path.join(dataDir, 'blogs.json');
+
+async function ensureDataFile() {
+  try {
+    await fs.mkdir(dataDir, { recursive: true });
+    try {
+      await fs.access(blogsFile);
+    } catch (err) {
+      await fs.writeFile(blogsFile, JSON.stringify([]));
+    }
+  } catch (err) {
+    console.error('Error ensuring data file:', err);
+  }
+}
+
+async function readBlogs() {
+  await ensureDataFile();
+  const raw = await fs.readFile(blogsFile, 'utf-8');
+  try { return JSON.parse(raw || '[]'); } catch (e) { return []; }
+}
+
+async function writeBlogs(list) {
+  await ensureDataFile();
+  await fs.writeFile(blogsFile, JSON.stringify(list, null, 2), 'utf-8');
+}
 
 // API endpoint to get public repositories
 app.get('/api/repos', async (req, res) => {
@@ -160,6 +190,56 @@ app.post('/api/create-blog', express.json(), async (req, res) => {
   } catch (error) {
     console.error('Error calling Gemini API:', error);
     res.status(500).json({ error: 'Failed to generate blog content' });
+  }
+});
+
+// Save a generated blog to server-side storage
+app.post('/api/blogs', async (req, res) => {
+  const { title, content, source, repo, item } = req.body || {};
+  if (!title || !content) return res.status(400).json({ error: 'Missing title or content' });
+
+  try {
+    const blogs = await readBlogs();
+    const id = Date.now().toString();
+    const newBlog = {
+      id,
+      title,
+      content,
+      source: source || null,
+      repo: repo || null,
+      item: item || null,
+      created_at: new Date().toISOString()
+    };
+    blogs.unshift(newBlog);
+    await writeBlogs(blogs);
+    res.status(201).json(newBlog);
+  } catch (err) {
+    console.error('Failed to save blog:', err);
+    res.status(500).json({ error: 'Failed to save blog' });
+  }
+});
+
+// List saved blogs
+app.get('/api/blogs', async (req, res) => {
+  try {
+    const blogs = await readBlogs();
+    res.json(blogs);
+  } catch (err) {
+    console.error('Failed to read blogs:', err);
+    res.status(500).json({ error: 'Failed to read blogs' });
+  }
+});
+
+// Get single blog
+app.get('/api/blogs/:id', async (req, res) => {
+  try {
+    const blogs = await readBlogs();
+    const blog = blogs.find(b => b.id === req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Not found' });
+    res.json(blog);
+  } catch (err) {
+    console.error('Failed to read blog:', err);
+    res.status(500).json({ error: 'Failed to read blog' });
   }
 });
 

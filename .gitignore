@@ -3,6 +3,9 @@
 .env.local
 .env.*.local
 
+# Data files
+backend/data/*
+
 # Dependencies
 node_modules/
 frontend/vite-frontend/node_modules/
