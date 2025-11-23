@@ -1,16 +1,15 @@
-import { useMemo, useState } from "react";
-import { Octokit } from "@octokit/core"; // npm install @octokit/core
+import { useMemo, useState, useEffect } from "react";
+import { Octokit } from "@octokit/core"; 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import "highlight.js/styles/github.css"; // code block theme
+import "highlight.js/styles/github.css"; 
 import "./App.css";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8787";
 
 const octokit = new Octokit({
   userAgent: "github-blog-generator",
-  // auth: process.env.REACT_APP_GITHUB_TOKEN // 필요시 사용
 });
 
 type CommitItem = {
@@ -26,10 +25,21 @@ type PullItem = {
   user: string;
   state: string;
   created_at: string;
-  body?: string; // 상세 조회 시 채움
+  body?: string; 
+};
+
+// [NEW] 저장된 블로그 타입 정의
+type SavedBlog = {
+  id: string;
+  repo: string;
+  content: string;
+  createdAt: string;
 };
 
 function App() {
+  // Tab state: 'generate' or 'saved'
+  const [activeTab, setActiveTab] = useState<'generate' | 'saved'>('generate');
+
   const [repo, setRepo] = useState("");
   const [loading, setLoading] = useState(false);
   const [commits, setCommits] = useState<CommitItem[]>([]);
@@ -40,20 +50,103 @@ function App() {
   const [blog, setBlog] = useState<string | null>(null);
   const [blogLoading, setBlogLoading] = useState(false);
   const [serverModel, setServerModel] = useState<string | null>(null);
+  
+  // [NEW] Saved Blogs State
+  const [savedBlogs, setSavedBlogs] = useState<SavedBlog[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null); // 현재 수정 중인 ID
+  const [editContent, setEditContent] = useState(""); // 수정 중인 내용
 
   const [owner, name] = useMemo(() => {
     const [o, n] = repo.split("/");
     return [o, n] as const;
   }, [repo]);
 
+  // [NEW] 저장된 블로그 목록 가져오기
+  const fetchSavedBlogs = async () => {
+    try {
+      const r = await fetch(`${API_BASE}/api/blogs`);
+      const j = await r.json();
+      if (j.ok) setSavedBlogs(j.blogs);
+    } catch (e) {
+      console.error("Failed to fetch saved blogs", e);
+    }
+  };
+
+  // [NEW] 현재 생성된 블로그 저장하기
+  const handleSaveBlog = async () => {
+    if (!blog || !repo) return;
+    if (!confirm("현재 내용을 저장하시겠습니까?")) return;
+
+    try {
+      const r = await fetch(`${API_BASE}/api/blogs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repo, content: blog }),
+      });
+      const j = await r.json();
+      if (j.ok) {
+        alert("저장되었습니다!");
+        fetchSavedBlogs(); // 목록 갱신
+        setActiveTab('saved'); // 저장 목록 탭으로 이동
+      } else {
+        alert("저장 실패: " + j.error);
+      }
+    } catch (e) {
+      alert("저장 오류");
+    }
+  };
+
+  // [NEW] 블로그 삭제
+  const handleDeleteBlog = async (id: string) => {
+    if (!confirm("정말 삭제하시겠습니까?")) return;
+    try {
+      const r = await fetch(`${API_BASE}/api/blogs/${id}`, { method: "DELETE" });
+      const j = await r.json();
+      if (j.ok) {
+        fetchSavedBlogs();
+      }
+    } catch (e) {
+      alert("삭제 오류");
+    }
+  };
+
+  // [NEW] 수정 모드 진입
+  const startEdit = (b: SavedBlog) => {
+    setEditingId(b.id);
+    setEditContent(b.content);
+  };
+
+  // [NEW] 수정 내용 저장 (Update)
+  const saveEdit = async (id: string) => {
+    try {
+      const r = await fetch(`${API_BASE}/api/blogs/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: editContent }),
+      });
+      const j = await r.json();
+      if (j.ok) {
+        setEditingId(null);
+        fetchSavedBlogs();
+      } else {
+        alert("수정 실패");
+      }
+    } catch (e) {
+      alert("수정 오류");
+    }
+  };
+
+  useEffect(() => {
+    fetchServerModel();
+    fetchSavedBlogs(); // 앱 시작 시 목록 로드
+  }, []);
+
   const fetchServerModel = async () => {
     try {
       const r = await fetch(`${API_BASE}/api/models`);
       const j = await r.json();
       if (j.ok) setServerModel(j.chosen);
-    } catch {
-      // ignore
-    }
+    } catch { /* ignore */ }
   };
 
   const handleFetch = async () => {
@@ -66,11 +159,8 @@ function App() {
     try {
       if (!owner || !name) throw new Error("Use format owner/name");
 
-      // Commits
       const commitRes = await octokit.request("GET /repos/{owner}/{repo}/commits", {
-        owner,
-        repo: name,
-        per_page: 5
+        owner, repo: name, per_page: 5
       });
       const commitsData: CommitItem[] = commitRes.data.map((c: any) => ({
         sha: c.sha,
@@ -79,12 +169,8 @@ function App() {
         date: c.commit.author?.date
       }));
 
-      // PRs
       const pullRes = await octokit.request("GET /repos/{owner}/{repo}/pulls", {
-        owner,
-        repo: name,
-        state: "all",
-        per_page: 5
+        owner, repo: name, state: "all", per_page: 5
       });
       const pullsData: PullItem[] = pullRes.data.map((p: any) => ({
         number: p.number,
@@ -96,7 +182,6 @@ function App() {
 
       setCommits(commitsData);
       setPulls(pullsData);
-      fetchServerModel();
     } catch (e: any) {
       setError(e.message ?? "Unknown error");
     } finally {
@@ -104,6 +189,7 @@ function App() {
     }
   };
 
+  // (generate 함수들은 기존 로직과 동일)
   const generateForCommit = async (c: CommitItem) => {
     setBlogLoading(true);
     setBlog(null);
@@ -111,11 +197,7 @@ function App() {
       const r = await fetch(`${API_BASE}/api/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          repo,
-          itemType: "commit",
-          commit: c
-        })
+        body: JSON.stringify({ repo, itemType: "commit", commit: c })
       });
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || "Generation failed");
@@ -134,9 +216,7 @@ function App() {
         owner, repo: name, pull_number: num
       });
       return r.data.body as string | undefined;
-    } catch {
-      return undefined;
-    }
+    } catch { return undefined; }
   };
 
   const generateForPR = async (p: PullItem) => {
@@ -147,11 +227,7 @@ function App() {
       const r = await fetch(`${API_BASE}/api/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          repo,
-          itemType: "pull",
-          pull: { ...p, body }
-        })
+        body: JSON.stringify({ repo, itemType: "pull", pull: { ...p, body } })
       });
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || "Generation failed");
@@ -173,16 +249,10 @@ function App() {
         const body = await fetchPRBody(p.number);
         pullsWithBody.push({ ...p, body });
       }
-
       const r = await fetch(`${API_BASE}/api/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          repo,
-          itemType: "all",
-          commits,
-          pulls: pullsWithBody
-        })
+        body: JSON.stringify({ repo, itemType: "all", commits, pulls: pullsWithBody })
       });
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || "Generation failed");
@@ -198,85 +268,165 @@ function App() {
   return (
     <div style={{ maxWidth: 880, margin: "60px auto", padding: "0 16px" }}>
       <h1>GitHub Blog Generator</h1>
-      <p style={{ opacity: 0.7, marginTop: -8 }}>
-        Enter <code>owner/repo</code>, fetch activity, then click <b>Generate Blog</b>.
-      </p>
-
-      <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 16 }}>
-        <input
-          type="text"
-          placeholder="e.g. vercel/next.js"
-          value={repo}
-          onChange={(e) => setRepo(e.target.value)}
-          style={{ padding: 8, width: 320 }}
-        />
-        <button onClick={handleFetch} style={{ padding: "8px 12px" }}>Fetch</button>
-        <button onClick={generateForAll} disabled={commits.length + pulls.length === 0} style={{ padding: "8px 12px" }}>
-          Generate Blog (All)
+      
+      {/* [NEW] 탭 메뉴 */}
+      <div style={{ marginBottom: 20, borderBottom: '1px solid #ccc' }}>
+        <button 
+          onClick={() => setActiveTab('generate')}
+          style={{ 
+            marginRight: 10, 
+            fontWeight: activeTab === 'generate' ? 'bold' : 'normal',
+            borderBottom: activeTab === 'generate' ? '2px solid black' : 'none',
+            background: 'none', border: 'none', cursor: 'pointer', fontSize: 16
+          }}
+        >
+          Generate
         </button>
-        {serverModel && (
-          <span style={{ marginLeft: "auto", fontSize: 12, opacity: 0.7 }}>
-            Model: {serverModel}
-          </span>
-        )}
+        <button 
+          onClick={() => setActiveTab('saved')}
+          style={{ 
+            fontWeight: activeTab === 'saved' ? 'bold' : 'normal',
+            borderBottom: activeTab === 'saved' ? '2px solid black' : 'none',
+            background: 'none', border: 'none', cursor: 'pointer', fontSize: 16
+          }}
+        >
+          Saved Blogs
+        </button>
       </div>
 
-      {loading && <p>🔄 Loading GitHub data…</p>}
-      {error && <p style={{ color: "red" }}>⚠️ Error: {error}</p>}
+      {/* ================= GENERATE TAB ================= */}
+      {activeTab === 'generate' && (
+        <>
+          <p style={{ opacity: 0.7, marginTop: -8 }}>
+            Enter <code>owner/repo</code>, fetch activity, then click <b>Generate Blog</b>.
+          </p>
 
-      {!loading && commits.length > 0 && (
-        <div style={{ marginTop: 28 }}>
-          <h2>🧱 Recent Commits</h2>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {commits.map((c) => (
-              <li key={c.sha} style={{ marginBottom: 14, paddingBottom: 10, borderBottom: "1px solid #eee" }}>
-                <div style={{ fontWeight: 600 }}>{c.message}</div>
-                <div style={{ fontSize: 13, opacity: 0.75 }}>
-                  Author: {c.author ?? "Unknown"} · Date: {c.date} · SHA: {c.sha.substring(0, 7)}
-                </div>
-                <div style={{ marginTop: 6 }}>
-                  <button onClick={() => generateForCommit(c)} style={{ padding: "6px 10px" }}>
-                    Generate Blog
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 16 }}>
+            <input
+              type="text"
+              placeholder="e.g. vercel/next.js"
+              value={repo}
+              onChange={(e) => setRepo(e.target.value)}
+              style={{ padding: 8, width: 320 }}
+            />
+            <button onClick={handleFetch} style={{ padding: "8px 12px" }}>Fetch</button>
+            <button onClick={generateForAll} disabled={commits.length + pulls.length === 0} style={{ padding: "8px 12px" }}>
+              Generate Blog (All)
+            </button>
+            {serverModel && (
+              <span style={{ marginLeft: "auto", fontSize: 12, opacity: 0.7 }}>
+                Model: {serverModel}
+              </span>
+            )}
+          </div>
+
+          {loading && <p>🔄 Loading GitHub data…</p>}
+          {error && <p style={{ color: "red" }}>⚠️ Error: {error}</p>}
+
+          {!loading && commits.length > 0 && (
+            <div style={{ marginTop: 28 }}>
+              <h2>🧱 Recent Commits</h2>
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                {commits.map((c) => (
+                  <li key={c.sha} style={{ marginBottom: 14, paddingBottom: 10, borderBottom: "1px solid #eee" }}>
+                    <div style={{ fontWeight: 600 }}>{c.message}</div>
+                    <div style={{ fontSize: 13, opacity: 0.75 }}>
+                      Author: {c.author ?? "Unknown"} · Date: {c.date}
+                    </div>
+                    <div style={{ marginTop: 6 }}>
+                      <button onClick={() => generateForCommit(c)} style={{ padding: "6px 10px" }}>Generate Blog</button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {!loading && pulls.length > 0 && (
+            <div style={{ marginTop: 28 }}>
+              <h2>📬 Recent Pull Requests</h2>
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                {pulls.map((p) => (
+                  <li key={p.number} style={{ marginBottom: 14, paddingBottom: 10, borderBottom: "1px solid #eee" }}>
+                    <div style={{ fontWeight: 600 }}>#{p.number} {p.title}</div>
+                    <div style={{ fontSize: 13, opacity: 0.75 }}>
+                      User: {p.user} · State: {p.state}
+                    </div>
+                    <div style={{ marginTop: 6 }}>
+                      <button onClick={() => generateForPR(p)} style={{ padding: "6px 10px" }}>Generate Blog</button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {blogLoading && <p style={{ marginTop: 24 }}>🧠 Generating blog with Gemini…</p>}
+
+          {blog && (
+            <div className="blog-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2 style={{ marginTop: 0 }}>📝 Generated Blog</h2>
+                {/* [NEW] 저장 버튼 */}
+                <button onClick={handleSaveBlog} style={{ backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '8px 16px', cursor: 'pointer' }}>
+                  Save to Library
+                </button>
+              </div>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+              >
+                {blog}
+              </ReactMarkdown>
+            </div>
+          )}
+        </>
       )}
 
-      {!loading && pulls.length > 0 && (
-        <div style={{ marginTop: 28 }}>
-          <h2>📬 Recent Pull Requests</h2>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {pulls.map((p) => (
-              <li key={p.number} style={{ marginBottom: 14, paddingBottom: 10, borderBottom: "1px solid #eee" }}>
-                <div style={{ fontWeight: 600 }}>#{p.number} {p.title}</div>
-                <div style={{ fontSize: 13, opacity: 0.75 }}>
-                  User: {p.user} · State: {p.state} · Date: {p.created_at}
+      {/* ================= SAVED BLOGS TAB ================= */}
+      {activeTab === 'saved' && (
+        <div>
+          <h2>📚 Saved Blogs</h2>
+          {savedBlogs.length === 0 && <p>No saved blogs yet.</p>}
+          {savedBlogs.map(b => (
+            <div key={b.id} className="blog-card" style={{ marginBottom: 30 }}>
+              <div style={{ borderBottom: '1px solid #ddd', paddingBottom: 10, marginBottom: 10, display: 'flex', justifyContent: 'space-between' }}>
+                <div>
+                  <strong>Repo:</strong> {b.repo} <span style={{ margin: '0 8px' }}>|</span>
+                  <span style={{ fontSize: 13, color: '#666' }}>{new Date(b.createdAt).toLocaleString()}</span>
                 </div>
-                <div style={{ marginTop: 6 }}>
-                  <button onClick={() => generateForPR(p)} style={{ padding: "6px 10px" }}>
-                    Generate Blog
-                  </button>
+                <div>
+                  {editingId === b.id ? (
+                    <>
+                      <button onClick={() => saveEdit(b.id)} style={{ marginRight: 8 }}>Save</button>
+                      <button onClick={() => setEditingId(null)}>Cancel</button>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={() => startEdit(b)} style={{ marginRight: 8 }}>Edit</button>
+                      <button onClick={() => handleDeleteBlog(b.id)} style={{ color: 'red' }}>Delete</button>
+                    </>
+                  )}
                 </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {blogLoading && <p style={{ marginTop: 24 }}>🧠 Generating blog with Gemini…</p>}
-
-      {blog && (
-        <div className="blog-card">
-          <h2 style={{ marginTop: 0 }}>📝 Generated Blog</h2>
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight]}
-          >
-            {blog}
-          </ReactMarkdown>
+              </div>
+              
+              {/* 수정 모드일 때 textarea, 아닐 때 Markdown 뷰어 */}
+              {editingId === b.id ? (
+                <textarea 
+                  value={editContent} 
+                  onChange={(e) => setEditContent(e.target.value)}
+                  style={{ width: '100%', height: 300, fontFamily: 'monospace' }}
+                />
+              ) : (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight]}
+                >
+                  {b.content}
+                </ReactMarkdown>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
