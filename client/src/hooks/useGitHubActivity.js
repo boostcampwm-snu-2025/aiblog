@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { githubApi } from '../apis/api';
+
+const STORAGE_KEY = 'github_repo_cache';
 
 // GitHub 활동 데이터를 가져오는 로직을 묶어 만든 '커스텀 훅'
 export const useGitHubActivity = () => {
@@ -15,6 +17,20 @@ export const useGitHubActivity = () => {
 
   // 어떤 저장소(owner/repo) 데이터를 보고 있는지 저장
   const [repoInfo, setRepoInfo] = useState(null);
+
+  // 컴포넌트 마운트 시 localStorage에서 저장된 레포 정보 불러오기
+  useEffect(() => {
+    const cached = localStorage.getItem(STORAGE_KEY);
+    if (cached) {
+      try {
+        const { activities: cachedActivities, repoInfo: cachedRepoInfo } = JSON.parse(cached);
+        setActivities(cachedActivities);
+        setRepoInfo(cachedRepoInfo);
+      } catch (err) {
+        console.error('Failed to load cached repo data:', err);
+      }
+    }
+  }, []);
 
   // 실제로 GitHub API를 호출하는 함수
   // 비동기 async 함수이며 { owner, repo } 객체를 받아온다
@@ -37,7 +53,14 @@ export const useGitHubActivity = () => {
       setActivities(data);
 
       // 현재 어떤 repo를 보고 있는지 기록
-      setRepoInfo({ owner, repo });
+      const newRepoInfo = { owner, repo };
+      setRepoInfo(newRepoInfo);
+
+      // localStorage에 저장
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        activities: data,
+        repoInfo: newRepoInfo
+      }));
 
     } catch (err) {
       // 에러 발생 시 콘솔에 원본 에러 출력 (개발용)

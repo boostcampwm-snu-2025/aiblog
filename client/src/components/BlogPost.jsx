@@ -1,17 +1,23 @@
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { useAppContext } from '../contexts/AppContext';
 import './BlogPost.css';
 
-function BlogPost({ blog, onClose, onSave }) {
+function BlogPost({ onSave }) {
+  // ========== Context에서 필요한 상태와 함수 가져오기 ==========
+  const { generatedBlog, closeBlog } = useAppContext();
+
   const [isSaved, setIsSaved] = useState(false);
 
-  if (!blog) {
+  if (!generatedBlog) {
     return (
       <div className="blog-post-empty">
         <p>📝 커밋이나 PR을 선택하고 "블로그 생성" 버튼을 클릭하세요</p>
       </div>
     );
   }
+
+  const blog = generatedBlog;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(blog.content);
@@ -37,7 +43,7 @@ function BlogPost({ blog, onClose, onSave }) {
     <div className="blog-post">
       <div className="blog-post-header">
         <h2>{blog.title}</h2>
-        <button className="close-btn" onClick={onClose} title="닫기">
+        <button className="close-btn" onClick={closeBlog} title="닫기">
           ✕
         </button>
       </div>
