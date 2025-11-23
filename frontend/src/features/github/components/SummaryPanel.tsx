@@ -1,3 +1,5 @@
+import ReactMarkdown from "react-markdown";
+
 interface SummaryPanelProps {
   title: string | null;
   summary: string | null;
@@ -15,7 +17,7 @@ export default function SummaryPanel({ title, summary, onSave }: SummaryPanelPro
         <>
           <h3 className="font-semibold text-lg">{title}</h3>
           <pre className="whitespace-pre-wrap text-sm mt-2 overflow-auto max-h-[400px]">
-            {summary}
+            <ReactMarkdown>{summary}</ReactMarkdown>
           </pre>
 
           <button

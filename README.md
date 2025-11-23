@@ -29,7 +29,7 @@
 - [x] PR 상세 보기 모달 (가장 처음 게시글 마크다운 문서)
 - [x] 리스트 페이지네이션 (10개 + 더보기 버튼)
 
-# Smart Blog – 2주차 구현 현황 체크리스트 (LLM 연동)
+# Smart Blog – 2/3주차 구현 현황 체크리스트 (LLM 연동)
 
 ## LLM API 연동 (Gemini 기반)
 - [x] Google AI Studio API Key 발급 및 .env 적용
@@ -62,11 +62,6 @@
 - [x] LLM 프롬프트 내 “블로그 형식(h2 섹션 포함)” 구조화 옵션 적용
 - [x] commit/PR 변경사항 기반의 개발 블로그 텍스트 자동 생성
 - [x] diff 기반으로 “무엇을 변경했는지/왜 했는지” 설명 포함
-- [ ] 생성된 글을 My Posts로 저장하는 기능 (localStorage 또는 DB)
-- [ ] 저장된 글 리스트 렌더링
-- [ ] 저장된 글 상세 페이지 구현
-
-## 기술 문맥 강화
-- [x] commit 메시지 + body + 파일 변경 목록 + diff 기반 요약 구조 확립
-- [ ] PR도 diff 기반 요약 지원(optional)
-- [ ] 여러 commit을 묶어 "주간 개발 리포트" 자동 생성(optional)
+- [X] 생성된 글을 My Posts로 저장하는 기능 (localStorage 또는 DB)
+- [X] 저장된 글 리스트 렌더링
+- [X] 저장된 글 상세 페이지 구현
