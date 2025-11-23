@@ -12,3 +12,15 @@ export type PullRequest = {
   mergedAt: string | null;
   draft: boolean;
 };
+
+export type PaginationInfo = {
+  currentPage: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+  lastPage: number | null;
+};
+
+export type GetPullRequestsResponse = {
+  data: PullRequest[];
+  pagination: PaginationInfo;
+};
