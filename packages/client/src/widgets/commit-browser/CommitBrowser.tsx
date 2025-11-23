@@ -2,12 +2,17 @@ import {
   useRepoUrlForm,
   useCommits,
   usePullRequests,
-  usePRSummaryModal,
   RepoSearchForm,
 } from "@features/repo-search";
-import { extractErrorMessage, QueryState } from "@shared";
+import {
+  usePRSummary,
+  useBlogPostGeneration,
+  useBlogPostSave,
+  useModalState,
+} from "@features/pr-summary";
+import { extractErrorMessage, QueryState } from "@shared/index";
 import { CommitList } from "@entities/commit";
-import { PullRequestList } from "@entities/pull-request";
+import { PullRequestList } from "@entities/pull-request/ui";
 import { PRSummaryModal } from "@widgets/pr-summary";
 
 export function CommitBrowser() {
@@ -16,18 +21,48 @@ export function CommitBrowser() {
   const commitsQuery = useCommits(submittedRepoUrl);
   const pullRequestsQuery = usePullRequests(submittedRepoUrl);
 
-  const prSummaryModal = usePRSummaryModal();
+  const modalState = useModalState();
+  const prSummary = usePRSummary();
+  const blogPostGeneration = useBlogPostGeneration();
+  const blogPostSave = useBlogPostSave();
 
-  const handleGenerateSummary = (prNumber: number) => {
+  const handleGenerateSummary = async (prNumber: number) => {
     if (!submittedRepoUrl) return;
-    prSummaryModal.generateSummary(submittedRepoUrl, prNumber);
+    
+    modalState.open(submittedRepoUrl, prNumber);
+    await prSummary.generateSummary({
+      url: submittedRepoUrl,
+      pullNumber: prNumber,
+    });
   };
 
-  const handleGenerateBlogPost = () => {
-    prSummaryModal.generateBlogPostContent();
+  const handleGenerateBlogPost = async () => {
+    if (!modalState.currentPR || !prSummary.summary) return;
+    
+    await blogPostGeneration.generateBlogPost({
+      url: modalState.currentPR.repoUrl,
+      pullNumber: modalState.currentPR.prNumber,
+      summary: prSummary.summary,
+    });
   };
+
   const handleSaveBlogPost = async () => {
-    await prSummaryModal.saveBlogPostToServer();
+    if (!modalState.currentPR || !blogPostGeneration.blogPost) return;
+    
+    await blogPostSave.saveBlogPost({
+      url: modalState.currentPR.repoUrl,
+      pullNumber: modalState.currentPR.prNumber,
+      blogPost: blogPostGeneration.blogPost,
+      summary: prSummary.summary ?? undefined,
+      title: blogPostGeneration.blogPostTitle ?? undefined,
+    });
+  };
+
+  const handleCloseModal = () => {
+    modalState.close();
+    prSummary.generateSummary({ url: "", pullNumber: 0 }); // Reset
+    blogPostGeneration.reset();
+    blogPostSave.reset();
   };
 
   const commitsError = commitsQuery.error
@@ -42,6 +77,21 @@ export function CommitBrowser() {
     : undefined;
 
   const formError = commitsError ?? pullRequestsError;
+
+  const summaryError = prSummary.error
+    ? extractErrorMessage(prSummary.error, "PR 요약 생성에 실패했습니다.")
+    : null;
+
+  const blogPostError = blogPostGeneration.error
+    ? extractErrorMessage(
+        blogPostGeneration.error,
+        "블로그 글 생성에 실패했습니다."
+      )
+    : null;
+
+  const saveBlogPostError = blogPostSave.error
+    ? extractErrorMessage(blogPostSave.error, "블로그 글 저장에 실패했습니다.")
+    : null;
 
   return (
     <div className="space-y-6">
@@ -89,18 +139,18 @@ export function CommitBrowser() {
       </div>
 
       <PRSummaryModal
-        isOpen={prSummaryModal.isOpen}
-        onClose={prSummaryModal.closeModal}
-        summary={prSummaryModal.summary}
-        blogPost={prSummaryModal.blogPost}
-        blogPostTitle={prSummaryModal.blogPostTitle}
-        isLoading={prSummaryModal.isLoading}
-        isLoadingBlogPost={prSummaryModal.isLoadingBlogPost}
-        isSavingBlogPost={prSummaryModal.isSavingBlogPost}
-        isBlogPostSaved={!!prSummaryModal.savedBlogPostId}
-        error={prSummaryModal.error}
-        blogPostError={prSummaryModal.blogPostError}
-        saveBlogPostError={prSummaryModal.saveBlogPostError}
+        isOpen={modalState.isOpen}
+        onClose={handleCloseModal}
+        summary={prSummary.summary}
+        blogPost={blogPostGeneration.blogPost}
+        blogPostTitle={blogPostGeneration.blogPostTitle}
+        isLoading={prSummary.isLoading}
+        isLoadingBlogPost={blogPostGeneration.isLoading}
+        isSavingBlogPost={blogPostSave.isSaving}
+        isBlogPostSaved={!!blogPostSave.savedId}
+        error={summaryError}
+        blogPostError={blogPostError}
+        saveBlogPostError={saveBlogPostError}
         onGenerateBlogPost={handleGenerateBlogPost}
         onSaveBlogPost={handleSaveBlogPost}
       />

@@ -3,6 +3,5 @@ export {
   useRepoUrlForm,
   useCommits,
   usePullRequests,
-  usePRSummaryModal,
 } from "./model";
 
