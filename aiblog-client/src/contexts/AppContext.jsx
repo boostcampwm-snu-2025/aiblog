@@ -1,17 +1,44 @@
-import { createContext, useContext, useState, useMemo } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+} from 'react';
+import { getSavedPosts, savePosts } from '@/storage';
 
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
-  // Global state: Page navigation
   const [page, setPage] = useState('main');
+  
+  const [savedPosts, setSavedPosts] = useState(() => getSavedPosts());
+  useEffect(() => {
+    savePosts(savedPosts);
+  }, [savedPosts]);
+
+  const savePost = useCallback((post) => {
+    setSavedPosts((prevPosts) => {
+      const newPost = { ...post, id: Date.now().toString(), createdAt: new Date().toISOString() };
+      return [newPost, ...prevPosts];
+    });
+  }, []);
+
+  const deletePost = useCallback((postId) => {
+    setSavedPosts((prevPosts) => prevPosts.filter((p) => p.id !== postId));
+  }, []);
+
 
   const value = useMemo(
     () => ({
       page,
       setPage,
+      savedPosts,
+      savePost,
+      deletePost,
     }),
-    [page]
+    [page, savedPosts, savePost, deletePost]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
