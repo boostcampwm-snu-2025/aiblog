@@ -26,14 +26,18 @@ Smart_Blog/
         ├── index.html
         ├── public/
         └── src/
-            ├── main.tsx      # React 진입점
-            ├── App.tsx       # 메인 애플리케이션
-            ├── api.ts        # API 클라이언트
-            ├── types.ts      # TypeScript 타입 정의
-            ├── styles.css    # 전역 스타일
+            ├── main.tsx          # React 진입점 (전역 Provider 래핑)
+            ├── App.tsx           # 메인 애플리케이션 (탭/레이아웃/상태 오케스트레이션)
+            ├── api.ts            # GitHub/LLM API 클라이언트
+            ├── api.types.ts      # API 타입 정의 (Post 등)
+            ├── types.ts          # Activity 타입 정의
+            ├── postsContext.tsx  # Saved Posts 전역 상태(Context + useReducer)
+            ├── useSettings.ts    # 설정(localStorage) 관리 커스텀 훅
+            ├── styles.css        # 전역 스타일
             └── components/
                 ├── RepoForm.tsx        # 저장소 검색 폼
-                ├── ActivityList.tsx    # 활동 목록 표시
+                ├── ActivityList.tsx    # 활동 목록 + Generate Summary
+                ├── SavedPostList.tsx   # 저장된 글 목록
                 ├── BlogPreview.tsx     # 블로그 미리보기
                 ├── Loader.tsx          # 로딩 인디케이터
                 └── ErrorBanner.tsx     # 에러 메시지 표시
@@ -57,7 +61,8 @@ Smart_Blog/
 
 ### 포스트 관리
 
-생성된 블로그 포스트를 저장, 조회, 수정, 삭제할 수 있는 CRUD 기능을 제공합니다.
+서버는 `/api/posts`를 통해 JSON 파일 기반 포스트 CRUD API를 제공하지만,  
+3주차 기준 웹 애플리케이션은 기본적으로 브라우저 `localStorage`에 포스트를 저장/조회합니다.
 
 ## 기술 스택
 
@@ -189,10 +194,11 @@ DELETE /api/posts/:id    # 포스트 삭제
 1. 웹 애플리케이션(`http://localhost:5173`)에 접속합니다.
 2. 상단 입력창에 `owner/repo` 형식으로 GitHub 저장소를 입력합니다.  
    - 예: `joosung03/netflix-clone`
-3. 조회 기간(14일, 30일, 90일 등)을 선택한 뒤 **최근 커밋 보기** 버튼을 클릭합니다.
-4. 좌측 **Recent Commits** 카드 목록에서 원하는 커밋/PR의 **Generate Summary** 버튼을 클릭합니다.
-5. 우측 **Selected Commit** 패널의 *AI Summary* 영역에 LLM(OpenAI API)이 생성한 블로그 스타일 마크다운이 표시됩니다.
-6. 내용이 마음에 들면 **Save as Blog Post** 버튼을 눌러 서버의 `/api/posts`에 포스트로 저장합니다.
+3. 조회 기간(14일, 30일, 90일 등)을 선택한 뒤 최근 커밋 보기 버튼을 클릭합니다.
+4. 좌측 Recent Commits 카드 목록에서 원하는 커밋/PR의 Generate Summary 버튼을 클릭합니다.
+5. 우측 Selected Commit 패널의 *AI Summary* 영역에 LLM(OpenAI API)이 생성한 블로그 스타일 마크다운이 표시됩니다.
+6. 내용이 마음에 들면 Save as Blog Post 버튼을 눌러, 브라우저 `localStorage` 기반 Saved Posts 목록에 포스트를 저장합니다.
+7. 상단 탭에서 Saved Posts 로 이동하면, localStorage에 저장된 글 목록과 상세 내용을 확인할 수 있습니다.
 
 ## 최근 업데이트
 
@@ -213,10 +219,18 @@ DELETE /api/posts/:id    # 포스트 삭제
 
 ### LLM 기반 블로그 생성 및 Smart Blog UI (2주차)
 
-- OpenAI Chat Completions API를 사용하는 `/api/summarize` 엔드포인트를 구현하여, 선택한 커밋/PR에 대한 **블로그 형식 AI 요약**을 생성
-- 프론트엔드에서 카드 형태의 **Recent Commits** 리스트와 **Selected Commit / AI Summary** 패널로 구성된 Smart Blog 레이아웃 구현
-- 각 활동별 **Generate Summary** 버튼을 통해 단일 커밋/PR에 대한 요약을 트리거
-- 생성된 마크다운을 미리보기로 보여주고, **Save as Blog Post** 버튼으로 `/api/posts`에 저장하는 플로우 완성
+- OpenAI Chat Completions API를 사용하는 `/api/summarize` 엔드포인트를 구현하여, 선택한 커밋/PR에 대한 블로그 형식 AI 요약을 생성
+- 프론트엔드에서 카드 형태의 Recent Commits 리스트와 Selected Commit / AI Summary 패널로 구성된 Smart Blog 레이아웃 구현
+- 각 활동별 Generate Summary 버튼을 통해 단일 커밋/PR에 대한 요약을 트리거
+- 생성된 마크다운을 미리보기로 보여주고, Save as Blog Post 버튼으로 `/api/posts`에 저장하는 플로우 완성
+
+### 로컬 저장/전역 상태/리팩토링 (3주차)
+
+- 생성된 블로그 글 저장/관리를 **localStorage 기반 클라이언트**로 전환하고, 서버 `/api/posts` API 의존성을 제거
+- `PostsProvider` + `usePosts`(Context API + `useReducer`)로 Saved Posts 전역 상태 관리 및 localStorage 동기화
+- `useSettings` 훅으로 요약 언어/톤/기본 조회 기간을 관리하고 localStorage(`smartblog:settings`)에 저장
+- 활동/요약/포스트 상태에 `idle/loading/success/error` 비동기 상태 패턴 적용 및 UI 반영
+- 중복 로직을 커스텀 훅/컨텍스트로 분리하고, App/컴포넌트 구조를 단순화하는 리팩토링 진행
 
 ## 개발 진행 상황
 
@@ -234,4 +248,12 @@ DELETE /api/posts/:id    # 포스트 삭제
 - GitHub 최근 커밋/PR 별 **Generate Summary** 버튼으로 블로그 글 자동 생성
 - Selected Commit 패널에서 AI Summary 표시 및 **Save as Blog Post** 기능 구현
 - Smart Blog 스타일의 헤더/2열 레이아웃 및 카드 기반 UI 적용
+
+### 3주차
+
+- 생성된 글 저장/관리를 서버 대신 localStorage 기반 Saved Posts 클라이언트로 전환
+- Context API + `useReducer` 기반 전역 상태 관리(`PostsProvider/usePosts`)와 localStorage 동기화 구현
+- 요약 언어/톤/기본 조회 기간을 설정하는 Settings 페이지 및 `useSettings` 훅 도입
+- 활동/요약/포스트에 비동기 상태 패턴(idle/loading/success/error) 적용 및 UI 연동
+- 중복된 비즈니스 로직을 커스텀 훅으로 분리하고, 코드 전반 가독성과 구조 리팩토링
 

@@ -1,9 +1,12 @@
 const API = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
 
 import type { Activity } from './types';
-import type { Post } from './api.types';
 
-export async function fetchRecent(owner: string, repo: string, sinceDays = 90) {
+export async function fetchRecent(
+  owner: string,
+  repo: string,
+  sinceDays = 90,
+) {
   const res = await fetch(
     `${API}/api/github/${owner}/${repo}/recent?sinceDays=${sinceDays}`,
   );
@@ -36,18 +39,4 @@ export async function summarizeActivities(
   if (!res.ok) throw new Error(await res.text().catch(() => res.statusText));
   const json = await res.json();
   return json.markdown as string;
-}
-
-export async function createPost(
-  title: string,
-  markdown: string,
-  tags?: string[],
-): Promise<Post> {
-  const res = await fetch(`${API}/api/posts`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title, markdown, tags }),
-  });
-  if (!res.ok) throw new Error(await res.text().catch(() => res.statusText));
-  return (await res.json()) as Post;
 }

@@ -1,0 +1,46 @@
+[
+  {
+    "id": "wpquVmSpQb6n",
+    "createdAt": "2025-11-22T13:43:46.046Z",
+    "updatedAt": "2025-11-22T13:43:46.046Z",
+    "title": "[컴퓨터공학부_유주성] 가계부 만들기 2주차",
+    "markdown": "# Executive Summary\n\nIn the second week of developing a personal finance management application, significant progress was made in enhancing the user interface, implementing core features, and refactoring the codebase for improved readability and maintainability. The integration of AI tools facilitated a more efficient development process, particularly in code refactoring and documentation.\n\n## Highlights\n- **Completed Tasks:**\n  - Main screen components: Header, input box, and list view.\n  - Calendar and statistics features implemented.\n  - Comprehensive code refactoring using AI:\n    - Improved variable name readability.\n    - Documented components and functions.\n    - Organized code structure and formatting.\n  - Enhanced functionality:\n    - Improved modal event handler.\n    - Optimized component dependencies.\n\n- **Challenges and Solutions:**\n  - Addressed readability issues caused by abbreviated variable names.\n  - Managed dependencies in the Modal component's `useEffect` to prevent unnecessary re-renders.\n  - Standardized comment styles across files using JSDoc.\n\n- **AI Utilization:**\n  - Leveraged AI for consistent refactoring across a large codebase.\n  - Received assistance in explaining complex logic.\n  - Actively used AI for code review and improvement suggestions.\n\n## What I Learned\nThis week reinforced the importance of code readability and maintainability, especially when working in a team setting. The feedback regarding variable names highlighted the need for clarity, which can significantly ease future maintenance. Additionally, managing dependencies in React components is crucial to avoid performance issues. The use of AI tools proved invaluable in streamlining the refactoring process and ensuring consistency across the codebase.\n\nFor more details, check out the [GitHub Pull Request](https://github.com/boostcampwm-snu-2025/bye2money/pull/29).",
+    "tags": [
+      "github",
+      "pr"
+    ]
+  },
+  {
+    "id": "o24f3Gu63NRg",
+    "createdAt": "2025-11-22T13:40:30.578Z",
+    "updatedAt": "2025-11-22T13:40:30.578Z",
+    "title": "[컴퓨터공학부_유주성] 넷플릭스 검색 기능 구현",
+    "markdown": "# 넷플릭스 검색 기능 구현\n\n## Executive Summary\n이번 포스트에서는 넷플릭스의 검색 기능 구현 과정에 대해 다루고, 주요 작업 목록 및 고민했던 점들을 공유하고자 합니다. 검색창 애니메이션, 검색 결과 노출, 최근 검색어 기능을 포함하여, 개발 과정에서의 AI 활용 경험도 함께 언급하겠습니다.\n\n## Highlights\n- **완료 작업 목록**\n  - 서버 응답 처리\n  - 검색 결과 노출 기능 구현\n  - 검색창 기능 구현\n    - 애니메이션 추가\n    - 최근 검색어 기능 구현\n- **고민과 해결 과정**\n  - 초기 설계서와 변경 사항 반영\n  - Express 환경 구성에 대한 이해\n  - AI의 도움을 통한 구현 아이디어 도출\n- **AI 활용 경험**\n  - Express 서버 생성 도움\n  - 검색 결과창 대체 아이디어\n  - 최근 검색어 레이어 구현 아이디어\n\n## What I Learned\n이번 프로젝트를 통해 데이터 통신과 서버 환경에 대한 이해를 높일 수 있었습니다. 특히, AI를 활용하여 다양한 구현 아이디어를 얻을 수 있었고, 설계서를 수정하는 과정에서 유연한 사고의 중요성을 깨달았습니다. 이러한 경험들은 앞으로의 개발 작업에 큰 도움이 될 것이라 확신합니다.\n\n더 자세한 내용은 [여기서 확인하세요](https://github.com/boostcampwm-snu-2025/netflix-clone/pull/113).",
+    "tags": [
+      "github",
+      "pr"
+    ]
+  },
+  {
+    "id": "VlXQ7GUp5-Ph",
+    "createdAt": "2025-11-22T13:37:48.490Z",
+    "updatedAt": "2025-11-22T13:37:48.490Z",
+    "title": "Add pull request template with checklist and guidelines",
+    "markdown": "# Pull Request 템플릿 추가: 체크리스트 및 가이드라인\n\n## Executive Summary\n이번 포스팅에서는 GitHub 리포지토리에 Pull Request 템플릿을 추가한 내용을 공유합니다. 이 템플릿은 팀원들이 코드 리뷰를 더 쉽고 효율적으로 진행할 수 있도록 체크리스트와 가이드라인을 포함하고 있습니다. 이를 통해 코드 품질을 향상시키고, 협업의 일관성을 높이는 것이 목표입니다.\n\n## Highlights\n- **Pull Request 템플릿 추가**: 모든 PR에 사용할 수 있는 템플릿을 설정하여 효율적인 리뷰 프로세스 구축\n- **체크리스트 포함**: 코드 품질 검토를 위한 필수 항목을 체크리스트 형태로 제공\n- **가이드라인 제공**: PR 작성 시 유의해야 할 사항들을 명시하여 팀원들이 참고할 수 있도록 함\n- **GitHub 커밋 링크**: [변경 사항 보기](https://github.com/joosung03/aiblog/commit/ea4f158e4b717b4f30f622cceaf4cb347d81330c)\n\n## What I Learned\n- **표준화의 중요성**: Pull Request 템플릿을 사용함으로써 팀 내에서 PR 작성 과정이 표준화되어, 코드 리뷰가 더 원활하게 진행된다는 것을 확인했습니다.\n- **팀 커뮤니케이션 개선**: 명확한 가이드라인과 체크리스트 덕분에 팀원들이 서로의 작업을 이해하고, 필요한 피드백을 제공하는 데 도움이 되었습니다.\n- **코드 품질 향상**: 체계적인 리뷰 프로세스가 코드 품질을 높이는 데 기여하며, 잠재적인 버그를 사전에 방지할 수 있음을 배웠습니다.\n\n이와 같은 템플릿은 팀의 개발 환경을 개선하는 데 큰 도움이 될 것이며, 앞으로도 지속적으로 발전시켜 나가야 할 중요한 요소입니다.",
+    "tags": [
+      "github",
+      "commit"
+    ]
+  },
+  {
+    "id": "aZ6rkz1iHll5",
+    "createdAt": "2025-11-17T14:04:21.633Z",
+    "updatedAt": "2025-11-17T14:04:21.633Z",
+    "title": "feat: add search.ts and searchPage.ts",
+    "markdown": "# Executive Summary\n이번 포스팅에서는 Netflix 클론 프로젝트에 새로운 기능으로 추가된 `search.ts`와 `searchPage.ts` 파일에 대해 소개하겠습니다. 이 두 파일은 검색 기능을 구현하여 사용자 경험을 향상시키는 데 기여합니다. 신규 기능의 구현 과정과 배운 점을 공유하겠습니다.\n\n## 주요 내용\n- `search.ts` 파일: 검색 로직 및 API 호출을 담당\n- `searchPage.ts` 파일: 검색 결과를 표시하는 UI 구성\n- GitHub 커밋 링크: [commit details](https://github.com/joosung03/netflix-clone/commit/f8e3df7853e324d560f61c0455400173efeca258)\n- 검색 기능을 통해 사용자 편의성 증가\n\n## What I Learned\n- **검색 기능 구현**: 검색 기능을 구현하면서 API와의 연동을 통해 실시간으로 데이터를 가져오는 방법을 배웠습니다. 이는 사용자 경험을 개선하는 데 중요한 요소임을 느꼈습니다.\n- **UI 구성**: `searchPage.ts`에서 검색 결과를 효과적으로 표시하기 위한 UI 디자인의 중요성을 다시 한번 깨달았습니다. 사용자 친화적인 인터페이스가 필수적이라는 점을 다시 한 번 상기시켰습니다.\n- **코드 관리**: 새로운 기능을 추가하면서 코드의 가독성과 유지보수성을 중요하게 생각해야 한다는 점도 다시 느꼈습니다. 잘 구조화된 코드가 향후 작업을 수월하게 만들어 줄 것입니다.\n\n이 포스팅이 여러분에게 유용한 정보가 되길 바랍니다!",
+    "tags": [
+      "github",
+      "commit"
+    ]
+  }
+]
