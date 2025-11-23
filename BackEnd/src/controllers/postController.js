@@ -3,6 +3,8 @@ const path = require('path')
 const { v4: uuidv4 } = require('uuid')
 const { handleError } = require('../utils/errorHandler')
 
+// Constants
+const POSTS_PER_PAGE = 10
 const dataDir = path.join(__dirname, '../../data')
 const postsFile = path.join(dataDir, 'posts.json')
 
@@ -28,7 +30,6 @@ const readPosts = () => {
     const data = fs.readFileSync(postsFile, 'utf-8')
     return JSON.parse(data)
   } catch (error) {
-    console.error('포스트 읽기 오류:', error)
     return []
   }
 }
@@ -40,7 +41,6 @@ const writePosts = (posts) => {
     fs.writeFileSync(postsFile, JSON.stringify(posts, null, 2))
     return true
   } catch (error) {
-    console.error('포스트 쓰기 오류:', error)
     return false
   }
 }
@@ -116,7 +116,7 @@ const createPost = (req, res) => {
 const getPosts = (req, res) => {
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1)
-    const perPage = 10
+    const perPage = POSTS_PER_PAGE
 
     const posts = readPosts()
     // createdAt 기준 최신순으로 정렬

@@ -64,11 +64,6 @@ export default function SelectedContents({
       )
     }
 
-    // 디버깅용 로그
-    if (type === 'pr') {
-      console.log('PR 데이터:', data)
-    }
-
     const typeLabel = getTypeLabel()
 
     return (
@@ -156,7 +151,7 @@ export default function SelectedContents({
                 <div className="animate-spin">
                   <div className="w-[24px] h-[24px] border-2 border-primary-line border-t-primary-login rounded-full"></div>
                 </div>
-                <span className="text-contents text-primary-line text-sm">요약 생성 중...</span>
+                <span className="text-contents text-primary-line">요약 생성 중...</span>
               </div>
             </div>
           ) : summaryError ? (
