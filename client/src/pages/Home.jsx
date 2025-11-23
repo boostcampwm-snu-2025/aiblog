@@ -3,6 +3,7 @@ import RepoInputForm from '../components/RepoInputForm';
 import ActivityList from '../components/ActivityList';
 import ActivityDetail from '../components/ActivityDetail';
 import { useGitHubActivity } from '../hooks/useGitHubActivity';
+import { useBlogStorage } from '../hooks/useBlogStorage';
 import { blogApi } from '../apis/api';
 import './Home.css';
 
@@ -10,6 +11,9 @@ function Home() {
   // 커스텀 훅 호출 → GitHub 활동, 로딩 상태, 에러 등 가져오기
   // fetchGitHubActivity는 repo(owner/repo) 입력 시 API 호출 함수
   const { activities, isLoading, error, repoInfo, fetchGitHubActivity } = useGitHubActivity();
+
+  // 블로그 저장/관리 훅
+  const { saveBlog } = useBlogStorage();
 
   // 사용자가 리스트에서 선택한 커밋/PR 데이터
   const [selectedActivity, setSelectedActivity] = useState(null);
@@ -35,6 +39,21 @@ function Home() {
       // 백엔드 API 호출 → activity 정보를 기반으로 블로그 글 생성
       const blog = await blogApi.generate(activity);
       setGeneratedBlog(blog); // 생성된 블로그 글 저장
+
+      // localStorage에 자동 저장
+      const savedBlogData = {
+        title: blog.title,
+        content: blog.content,
+        createdAt: blog.createdAt,
+        activityType: activity.type,
+        repoInfo: repoInfo, // 어떤 레포지토리에서 생성했는지 저장
+      };
+
+      saveBlog(savedBlogData);
+
+      // 저장 성공 알림 (콘솔)
+      console.log('✅ 블로그가 localStorage에 저장되었습니다!');
+
     } catch (err) {
       console.error('Error generating blog:', err);
       // 서버에서 보낸 메시지가 있으면 표시, 아니면 기본 메시지 표시
@@ -93,6 +112,7 @@ function Home() {
           />
         </div>
       )}
+
     </>
   );
 }

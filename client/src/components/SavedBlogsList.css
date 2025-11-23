@@ -1,0 +1,134 @@
+.saved-blogs-list {
+  margin: 40px auto;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.saved-blogs-list h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.loading-text,
+.empty-text {
+  text-align: center;
+  color: #666;
+  padding: 40px;
+  font-size: 0.95rem;
+}
+
+.blogs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.blog-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.blog-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.blog-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.blog-type-badge {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.blog-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.blog-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 15px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.repo-info,
+.created-date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.blog-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.btn-view,
+.btn-delete {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #45a049;
+}
+
+.btn-delete {
+  background: #f44336;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #da190b;
+}
+
+.btn-view:active,
+.btn-delete:active {
+  transform: scale(0.98);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .blogs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .saved-blogs-list {
+    padding: 0 15px;
+  }
+}
