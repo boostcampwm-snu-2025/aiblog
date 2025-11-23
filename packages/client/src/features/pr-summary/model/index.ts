@@ -1,4 +1,5 @@
 export { usePRSummary } from "./usePRSummary";
+export { usePRSummarySuspense } from "./usePRSummarySuspense";
 export { useBlogPostGeneration } from "./useBlogPostGeneration";
 export { useBlogPostSave } from "./useBlogPostSave";
 export { useModalState } from "./useModalState";

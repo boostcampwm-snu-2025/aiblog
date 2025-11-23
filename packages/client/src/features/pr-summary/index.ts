@@ -1,5 +1,6 @@
 export {
   usePRSummary,
+  usePRSummarySuspense,
   useBlogPostGeneration,
   useBlogPostSave,
   useModalState,
