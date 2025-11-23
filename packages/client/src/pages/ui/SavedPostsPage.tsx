@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSavedBlogPosts } from "@features/saved";
 import { BlogCard } from "@entities/blog-post";
-import { QueryState, Modal, Button, MarkdownContent } from "@shared";
+import { QueryState, Modal, Button, MarkdownContent } from "@shared/index";
 import type { BlogPostItem } from "@shared/api/types";
 
 export function SavedPostsPage() {

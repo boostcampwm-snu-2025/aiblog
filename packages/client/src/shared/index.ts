@@ -10,3 +10,5 @@ export * from "./ui/MarkdownContent";
 export * from "./lib/constants";
 export * from "./lib/errorUtils";
 export * from "./lib/markdownUtils";
+export * from "./api";
+export * from "./api/types";
