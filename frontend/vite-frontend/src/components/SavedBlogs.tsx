@@ -18,7 +18,7 @@ export default function SavedBlogs({ onBack }: { onBack: () => void }) {
     const fetch = async () => {
       try {
         setLoading(true);
-        const resp = await axios.get<Blog[]>('http://localhost:3000/api/blogs');
+        const resp = await axios.get<Blog[]>('http://localhost:3000/blogs');
         setBlogs(resp.data || []);
         setLoading(false);
       } catch (e) {

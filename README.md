@@ -20,6 +20,7 @@
 - [x] 미구현 기능: LLM call loading 표시 기능 구현
 - [x] 생성된 블로그 저장 기능 구현
 - [ ] 1,2주차 review 반영하여 코드 리팩토링
-
+	- server.js api 기능별로 router 분리
+	
 ## 추후 구현 필요 사항
 llm call 시 돌아가고 있다는 표시가 되도록 Blog 창에 loading 같은 것을 걸거나, 다시 버튼 클릭 되는 것을 block하도록 구현할 필요

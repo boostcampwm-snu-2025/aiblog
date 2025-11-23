@@ -19,7 +19,7 @@ export default function RepositoryList() {
   useEffect(() => {
     const fetchRepositories = async () => {
       try {
-        const response = await axios.get<Repository[]>('http://localhost:3000/api/repos');
+        const response = await axios.get<Repository[]>('http://localhost:3000/github/repos');
         setRepositories(response.data);
         setLoading(false);
       } catch (err) {
@@ -41,7 +41,7 @@ export default function RepositoryList() {
       setBlogError(null);
       setBlogContent(null);
       const payload = { source, item, repo: selectedRepo };
-      const resp = await axios.post('http://localhost:3000/api/create-blog', payload);
+      const resp = await axios.post('http://localhost:3000/llm/create-blog', payload);
       // Prefer different possible response shapes from backend
       const generated = resp?.data?.result || resp?.data?.data || (typeof resp?.data === 'string' ? resp.data : null) || JSON.stringify(resp?.data);
       console.log('Create blog result:', resp.data);
@@ -72,7 +72,7 @@ export default function RepositoryList() {
                 if (!blogContent) return;
                 try {
                   const title = `${selectedRepo?.name || 'blog'} - ${lastMeta?.source || ''} - ${lastMeta?.item?.sha || lastMeta?.item?.number || ''}`;
-                  await axios.post('http://localhost:3000/api/blogs', { title, content: blogContent, source: lastMeta?.source, repo: selectedRepo, item: lastMeta?.item });
+                  await axios.post('http://localhost:3000/blogs', { title, content: blogContent, source: lastMeta?.source, repo: selectedRepo, item: lastMeta?.item });
                   alert('Saved blog');
                 } catch (e) {
                   console.error('Failed to save blog', e);
