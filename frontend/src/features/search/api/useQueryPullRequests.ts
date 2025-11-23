@@ -13,7 +13,7 @@ type GetPullRequestsParams = {
   perPage?: number;
 };
 
-const getPullRequests = async ({ owner, repository, page = 1, perPage = 30 }: GetPullRequestsParams) => {
+const getPullRequests = async ({ owner, repository, page = 1, perPage = 10 }: GetPullRequestsParams) => {
   return getRequest<GetPullRequestsResponse>(
     `${BASE_URL}/repos/${owner}/${repository}/pulls?page=${page}&per_page=${perPage}`,
   );

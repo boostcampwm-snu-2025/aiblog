@@ -47,7 +47,7 @@ export const getPRList = async (
 ) => {
   try {
     const { owner, repo } = req.params;
-    const { state = "all", page = "1", per_page = "30" } = req.query;
+    const { state = "all", page = "1", per_page = "10" } = req.query;
 
     // 페이지네이션 파라미터 검증
     const pageNum = parseInt(page, 10);
