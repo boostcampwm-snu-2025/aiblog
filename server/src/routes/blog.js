@@ -1,13 +1,12 @@
 import express from 'express';
 import { getCommitDetail, getPullRequestDetail } from '../services/githubService.js';
 import { generateBlogFromCommit, generateBlogFromPR } from '../services/openaiService.js';
-import { saveBlog, getBlogById, getAllBlogs } from '../services/blogService.js';
 
 const router = express.Router();
 
 /**
  * POST /api/blog/generate/commit
- * Generate blog from commit
+ * Generate blog from commit (no server-side storage)
  * Body: { owner, repo, sha }
  */
 router.post('/generate/commit', async (req, res) => {
@@ -28,13 +27,14 @@ router.post('/generate/commit', async (req, res) => {
     // 2. Generate blog content using OpenAI
     const blogContent = await generateBlogFromCommit(commitData, `${owner}/${repo}`);
     
-    // 3. Save blog to storage
-    const blog = await saveBlog({
-      type: 'commit',
-      title: commitData.message.split('\n')[0], // First line of commit message
+    // 3. Return generated content only (client handles storage)
+    res.json({
+      success: true,
       content: blogContent,
-      repoName: `${owner}/${repo}`,
-      sourceData: {
+      metadata: {
+        type: 'commit',
+        title: commitData.message.split('\n')[0], // First line of commit message
+        repoName: `${owner}/${repo}`,
         owner,
         repo,
         sha: commitData.sha,
@@ -42,11 +42,6 @@ router.post('/generate/commit', async (req, res) => {
         date: commitData.author.date,
         html_url: commitData.html_url
       }
-    });
-    
-    res.json({
-      success: true,
-      blog: blog
     });
   } catch (error) {
     console.error('Error generating blog from commit:', error);
@@ -59,7 +54,7 @@ router.post('/generate/commit', async (req, res) => {
 
 /**
  * POST /api/blog/generate/pr
- * Generate blog from pull request
+ * Generate blog from pull request (no server-side storage)
  * Body: { owner, repo, pullNumber }
  */
 router.post('/generate/pr', async (req, res) => {
@@ -80,13 +75,14 @@ router.post('/generate/pr', async (req, res) => {
     // 2. Generate blog content using OpenAI
     const blogContent = await generateBlogFromPR(prData, `${owner}/${repo}`);
     
-    // 3. Save blog to storage
-    const blog = await saveBlog({
-      type: 'pull_request',
-      title: prData.title,
+    // 3. Return generated content only (client handles storage)
+    res.json({
+      success: true,
       content: blogContent,
-      repoName: `${owner}/${repo}`,
-      sourceData: {
+      metadata: {
+        type: 'pull_request',
+        title: prData.title,
+        repoName: `${owner}/${repo}`,
         owner,
         repo,
         number: prData.number,
@@ -97,54 +93,10 @@ router.post('/generate/pr', async (req, res) => {
         html_url: prData.html_url
       }
     });
-    
-    res.json({
-      success: true,
-      blog: blog
-    });
   } catch (error) {
     console.error('Error generating blog from PR:', error);
     res.status(500).json({ 
       error: 'Failed to generate blog from PR',
-      message: error.message 
-    });
-  }
-});
-
-/**
- * GET /api/blog/:id
- * Get blog by ID
- */
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const blog = await getBlogById(id);
-    res.json(blog);
-  } catch (error) {
-    console.error('Error fetching blog:', error);
-    if (error.message === 'Blog not found') {
-      return res.status(404).json({ error: 'Blog not found' });
-    }
-    res.status(500).json({ 
-      error: 'Failed to fetch blog',
-      message: error.message 
-    });
-  }
-});
-
-/**
- * GET /api/blog
- * Get all blogs (limited to most recent)
- */
-router.get('/', async (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit) || 50;
-    const blogs = await getAllBlogs(limit);
-    res.json({ blogs, count: blogs.length });
-  } catch (error) {
-    console.error('Error fetching blogs:', error);
-    res.status(500).json({ 
-      error: 'Failed to fetch blogs',
       message: error.message 
     });
   }
