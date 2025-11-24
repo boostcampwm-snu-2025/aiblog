@@ -1,0 +1,21 @@
+{
+  "id": "blog_1763323913915_s9sbusozr",
+  "type": "pull_request",
+  "title": "[컴퓨터공학부_류명현] 2주차 LLM 연동하기",
+  "content": "# PR #47: [컴퓨터공학부_류명현] 2주차 LLM 연동하기\n\n안녕하세요, 여러분! 오늘은 제가 진행한 PR #47에 대해 이야기해볼까 합니다. 이번 PR에서는 LLM(대규모 언어 모델)을 연동하고, 생성된 블로그 글을 파일로 저장하는 기능을 추가했습니다. 그럼 시작해볼까요?\n\n## 개요\n이번 PR의 주요 목표는 LLM을 통해 블로그 글을 생성하고, 이를 사용자가 쉽게 활용할 수 있도록 하는 것입니다. 기존의 블로그 시스템에 AI 기능을 도입하여, 커밋 메시지나 변경된 파일 목록 등을 기반으로 자동으로 콘텐츠를 생성하는 과정을 구현했습니다.\n\n## 문제 정의\n저희 팀은 GitHub의 커밋 정보를 바탕으로 블로그 글을 생성하는 기능이 필요했습니다. 그러나, 서버와의 통신 방식에 대한 결정이 필요했고, 기존 API를 사용하는 것이 효율적이지 않다고 판단했습니다. 따라서, 서버를 거치지 않고 클라이언트가 직접 GitHub API에 접근하는 방식을 선택했습니다.\n\n## 해결 방법\n저는 다음과 같은 방식으로 문제를 해결했습니다:\n- **LLM 연결하기**: 클라이언트에서 GitHub API를 통해 필요한 정보를 가져오고, 이를 LLM에 전달하여 블로그 콘텐츠를 생성합니다.\n- **파일 시스템에 저장**: 서버 DB를 사용하지 않고, 생성된 블로그 글을 JSON 형식으로 파일에 저장하는 방법을 선택했습니다. 이는 빠르게 작동 가능한 프로토타입을 구현하기 위한 결정이었습니다.\n\n## 구현 세부사항\n### 주요 변경 사항\n- 새로운 API 서비스 추가: `client/src/api/blog.js` 파일을 생성하여 블로그 생성 API와의 통신을 담당하도록 했습니다.\n- UI 컴포넌트 수정: `CommitItem`과 `CommitsList` 컴포넌트를 수정하여 블로그 생성 버튼과 뷰어를 추가했습니다.\n- LLM과의 통신: `openaiService.js` 파일에 LLM과의 통신을 위한 함수들을 구현했습니다. 앞으로는 시스템 프롬프트를 별도의 파일로 분리할 계획입니다.\n\n### 코드 변경 통계\n- 추가된 라인: 2729\n- 삭제된 라인: 113\n- 변경된 파일 수: 18\n\n### 주요 코드 변경 예시\n```javascript\n// client/src/api/blog.js\nexport const generateBlogFromCommit = async (owner, repo, sha) => {\n  const response = await apiClient.post('/blog/generate/commit', {\n    owner,\n    repo,\n    sha,\n  });\n  return response.data;\n};\n```\n\n```javascript\n// client/src/components/activity/CommitItem.jsx\nconst CommitItem = ({ commit, owner, repo }) => {\n  const [showBlog, setShowBlog] = useState(false);\n  const [generatedBlog, setGeneratedBlog] = useState(null);\n\n  const { mutate: generateBlog } = useGenerateBlogFromCommit();\n\n  const handleGenerateBlog = () => {\n    generateBlog({ owner, repo, sha: commit.sha }).then((blog) => {\n      setGeneratedBlog(blog);\n      setShowBlog(true);\n    });\n  };\n\n  return (\n    <div>\n      <h3>{getCommitTitle(commit)}</h3>\n      <button onClick={handleGenerateBlog}>블로그 생성</button>\n      {showBlog && <BlogViewer blog={generatedBlog} />}\n    </div>\n  );\n};\n```\n\n## 결과 및 마무리\n이 PR을 통해 블로그 글 자동 생성 기능이 성공적으로 구현되었습니다. 초기 프로토타입 단계이기 때문에, 향후에는 데이터베이스 통합 및 코드 리팩토링을 통해 더욱 견고한 시스템으로 발전시킬 계획입니다. \n\n이번 작업을 통해 AI와의 상호작용을 경험하고, 실제로 어떻게 클라이언트와 서버 간의 데이터 처리를 구성할 수 있는지를 배울 수 있었습니다. 앞으로도 더 나은 기능을 제공하기 위해 지속적으로 개선해 나갈 생각입니다.\n\n이상으로 PR #47에 대한 간단한 개발 일지를 마치겠습니다. 질문이나 피드백이 있으시면 언제든지 댓글로 남겨주세요! 😊",
+  "repoName": "boostcampwm-snu-2025/aiblog",
+  "sourceData": {
+    "owner": "boostcampwm-snu-2025",
+    "repo": "aiblog",
+    "number": 47,
+    "user": {
+      "login": "paul2126",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29268973?v=4"
+    },
+    "state": "open",
+    "created_at": "2025-11-16T20:11:18Z",
+    "merged_at": null,
+    "html_url": "https://github.com/boostcampwm-snu-2025/aiblog/pull/47"
+  },
+  "createdAt": "2025-11-16T20:11:53.915Z"
+}
