@@ -3,9 +3,9 @@ import { fileURLToPath } from "node:url";
 import cors from "cors";
 import express from "express";
 import env from "./config/env.js";
-import { devDelayMiddleware } from "./middleware/dev-delay";
-import githubRouter from "./routes/github.routes";
-import summaryRouter from "./routes/summary.routes";
+import { devDelayMiddleware } from "./middleware/dev-delay.js";
+import githubRouter from "./routes/github.routes.js";
+import summaryRouter from "./routes/summary.routes.js";
 
 const app = express();
 

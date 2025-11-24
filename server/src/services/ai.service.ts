@@ -1,5 +1,5 @@
-import { ai } from "../config/clients";
-import { generateChangelogPrompt } from "../utils/prompts";
+import { ai } from "../config/clients.js";
+import { generateChangelogPrompt } from "../utils/prompts.js";
 
 export async function generateCommitSummary(
 	commitMessage: string,

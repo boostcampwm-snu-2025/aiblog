@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { Octokit } from "octokit";
-import env from "./env";
+import env from "./env.js";
 
 export const octokit: Octokit = new Octokit({
 	auth: env.GITHUB_TOKEN,

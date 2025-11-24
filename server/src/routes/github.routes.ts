@@ -1,8 +1,8 @@
 import type { Router } from "express";
 import { Router as ExpressRouter } from "express";
-import * as githubController from "../controllers/github.controller";
-import { asyncGithubHandler } from "../middleware/async-handler";
-import { errorHandler } from "../middleware/error-handler";
+import * as githubController from "../controllers/github.controller.js";
+import { asyncGithubHandler } from "../middleware/async-handler.js";
+import { errorHandler } from "../middleware/error-handler.js";
 
 const router: Router = ExpressRouter();
 

@@ -9,8 +9,8 @@ import {
 	querySchema,
 	repoSchema,
 	usernameSchema,
-} from "../schemas/github.schema";
-import * as githubService from "../services/github.service";
+} from "../schemas/github.schema.js";
+import * as githubService from "../services/github.service.js";
 
 export async function getRepository(
 	req: Request,

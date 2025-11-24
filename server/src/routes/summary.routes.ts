@@ -1,8 +1,8 @@
 import type { Router } from "express";
 import { Router as ExpressRouter } from "express";
-import * as summaryController from "../controllers/summary.controller";
-import { asyncHandler } from "../middleware/async-handler";
-import { errorHandler } from "../middleware/error-handler";
+import * as summaryController from "../controllers/summary.controller.js";
+import { asyncHandler } from "../middleware/async-handler.js";
+import { errorHandler } from "../middleware/error-handler.js";
 
 const router: Router = ExpressRouter();
 

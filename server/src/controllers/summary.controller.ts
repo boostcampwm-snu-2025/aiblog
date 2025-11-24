@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { summarySchema } from "../schemas/summary.schema";
-import * as summaryService from "../services/summary.service";
+import { summarySchema } from "../schemas/summary.schema.js";
+import * as summaryService from "../services/summary.service.js";
 
 export async function listSummaries(_req: Request, res: Response) {
 	const summaries = await summaryService.listAll();
