@@ -2,6 +2,7 @@
 import { useForm } from "react-hook-form";
 import { useGithubRepos } from "../hooks/useGithubRepos";
 import { useGithubBranches } from "../hooks/useGithubBranches";
+import useDebounce from "../hooks/useDebounce";
 
 function RepoInput({ onFetch }) {
   const {
@@ -12,11 +13,12 @@ function RepoInput({ onFetch }) {
   } = useForm();
 
   const owner = watch("owner");
+  const debouncedOwner = useDebounce(owner, 500);
   const repo = watch("repo");
 
-  const { data: repos, isLoading: repoLoading } = useGithubRepos(owner);
+  const { data: repos, isLoading: repoLoading } = useGithubRepos(debouncedOwner);
   const { data: branches, isLoading: branchLoading } = useGithubBranches(
-    owner,
+    debouncedOwner,
     repo
   );
 
@@ -64,7 +66,7 @@ function RepoInput({ onFetch }) {
             <option value="">
               {repoLoading ? "Loading repos..." : "Select Repo"}
             </option>
-            {repos?.map((r) => (
+            {(Array.isArray(repos) ? repos : []).map((r) => (
               <option key={r.id} value={r.name}>
                 {r.name}
               </option>

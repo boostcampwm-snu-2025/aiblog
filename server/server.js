@@ -1,6 +1,8 @@
 //.env 파일 로드
-const dotenv = require("dotenv");
-dotenv.config();
+require("dotenv").config();
+
+//github key error debug
+//console.log("TOKEN:", process.env.GITHUB_TOKEN);
 
 const express = require("express");
 

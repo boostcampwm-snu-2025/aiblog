@@ -66,8 +66,8 @@ router.post("/generate", async (req, res) => {
 =========================== */
 router.post("/", async (req, res) => {
   try {
-    const blog = await Blog.create(req.body);
-    res.json(blog);
+    const createdBlog = await blog.create(req.body);
+    res.json(createdBlog);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -77,7 +77,7 @@ router.post("/", async (req, res) => {
    3) 전체 블로그 조회
 =========================== */
 router.get("/", async (req, res) => {
-  const blogs = await Blog.find().sort({ createdAt: -1 });
+  const blogs = await blog.find().sort({ createdAt: -1 });
   res.json(blogs);
 });
 
@@ -85,15 +85,15 @@ router.get("/", async (req, res) => {
    4) 특정 블로그 조회
 =========================== */
 router.get("/:id", async (req, res) => {
-  const blog = await Blog.findById(req.params.id);
-  res.json(blog);
+  const post = await blog.findById(req.params.id);
+  res.json(post);
 });
 
 /* ===========================
    5) 블로그 수정
 =========================== */
 router.put("/:id", async (req, res) => {
-  const updated = await Blog.findByIdAndUpdate(req.params.id, req.body, {
+  const updated = await blog.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });
   res.json(updated);
@@ -103,7 +103,7 @@ router.put("/:id", async (req, res) => {
    6) 블로그 삭제
 =========================== */
 router.delete("/:id", async (req, res) => {
-  await Blog.findByIdAndDelete(req.params.id);
+  await blog.findByIdAndDelete(req.params.id);
   res.json({ message: "Deleted" });
 });
 

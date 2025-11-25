@@ -1,5 +1,5 @@
 import RepoInput from "../components/RepoInput";
-import { useActivities } from "../contexts/ActivityContext";
+import { useActivities } from "../contexts/useActivities";
 import ActivityList from "../components/ActivityList";
 
 export const Homepage = () => {
