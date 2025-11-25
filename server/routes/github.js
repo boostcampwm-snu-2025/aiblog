@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/activities", async (req, res) => {
-  const { owner, repo } = req.query;
+  const { owner, repo, branch } = req.query;
 
   try {
-    const listURL = `https://api.github.com/repos/${owner}/${repo}/commits`;
+    const listURL = `https://api.github.com/repos/${owner}/${repo}/commits?sha=${branch}`;
     const listResponse = await fetch(listURL, {
       headers: {
         Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,

@@ -1,4 +1,4 @@
-//데이터 fetching (owner -> repos)
+//데이터 fetching (repo -> branches)
 import { useQuery } from "@tanstack/react-query";
 import { fetchRepoBranches } from "../apis/github";
 
