@@ -27,8 +27,8 @@ export default function RepoDetails({ repo, onBack, onCreateBlog }: Props) {
       try {
         setLoading(true);
         const [commitsRes, pullsRes] = await Promise.all([
-          axios.get(`http://localhost:3000/api/repos/${repo.owner}/${repo.name}/commits`),
-          axios.get(`http://localhost:3000/api/repos/${repo.owner}/${repo.name}/pulls`)
+          axios.get(`http://localhost:3000/github/repos/${repo.owner}/${repo.name}/commits`),
+          axios.get(`http://localhost:3000/github/repos/${repo.owner}/${repo.name}/pulls`)
         ]);
 
         setCommits(commitsRes.data);

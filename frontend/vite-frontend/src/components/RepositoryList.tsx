@@ -3,6 +3,7 @@ import axios from 'axios';
 import type { Repository } from '../types/Repository';
 import './RepositoryList.css';
 import RepoDetails from './RepoDetails';
+import SavedBlogs from './SavedBlogs';
 
 export default function RepositoryList() {
   const [repositories, setRepositories] = useState<Repository[]>([]);
@@ -10,11 +11,15 @@ export default function RepositoryList() {
   const [error, setError] = useState<string | null>(null);
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
   const [blogContent, setBlogContent] = useState<string | null>(null);
+  const [lastMeta, setLastMeta] = useState<{ source: 'commit' | 'pr'; item: any } | null>(null);
+  const [viewSaved, setViewSaved] = useState(false);
+  const [blogLoading, setBlogLoading] = useState(false);
+  const [blogError, setBlogError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRepositories = async () => {
       try {
-        const response = await axios.get<Repository[]>('http://localhost:3000/api/repos');
+        const response = await axios.get<Repository[]>('http://localhost:3000/github/repos');
         setRepositories(response.data);
         setLoading(false);
       } catch (err) {
@@ -32,15 +37,24 @@ export default function RepositoryList() {
   const handleCreateBlog = async (source: 'commit' | 'pr', item: any) => {
     if (!selectedRepo) return;
     try {
+      setBlogLoading(true);
+      setBlogError(null);
+      setBlogContent(null);
       const payload = { source, item, repo: selectedRepo };
-      const resp = await axios.post('http://localhost:3000/api/create-blog', payload);
+      const resp = await axios.post('http://localhost:3000/llm/create-blog', payload);
       // Prefer different possible response shapes from backend
       const generated = resp?.data?.result || resp?.data?.data || (typeof resp?.data === 'string' ? resp.data : null) || JSON.stringify(resp?.data);
       console.log('Create blog result:', resp.data);
       setBlogContent(generated);
+      setLastMeta({ source, item });
+      setBlogLoading(false);
       // For now, just log result to console (frontend requirement)
     } catch (err) {
       console.error('Failed to create blog', err);
+      const e = err as any;
+      const msg = e?.response?.data?.error || e?.message || 'LLM call failed';
+      setBlogError(String(msg));
+      setBlogLoading(false);
     }
   };
 
@@ -53,10 +67,27 @@ export default function RepositoryList() {
         <div className="blog-preview">
           <div className="preview-header">
             <h3>Generated Blog</h3>
-            <button className="close-preview" onClick={() => setBlogContent(null)}>Close</button>
+            <div>
+              <button className="save-preview" disabled={blogLoading || !blogContent} onClick={async () => {
+                if (!blogContent) return;
+                try {
+                  const title = `${selectedRepo?.name || 'blog'} - ${lastMeta?.source || ''} - ${lastMeta?.item?.sha || lastMeta?.item?.number || ''}`;
+                  await axios.post('http://localhost:3000/blogs', { title, content: blogContent, source: lastMeta?.source, repo: selectedRepo, item: lastMeta?.item });
+                  alert('Saved blog');
+                } catch (e) {
+                  console.error('Failed to save blog', e);
+                  alert('Failed to save');
+                }
+              }}>Save</button>
+              <button className="close-preview" onClick={() => { setBlogContent(null); setBlogError(null); }}>Close</button>
+            </div>
           </div>
           <div className="preview-body">
-            {blogContent ? (
+            {blogLoading ? (
+              <div className="loading">LLM 요청 실행중... 잠시만 기다려주세요.</div>
+            ) : blogError ? (
+              <div className="error">오류 발생: {blogError}</div>
+            ) : blogContent ? (
               <pre style={{ whiteSpace: 'pre-wrap' }}>{blogContent}</pre>
             ) : (
               <div className="empty">생성된 블로그가 없습니다. Commit/PR 항목에서 "Create Blog"를 클릭하세요.</div>
@@ -66,10 +97,18 @@ export default function RepositoryList() {
       </div>
     );
   }
+  if (viewSaved) {
+    return <SavedBlogs onBack={() => setViewSaved(false)} />;
+  }
 
   return (
     <div className="repository-list">
-      <h1>My Public Repositories</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>My Public Repositories</h1>
+        <div>
+          <button onClick={() => setViewSaved(true)}>Saved Blogs</button>
+        </div>
+      </div>
       <div className="repositories">
         {repositories.map(repo => (
           <div key={repo.id} className="repository-card">
