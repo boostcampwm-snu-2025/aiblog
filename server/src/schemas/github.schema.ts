@@ -28,3 +28,11 @@ export const pageSchema = z.object({
 	page: z.coerce.number().optional(),
 	per_page: z.coerce.number().optional(),
 });
+
+export const orgSchema = z.object({
+	org: z.string(),
+});
+
+export const usernameSchema = z.object({
+	username: z.string(),
+});

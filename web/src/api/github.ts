@@ -2,13 +2,11 @@ import type { Endpoints } from "@octokit/types";
 
 import { queryOptions } from "@tanstack/react-query";
 
-import { baseUrl } from ".";
-
 export function readBranchCommits(owner: string, repo: string, branch: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
       const response = await fetch(
-        `${baseUrl}/api/github/repos/${owner}/${repo}/branches/${branch}/commits`,
+        `/api/github/repos/${owner}/${repo}/branches/${branch}/commits`,
         { signal },
       );
       if (!response.ok) {
@@ -26,7 +24,7 @@ export function readBranches(owner: string, repo: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
       const response = await fetch(
-        `${baseUrl}/api/github/repos/${owner}/${repo}/branches`,
+        `/api/github/repos/${owner}/${repo}/branches`,
         { signal },
       );
       if (!response.ok) {
@@ -44,7 +42,7 @@ export function readCommit(owner: string, repo: string, ref: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
       const response = await fetch(
-        `${baseUrl}/api/github/repos/${owner}/${repo}/commits/${ref}`,
+        `/api/github/repos/${owner}/${repo}/commits/${ref}`,
         { signal },
       );
       if (!response.ok) {
@@ -61,7 +59,7 @@ export function readCommit(owner: string, repo: string, ref: string) {
 export function readOrgRepos(org: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
-      const response = await fetch(`${baseUrl}/api/github/orgs/${org}/repos`, {
+      const response = await fetch(`/api/github/orgs/${org}/repos`, {
         signal,
       });
       if (!response.ok) {
@@ -79,7 +77,7 @@ export function readPullCommits(owner: string, repo: string, prNumber: number) {
   return queryOptions({
     queryFn: async ({ signal }) => {
       const response = await fetch(
-        `${baseUrl}/api/github/repos/${owner}/${repo}/pulls/${prNumber}/commits`,
+        `/api/github/repos/${owner}/${repo}/pulls/${prNumber}/commits`,
         { signal },
       );
       if (!response.ok) {
@@ -96,10 +94,9 @@ export function readPullCommits(owner: string, repo: string, prNumber: number) {
 export function readPulls(owner: string, repo: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
-      const response = await fetch(
-        `${baseUrl}/api/github/repos/${owner}/${repo}/pulls`,
-        { signal },
-      );
+      const response = await fetch(`/api/github/repos/${owner}/${repo}/pulls`, {
+        signal,
+      });
       if (!response.ok) {
         throw new Error(response.statusText);
       }
@@ -114,12 +111,9 @@ export function readPulls(owner: string, repo: string) {
 export function readRepository(owner: string, repo: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
-      const response = await fetch(
-        `${baseUrl}/api/github/repos/${owner}/${repo}`,
-        {
-          signal,
-        },
-      );
+      const response = await fetch(`/api/github/repos/${owner}/${repo}`, {
+        signal,
+      });
       if (!response.ok) {
         throw new Error(response.statusText);
       }
@@ -134,10 +128,9 @@ export function readRepository(owner: string, repo: string) {
 export function readUserRepos(username: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
-      const response = await fetch(
-        `${baseUrl}/api/github/users/${username}/repos`,
-        { signal },
-      );
+      const response = await fetch(`/api/github/users/${username}/repos`, {
+        signal,
+      });
       if (!response.ok) {
         throw new Error(response.statusText);
       }
@@ -153,9 +146,7 @@ export function searchRepositories(query: string) {
   return queryOptions({
     queryFn: async ({ signal }) => {
       const response = await fetch(
-        `${baseUrl}/api/github/search/repositories?q=${encodeURIComponent(
-          query,
-        )}`,
+        `/api/github/search/repositories?q=${encodeURIComponent(query)}`,
         { signal },
       );
       if (!response.ok) {

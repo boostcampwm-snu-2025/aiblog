@@ -19,10 +19,10 @@ import BranchSelector from "./-branch-selector";
 export const Route = createFileRoute("/repos/$owner/$repo/branches/$branch")({
   component: BranchesPage,
   loader: ({ context: { queryClient }, params: { branch, owner, repo } }) => {
-    queryClient.prefetchQuery(readBranches(owner, repo)).catch(console.error);
-    queryClient
-      .prefetchQuery(readBranchCommits(owner, repo, branch))
-      .catch(console.error);
+    void Promise.all([
+      queryClient.prefetchQuery(readBranches(owner, repo)),
+      queryClient.prefetchQuery(readBranchCommits(owner, repo, branch)),
+    ]);
   },
 });
 
@@ -31,10 +31,10 @@ function BranchesPage() {
   const navigate = useNavigate();
 
   const handleBranchChange = (branch: string) => {
-    navigate({
+    void navigate({
       params: { branch, owner, repo },
       to: "/repos/$owner/$repo/branches/$branch",
-    }).catch(console.error);
+    });
   };
 
   return (

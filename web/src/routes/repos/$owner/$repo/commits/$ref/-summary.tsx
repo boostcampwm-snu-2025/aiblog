@@ -1,8 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
 
-import { summarizeCommit } from "~/api/gemini";
+import { createCommitSummary } from "~/api/summaries";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import {
@@ -20,19 +20,21 @@ interface Props {
 }
 
 function Summary({ owner, ref, repo }: Props) {
-  const [summary, setSummary] = useState("");
-  const summarizeMutation = useMutation({
-    mutationFn: () => summarizeCommit(owner, repo, ref),
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const createMutation = useMutation({
+    ...createCommitSummary(queryClient),
+    onSuccess: () => {
+      void navigate({
+        params: { owner, ref, repo },
+        to: "/summaries/$owner/$repo/$ref",
+      });
+    },
   });
 
-  useEffect(() => {
-    if (summarizeMutation.isSuccess) {
-      setSummary(summarizeMutation.data);
-    }
-  }, [summarizeMutation.isSuccess, summarizeMutation.data]);
-
   const handleGenerateSummary = () => {
-    summarizeMutation.mutate();
+    createMutation.mutate({ owner, ref, repo });
   };
 
   return (
@@ -45,27 +47,19 @@ function Summary({ owner, ref, repo }: Props) {
       </CardHeader>
       <CardContent>
         <Button
-          disabled={summarizeMutation.isPending}
+          disabled={createMutation.isPending}
           onClick={handleGenerateSummary}
         >
-          {summarizeMutation.isPending && (
+          {createMutation.isPending && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           )}
           Generate Summary
         </Button>
 
-        {summarizeMutation.isError && (
+        {createMutation.isError && (
           <Alert className="mt-4" variant="destructive">
-            <AlertCircle />
+            <AlertCircle className="h-4 w-4" />
             <AlertDescription>Failed to generate summary</AlertDescription>
-          </Alert>
-        )}
-
-        {summary && (
-          <Alert className="mt-4">
-            <AlertDescription className="whitespace-pre-wrap">
-              {summary}
-            </AlertDescription>
           </Alert>
         )}
       </CardContent>
