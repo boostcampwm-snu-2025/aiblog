@@ -2,68 +2,71 @@ Smart Blog Maker
 GitHub 저장소의 커밋/PR 이력을 AI로 요약하여 기술 블로그 초안을 생성해주는 프로젝트입니다.
 
 # 🖥️ 주요 기능 데모
-![데모 파일](./assets/demo3.png)
-![데모 파일2](./assets/demo2.png)
+![데모 파일](./assets/demo4.png)
+![데모 파일2](./assets/demo5.png)
 
 
-# ✨ 주요 기능
-GitHub 데이터 연동: owner/repo 또는 GitHub URL을 입력받아, 해당 저장소의 최근 커밋 및 PR 목록을 실시간으로 조회합니다.
+이번 주차에는 서비스의 안정성과 사용자 경험(UX)을 개선하기 위한 대규모 리팩토링과 데이터 영속성(Persistence) 기능을 구현했습니다.
 
-AI 블로그 생성: 각 커밋/PR 항목별 "블로그 생성" 버튼을 클릭하면, Gemini AI가 해당 작업의 내용(커밋 메시지, PR 제목)을 기반으로 기술 블로그 초안을 생성합니다.
+## 전역 상태 관리 도입 (Context API + useReducer)
 
-보안 API 프록시: React(클라이언트)가 API 키를 직접 노출하지 않도록, Express(서버)가 모든 외부 API(GitHub, Gemini) 요청을 중계합니다.
+생성된 블로그 글을 앱 전역에서 효율적으로 관리합니다.
 
-GITHUB_TOKEN (GitHub API용)
+useGitHub, useLLM 등 커스텀 훅(Custom Hooks)을 도입하여 비즈니스 로직과 UI를 분리했습니다.
 
-GEMINI_API_KEY (Gemini API용)
+로컬 스토리지(LocalStorage) 연동
 
-인터랙티브 UI:
+생성된 블로그 글이 브라우저에 자동 저장되어, 새로고침 후에도 데이터가 유지됩니다.
 
-데이터 로딩 중 스피너 표시
+"저장된 블로그" 탭에서 언제든지 이전에 생성한 글을 다시 볼 수 있습니다.
 
-API 에러 발생 시 사용자에게 에러 메시지 표시
+## UX 개선
 
-생성된 블로그 내용을 깔끔한 모달(Modal) 창으로 제공
+탭 네비게이션: 'GitHub 검색'과 '저장된 블로그' 탭을 분리하여 깔끔한 UI를 제공합니다.
 
-# 🛠️ 사용 기술 및 아키텍처
+상태 반영 버튼: 이미 블로그로 생성한 항목은 "생성" 버튼 대신 "✅ 확인" 버튼으로 자동 변경되어 중복 생성을 방지합니다.
 
-이 프로젝트는 클라이언트와 서버가 분리된 구조로 작동합니다.
+비동기 상태 처리: 데이터 로딩, 생성 중, 에러 상태에 따른 정교한 UI 피드백을 제공합니다.
 
-Client (React): 사용자의 입력을 받아 Express 서버에 데이터(GET /api/github/...)를 요청합니다.
+# ✨ 전체 기능 목록
 
-Server (Express): 클라이언트의 요청을 받아, 서버에만 저장된 GITHUB_TOKEN을 첨부하여 GitHub API에 데이터를 요청합니다.
+GitHub 연동: 저장소 주소(owner/repo) 입력 시 최근 커밋/PR 목록 실시간 조회
 
-Client (React): "블로그 생성" 버튼 클릭 시, 커밋/PR 정보를 Express 서버(POST /api/llm/generate)로 전송합니다.
+AI 글쓰기: Google Gemini Pro 모델을 활용하여 개발 작업(Commit/PR)을 기술 블로그 톤으로 요약 및 재생성
 
-Server (Express): 클라이언트가 보낸 정보를 바탕으로 프롬프트를 생성하고, 서버에만 저장된 GEMINI_API_KEY를 첨부하여 Gemini API에 블로그 생성을 요청합니다.
+보안 프록시 서버: Express 백엔드를 통해 API Key(GitHub, Gemini)를 안전하게 은닉하여 호출
 
-Client (React): 서버가 반환한 AI 생성 텍스트를 모달 창에 렌더링합니다.
+블로그 관리:
 
-## Client (Frontend)
+생성된 글 자동 저장 (LocalStorage)
 
-React.js
+갤러리 형태의 글 목록 조회
 
-Vite (개발 환경 및 번들러)
+블로그 글 삭제 기능
 
-Tailwind CSS (스타일링)
+상세 보기 모달(Modal)
 
-## Server (Backend)
+# 🛠️ 기술 스택 및 아키텍처
 
-Node.js
+Client (Frontend)
 
-Express (API 라우팅 및 프록시)
+Framework: React (Vite)
 
-dotenv (API 키 등 환경 변수 관리)
+State Management: Context API, useReducer
 
-cors (CORS 이슈 해결)
+Styling: Tailwind CSS
 
-node-fetch (Node.js 18 미만 버전의 fetch 지원)
+Features: Custom Hooks, LocalStorage Sync
 
-## External APIs
+Server (Backend)
 
-GitHub REST API
+Runtime: Node.js
 
-Google Gemini API (gemini-2.5-flash-preview-09-2025)
+Framework: Express.js
+
+Security: dotenv (환경변수 관리), cors
+
+Integrations: GitHub REST API, Google Gemini API
 
 # 🚀 프로젝트 실행 방법
 이 프로젝트를 로컬 환경에서 실행하려면 2개의 터미널이 필요합니다.
@@ -126,10 +129,3 @@ npm run dev
 5. 브라우저 접속
 
 브라우저에서 http://localhost:5173 (Vite가 알려주는 주소)으로 접속하여 '저장소 불러오기' 및 '블로그 생성' 기능을 테스트합니다.
-
-## 📝 추후 구현 계획 (TBD)
-[ ] 생성된 블로그 글을 localStorage에 저장하는 기능
-
-[ ] 저장된 블로그 글 목록/상세 보기 페이지 구현
-
-[ ] 블로그 글 편집 기능
