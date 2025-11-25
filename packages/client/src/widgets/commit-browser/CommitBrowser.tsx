@@ -1,15 +1,14 @@
-import { useRepoUrlForm } from "../../features/repo-search/model/useRepoUrlForm";
-import { useCommits } from "../../features/repo-search/model/useCommits";
-import { usePullRequests } from "../../features/repo-search/model/usePullRequests";
-import { usePRSummaryModal } from "../../features/repo-search/model/usePRSummaryModal";
-import { extractErrorMessage, QueryState } from "../../shared";
-
-import { RepoSearchForm } from "../../features/repo-search/ui/RepoSearchForm";
-import { CommitList } from "../../entities/commit/ui/CommitList";
 import {
-  PullRequestList,
-  PRSummaryModal,
-} from "../../entities/pull-request/ui";
+  useRepoUrlForm,
+  useCommits,
+  usePullRequests,
+  RepoSearchForm,
+} from "@features/repo-search";
+import { useModalState } from "@features/pr-summary";
+import { extractErrorMessage, QueryState } from "@shared/index";
+import { CommitList } from "@entities/commit";
+import { PullRequestList } from "@entities/pull-request/ui";
+import { PRSummaryModal } from "@widgets/pr-summary";
 
 export function CommitBrowser() {
   const { repoUrl, setRepoUrl, submittedRepoUrl, onSubmitUrl } =
@@ -17,18 +16,11 @@ export function CommitBrowser() {
   const commitsQuery = useCommits(submittedRepoUrl);
   const pullRequestsQuery = usePullRequests(submittedRepoUrl);
 
-  const prSummaryModal = usePRSummaryModal();
+  const modalState = useModalState();
 
   const handleGenerateSummary = (prNumber: number) => {
     if (!submittedRepoUrl) return;
-    prSummaryModal.generateSummary(submittedRepoUrl, prNumber);
-  };
-
-  const handleGenerateBlogPost = () => {
-    prSummaryModal.generateBlogPostContent();
-  };
-  const handleSaveBlogPost = async () => {
-    await prSummaryModal.saveBlogPostToServer();
+    modalState.open(submittedRepoUrl, prNumber);
   };
 
   const commitsError = commitsQuery.error
@@ -90,20 +82,10 @@ export function CommitBrowser() {
       </div>
 
       <PRSummaryModal
-        isOpen={prSummaryModal.isOpen}
-        onClose={prSummaryModal.closeModal}
-        summary={prSummaryModal.summary}
-        blogPost={prSummaryModal.blogPost}
-        blogPostTitle={prSummaryModal.blogPostTitle}
-        isLoading={prSummaryModal.isLoading}
-        isLoadingBlogPost={prSummaryModal.isLoadingBlogPost}
-        isSavingBlogPost={prSummaryModal.isSavingBlogPost}
-        isBlogPostSaved={!!prSummaryModal.savedBlogPostId}
-        error={prSummaryModal.error}
-        blogPostError={prSummaryModal.blogPostError}
-        saveBlogPostError={prSummaryModal.saveBlogPostError}
-        onGenerateBlogPost={handleGenerateBlogPost}
-        onSaveBlogPost={handleSaveBlogPost}
+        isOpen={modalState.isOpen}
+        onClose={modalState.close}
+        repoUrl={modalState.currentPR?.repoUrl ?? null}
+        prNumber={modalState.currentPR?.prNumber ?? null}
       />
     </div>
   );

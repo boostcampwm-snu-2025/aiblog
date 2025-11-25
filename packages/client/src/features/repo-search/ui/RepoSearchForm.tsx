@@ -1,5 +1,5 @@
 import type { FormEventHandler } from "react";
-import { TextInput } from "../../../shared";
+import { TextInput } from "@shared";
 
 export interface RepoSearchFormProps {
   value: string;

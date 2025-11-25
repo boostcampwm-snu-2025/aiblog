@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Button } from "../../shared";
+import { Button } from "@shared";
 
 export function Header() {
   const location = useLocation();

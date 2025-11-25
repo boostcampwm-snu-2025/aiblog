@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchAllBlogPosts } from "../../../shared/api/github";
-import type { GetAllBlogPostsResponse } from "../../../shared/api/types";
+import { fetchAllBlogPosts } from "@shared/api/github";
+import type { GetAllBlogPostsResponse } from "@shared/api/types";
 
 export function useSavedBlogPosts() {
   return useQuery<GetAllBlogPostsResponse, Error>({
