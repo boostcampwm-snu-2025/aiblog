@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useActivities } from "../contexts/ActivityContext";
+import { useActivities } from "../contexts/useActivities";
 
 function ActivityList() {
   const { activities, isLoading, error, generateBlogMutation } =

@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 import ActivityList from "./ActivityList";
 import BlogDisplay from "./BlogDisplay";
 
@@ -9,9 +9,9 @@ const Layout = () => {
       <header className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
         {/* Left: My GitHub Diary */}
         <div className="flex-none">
-          <h1 className="text-2xl font-bold text-pink-500 font-gsans">
+          <Link to="/" className="text-2xl font-bold text-pink-500 font-gsans">
             My GitHub Diary
-          </h1>
+          </Link>
         </div>
 
         {/* Right: Buttons */}
@@ -19,9 +19,9 @@ const Layout = () => {
           <button className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">
             Settings
           </button>
-          <button className="bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-4 rounded">
+          <Link to="/posts" className="bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-4 rounded">
             Saved Posts
-          </button>
+          </Link>
         </div>
       </header>
 

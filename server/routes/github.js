@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/activities", async (req, res) => {
-  const { owner, repo } = req.query;
+  const { owner, repo, branch } = req.query;
 
   try {
-    const listURL = `https://api.github.com/repos/${owner}/${repo}/commits`;
+    const listURL = `https://api.github.com/repos/${owner}/${repo}/commits?sha=${branch}`;
     const listResponse = await fetch(listURL, {
       headers: {
-        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+        Authorization: `token ${process.env.GITHUB_TOKEN}`,
         Accept: "application/vnd.github.v3+json",
       },
     });
@@ -21,7 +21,7 @@ router.get("/activities", async (req, res) => {
         const detailURL = `https://api.github.com/repos/${owner}/${repo}/commits/${commit.sha}`;
         const detailResponse = await fetch(detailURL, {
           headers: {
-            Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+            Authorization: `token ${process.env.GITHUB_TOKEN}`,
             Accept: "application/vnd.github.v3+json",
           },
         });
@@ -40,7 +40,7 @@ router.get("/activities", async (req, res) => {
           diff: diff || "No diff available",
           authorName: commit.commit?.author?.name ?? "Unknown",
           authorLogin: commit.author?.login ?? "unknown",
-          date: commit.commmit?.author?.date ?? null,
+          date: commit.commit?.author?.date ?? null,
         };
       })
     );

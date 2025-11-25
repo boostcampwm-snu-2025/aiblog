@@ -1,6 +1,12 @@
 const express = require("express");
+const blog = require("../models/blog");
 const router = express.Router();
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
+/* ===========================
+   1) LLM 블로그 생성 (기존 기능) 
+=========================== */
 router.post("/generate", async (req, res) => {
   try {
     const { commitMessage, diff } = req.body;
@@ -55,6 +61,50 @@ router.post("/generate", async (req, res) => {
   }
 });
 
-console.log("ENV OPENAI KEY:", process.env.OPENAI_API_KEY);
+/* ===========================
+   2) 블로그 생성 (DB 저장)
+=========================== */
+router.post("/", async (req, res) => {
+  try {
+    const createdBlog = await blog.create(req.body);
+    res.json(createdBlog);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/* ===========================
+   3) 전체 블로그 조회
+=========================== */
+router.get("/", async (req, res) => {
+  const blogs = await blog.find().sort({ createdAt: -1 });
+  res.json(blogs);
+});
+
+/* ===========================
+   4) 특정 블로그 조회
+=========================== */
+router.get("/:id", async (req, res) => {
+  const post = await blog.findById(req.params.id);
+  res.json(post);
+});
+
+/* ===========================
+   5) 블로그 수정
+=========================== */
+router.put("/:id", async (req, res) => {
+  const updated = await blog.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  res.json(updated);
+});
+
+/* ===========================
+   6) 블로그 삭제
+=========================== */
+router.delete("/:id", async (req, res) => {
+  await blog.findByIdAndDelete(req.params.id);
+  res.json({ message: "Deleted" });
+});
 
 module.exports = router;
