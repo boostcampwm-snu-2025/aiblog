@@ -1,8 +1,9 @@
-import { useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
+import { PATHS } from "@/constants/paths";
 import type { PostEditorData } from "@/entities/post";
 import { createPost } from "@/features/post/api/createPost";
-import { useAiPost } from "@/features/post/api/getAiPost";
+import { useQueryAiPost } from "@/features/post/api/useQueryAiPost";
 import PostEditor from "@/features/post/components/PostEditor";
 import { ErrorFallback, LoadingFallback } from "@/shared/ui/Fallback";
 
@@ -11,10 +12,11 @@ export default function CreatePostPage() {
   const owner = searchParams.get("owner") ?? "";
   const repository = searchParams.get("repository") ?? "";
   const prNumber = Number(searchParams.get("prNumber") ?? "0");
+  const navigate = useNavigate();
 
   const hasSearchParams = owner !== "" && repository !== "" && prNumber > 0;
 
-  const { data: aiPost, status } = useAiPost({
+  const { data: aiPost, status } = useQueryAiPost({
     params: { owner, repository, prNumber },
     queryConfig: { enabled: hasSearchParams },
   });
@@ -26,8 +28,8 @@ export default function CreatePostPage() {
   }
 
   const handleCreatePost = (post: PostEditorData) => {
-    createPost(post);
-    alert("포스트를 생성했습니다.");
+    const newPost = createPost(post);
+    navigate(PATHS.post.detail.getHref(newPost.id));
   };
 
   return (

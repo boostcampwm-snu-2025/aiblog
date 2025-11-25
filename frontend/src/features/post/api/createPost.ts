@@ -17,8 +17,8 @@ export const createPost = (post: Omit<Post, "id" | "createdAt" | "updatedAt">): 
     updatedAt: now,
   };
 
-  posts.push(newPost);
-  setLocalStorage(STORAGE_KEY, posts);
+  const newPosts = [newPost, ...posts];
+  setLocalStorage(STORAGE_KEY, newPosts);
 
   return newPost;
 };

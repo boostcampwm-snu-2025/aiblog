@@ -58,3 +58,15 @@ export type SimplifiedCommit = {
     date: string;
   };
 };
+
+export interface PaginationInfo {
+  currentPage: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+  lastPage: number | null;
+}
+
+export interface PaginatedResponse<T> {
+  data: T;
+  pagination: PaginationInfo;
+}

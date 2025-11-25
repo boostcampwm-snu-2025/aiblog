@@ -1,8 +1,9 @@
 import type { Post } from "@/entities/post";
 
+import { getLocalStorage } from "@/shared/utils/localStorage";
+
 import { STORAGE_KEY } from "./constants";
 
-export const getPosts = () => {
-  const data = localStorage.getItem(STORAGE_KEY);
-  return data ? (JSON.parse(data) as Post[]) : [];
+export const getPosts = (): Post[] => {
+  return getLocalStorage<Post[]>(STORAGE_KEY) ?? [];
 };

@@ -1,34 +1,22 @@
+import { config } from "../config/env.js";
+
 const GITHUB_API_URL = "https://api.github.com";
-
-let GITHUB_TOKEN: string | undefined = undefined;
-
-const getGitHubToken = () => {
-  if (GITHUB_TOKEN === undefined) {
-    GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-
-    if (!GITHUB_TOKEN) {
-      throw new Error("GITHUB_TOKEN is not defined in environment variables");
-    }
-  }
-
-  return GITHUB_TOKEN;
-};
+const GITHUB_TOKEN = config.github.token;
 
 export const fetchGithubData = async <T = unknown>(
   endpoint: string
-): Promise<T> => {
-  const token = getGitHubToken();
-
+): Promise<{ data: T; headers: Headers }> => {
   const response = await fetch(`${GITHUB_API_URL}${endpoint}`, {
     headers: {
-      Authorization: `token ${token}`,
+      Authorization: `token ${GITHUB_TOKEN}`,
       Accept: "application/vnd.github.v3+json",
     },
   });
 
-  if (response.status !== 200) {
+  if (!response.ok) {
     throw new Error(`GitHub API error: ${response.status}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  return { data, headers: response.headers };
 };

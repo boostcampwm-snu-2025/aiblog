@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import type { QueryConfig } from "@/services/react-query";
-import { getRequest } from "@/services/request";
+import { getRequest } from "@/shared/services/api";
+import type { QueryConfig } from "@/shared/services/react-query";
 
 import { BASE_URL } from "./constants";
 
@@ -25,8 +25,7 @@ type UseAiPostOptions = {
   queryConfig?: QueryConfig<GetAiPostResponse>;
 };
 
-// TODO: 쿼리키 상수로 관리
-export const useAiPost = ({ params, queryConfig }: UseAiPostOptions) => {
+export const useQueryAiPost = ({ params, queryConfig }: UseAiPostOptions) => {
   return useQuery({
     queryKey: ["aiPost", ...Object.values(params)] as const,
     queryFn: () => getAiPost(params),

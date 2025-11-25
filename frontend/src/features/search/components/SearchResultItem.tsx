@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-import { PATHS } from "@/constants/path";
+import { PATHS } from "@/constants/paths";
 import type { PRStatus, PullRequest } from "@/entities/pullrequest";
 import Badge from "@/shared/ui/Badge";
 import Button from "@/shared/ui/Button";
@@ -33,11 +33,9 @@ export default function SearchResultItem({ owner, repository, pullRequest }: Sea
           </div>
         </div>
       </div>
-      <Button>
-        <Link to={`${CREATE_POST_HREF}?owner=${owner}&repository=${repository}&prNumber=${pullRequest.number}`}>
-          이 PR로 글쓰기
-        </Link>
-      </Button>
+      <Link to={`${CREATE_POST_HREF}?owner=${owner}&repository=${repository}&prNumber=${pullRequest.number}`}>
+        <Button>이 PR로 글쓰기</Button>
+      </Link>
     </li>
   );
 }
