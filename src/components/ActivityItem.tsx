@@ -1,39 +1,20 @@
-import { useState } from 'react';
 import type { Activity } from '../types';
-import { generateBlog, type BlogGenerationResponse } from '../lib/api';
 import { useDarkMode } from '../hooks/useDarkMode';
+import { useBlogGeneration } from '../hooks/useBlogGeneration';
 
 type Props = {
   item: Activity;
   owner?: string;
   repo?: string;
-  onBlogGenerate?: (blogData: BlogGenerationResponse['data']) => void;
 };
 
-export default function ActivityItem({ item, owner, repo, onBlogGenerate }: Props) {
-  const [generating, setGenerating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export default function ActivityItem({ item, owner, repo }: Props) {
   const isDarkMode = useDarkMode();
+  const { generateBlog, isGenerating, hasError, error } = useBlogGeneration();
 
   const handleGenerateBlog = async () => {
     if (!owner || !repo || item.kind !== 'commit') return;
-
-    try {
-      setGenerating(true);
-      setError(null);
-
-      const response = await generateBlog(owner, repo, item.sha!);
-
-      if (response.success && response.data) {
-        onBlogGenerate?.(response.data);
-      } else {
-        setError(response.error || '블로그 생성에 실패했습니다.');
-      }
-    } catch (err: any) {
-      setError(err?.message || '블로그 생성 중 오류가 발생했습니다.');
-    } finally {
-      setGenerating(false);
-    }
+    await generateBlog(owner, repo, item.sha!);
   };
 
   if (item.kind === 'commit') {
@@ -53,22 +34,22 @@ export default function ActivityItem({ item, owner, repo, onBlogGenerate }: Prop
           {owner && repo && (
             <button
               onClick={handleGenerateBlog}
-              disabled={generating}
+              disabled={isGenerating}
               style={{
                 padding: '4px 12px',
                 fontSize: 12,
                 borderRadius: 4,
                 border: '1px solid #0066cc',
-                backgroundColor: generating ? '#ccc' : '#0066cc',
+                backgroundColor: isGenerating ? '#ccc' : '#0066cc',
                 color: 'white',
-                cursor: generating ? 'not-allowed' : 'pointer',
+                cursor: isGenerating ? 'not-allowed' : 'pointer',
               }}
             >
-              {generating ? '생성 중...' : '블로그 생성'}
+              {isGenerating ? '생성 중...' : '블로그 생성'}
             </button>
           )}
         </div>
-        {error && <div style={{ fontSize: 12, color: 'crimson', marginTop: 8 }}>{error}</div>}
+        {hasError && error && <div style={{ fontSize: 12, color: 'crimson', marginTop: 8 }}>{error}</div>}
         <div style={{ fontSize:12, marginTop:6, whiteSpace:'pre-wrap' }}>{item.message}</div>
       </div>
     );

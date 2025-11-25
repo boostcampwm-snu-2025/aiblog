@@ -1,6 +1,5 @@
 import { useDarkMode } from '../hooks/useDarkMode';
-
-export type ViewMode = 'commits' | 'blogs';
+import type { ViewMode } from '../types';
 
 interface Props {
   currentView: ViewMode;
