@@ -1,51 +1,81 @@
 import {
   createContext,
   useContext,
-  useState,
+  useReducer,
   useMemo,
   useCallback,
 } from 'react';
+import { mainPageReducer, initialState } from '@/contexts/reducer';
+import * as Actions from '@/contexts/action';
 
 const MainPageContext = createContext(null);
 
 export function MainPageProvider({ children }) {
-  // Input states
-  const [repoName, setRepoName] = useState('');
-  const [filterType, setFilterType] = useState('all');
+  const [state, dispatch] = useReducer(mainPageReducer, initialState);
 
-  // API states
-  const [isLoading, setIsLoading] = useState(false);
-  const [githubData, setGithubData] = useState(null);
-  const [apiError, setApiError] = useState(null);
+  const {
+    repoName,
+    filterType,
+    fetchStatus,
+    githubData,
+    apiError,
+    checkedCommits,
+    activeCommit,
+    commitNotes,
+    generateStatus,
+    generatedContent,
+    generationError,
+  } = state;
 
-  // Interaction states
-  const [checkedCommits, setCheckedCommits] = useState(new Set());
-  const [activeCommit, setActiveCommit] = useState(null);
-  const [commitNotes, setCommitNotes] = useState({});
+  const setRepoName = useCallback((name) => {
+    dispatch({ type: Actions.SET_REPO_NAME, payload: name });
+  }, []);
 
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState(null);
-  const [generationError, setGenerationError] = useState(null);
+  const setFilterType = useCallback((type) => {
+    dispatch({ type: Actions.SET_FILTER_TYPE, payload: type });
+  }, []);
+
+  const setCheckedCommits = useCallback((newSet) => {
+    dispatch({ type: Actions.SET_CHECKED_COMMITS, payload: newSet });
+  }, []);
+
+  const setActiveCommit = useCallback((commit) => {
+    dispatch({ type: Actions.SET_ACTIVE_COMMIT, payload: commit });
+  }, []);
+
+  const setCommitNotes = useCallback((notesUpdater) => {
+  }, []);
   
+  const updateCommitNote = useCallback((id, note) => {
+    dispatch({ type: Actions.UPDATE_COMMIT_NOTE, payload: { id, note } });
+  }, []);
+
+  const setIsGenerating = useCallback((isGenerating) => {
+    if (isGenerating) dispatch({ type: Actions.GENERATE_INIT });
+  }, []);
+
+  const setGeneratedContent = useCallback((content) => {
+    if (content) {
+        dispatch({ type: Actions.GENERATE_SUCCESS, payload: content });
+    } else {
+        dispatch({ type: Actions.CLEAR_GENERATION });
+    }
+  }, []);
+
+  const setGenerationError = useCallback((error) => {
+    if (error) dispatch({ type: Actions.GENERATE_FAILURE, payload: error });
+  }, []);
+
   const handleSubmit = useCallback(
     async (event) => {
-      if (event) {
-        event.preventDefault();
-      }
+      if (event) event.preventDefault();
 
-      setIsLoading(true);
-      setGithubData(null);
-      setApiError(null);
-      setCheckedCommits(new Set());
-      setActiveCommit(null);
-      setCommitNotes({});
-      setGeneratedContent(null);
-      setGenerationError(null);
+      dispatch({ type: Actions.FETCH_INIT });
 
       try {
         const params = new URLSearchParams({
-          repoName: repoName,
-          filterType: filterType,
+          repoName: state.repoName,
+          filterType: state.filterType,
         });
 
         const response = await fetch(
@@ -58,55 +88,48 @@ export function MainPageProvider({ children }) {
           throw new Error(data.message || 'Failed to fetch data');
         }
 
-        setGithubData(data);
+        dispatch({ type: Actions.FETCH_SUCCESS, payload: data });
       } catch (error) {
         console.error('Fetch error:', error.message);
-        setApiError(error.message);
-      } finally {
-        setIsLoading(false);
+        dispatch({ type: Actions.FETCH_FAILURE, payload: error.message });
       }
     },
-    [repoName, filterType]
+    [state.repoName, state.filterType]
   );
 
   const value = useMemo(
     () => ({
-      repoName,
+      ...state,
+      isLoading: fetchStatus === 'loading',
+      isGenerating: generateStatus === 'loading',
+      
       setRepoName,
-      filterType,
       setFilterType,
-      isLoading,
-      githubData,
-      apiError,
-      checkedCommits,
       setCheckedCommits,
-      activeCommit,
       setActiveCommit,
-      commitNotes,
-      setCommitNotes,
-      handleSubmit,
-
-      isGenerating,
+      // setCommitNotes: (Deprecated) -> updateCommitNote 사용 권장
+      updateCommitNote, 
+      
       setIsGenerating,
-      generatedContent,
       setGeneratedContent,
-      generationError,
       setGenerationError,
+
+      handleSubmit,
+      dispatch,
     }),
     [
-      repoName,
-      filterType,
-      isLoading,
-      githubData,
-      apiError,
-      checkedCommits,
-      activeCommit,
-      commitNotes,
+      state,
+      fetchStatus,
+      generateStatus,
+      setRepoName,
+      setFilterType,
+      setCheckedCommits,
+      setActiveCommit,
+      updateCommitNote,
+      setIsGenerating,
+      setGeneratedContent,
+      setGenerationError,
       handleSubmit,
-
-      isGenerating,
-      generatedContent,
-      generationError,
     ]
   );
 
