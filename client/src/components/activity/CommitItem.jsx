@@ -7,24 +7,19 @@ const CommitItem = ({ commit, owner, repo }) => {
   const [showBlog, setShowBlog] = useState(false);
   const [generatedBlog, setGeneratedBlog] = useState(null);
   
-  const { mutate: generateBlog, isPending } = useGenerateBlogFromCommit();
+  const { generateAndSave, isLoading } = useGenerateBlogFromCommit();
   
   const title = getCommitTitle(commit.message);
   const hasBody = commit.message.split('\n').length > 1;
 
-  const handleGenerateBlog = () => {
-    generateBlog(
-      { owner, repo, sha: commit.sha },
-      {
-        onSuccess: (data) => {
-          setGeneratedBlog(data.blog);
-          setShowBlog(true);
-        },
-        onError: (error) => {
-          alert(`블로그 생성 실패: ${error.message}`);
-        }
-      }
-    );
+  const handleGenerateBlog = async () => {
+    try {
+      const savedPost = await generateAndSave(owner, repo, commit.sha);
+      setGeneratedBlog(savedPost);
+      setShowBlog(true);
+    } catch (error) {
+      alert(`블로그 생성 실패: ${error.message}`);
+    }
   };
 
   return (
@@ -104,10 +99,10 @@ const CommitItem = ({ commit, owner, repo }) => {
               {/* Generate Blog Button */}
               <button
                 onClick={handleGenerateBlog}
-                disabled={isPending}
+                disabled={isLoading}
                 className="inline-flex items-center space-x-1 px-3 py-1 text-xs bg-gh-accent-emphasis hover:bg-gh-accent-fg disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-md transition-colors"
               >
-                {isPending ? (
+                {isLoading ? (
                   <>
                     <svg className="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
