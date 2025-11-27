@@ -3,7 +3,7 @@ import {
   getRepoList,
   getCommitList,
   getCommitDetailList,
-} from "../controllers/githubController.ts";
+} from "@/controllers/githubController.ts";
 
 const router = Router();
 

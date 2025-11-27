@@ -5,7 +5,7 @@ import {
   getPostById,
   updatePost,
   deletePost,
-} from "../controllers/postsController.ts";
+} from "@/controllers/postsController.ts";
 
 const router = Router();
 
@@ -16,4 +16,3 @@ router.put("/:id", updatePost);
 router.delete("/:id", deletePost);
 
 export default router;
-

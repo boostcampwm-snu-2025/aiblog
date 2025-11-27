@@ -21,7 +21,11 @@
 
     /* Build-time Options */
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src/**/*"], // Only compile files in the src folder
   "exclude": ["node_modules"]

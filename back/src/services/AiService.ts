@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import type { CommitFile } from "../types/index.ts";
+import type { CommitFile } from "@/types/index.ts";
 
 export interface AiGenerateRequest {
   commitMessage: string;

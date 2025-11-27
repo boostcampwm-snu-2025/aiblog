@@ -1,6 +1,6 @@
 import fs from "fs";
 
-import type { PostMeta } from "../types/index.ts";
+import type { PostMeta } from "@/types/index.ts";
 
 const FRONT_MATTER_DELIM_RE = /^---\s*$/gm;
 const parseTags = (s: string): string[] => {

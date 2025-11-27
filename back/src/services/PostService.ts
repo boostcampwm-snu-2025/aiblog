@@ -2,20 +2,20 @@ import fs from "fs";
 import fsp from "fs/promises";
 import path from "path";
 import { v7 as uuidv7 } from "uuid";
-import { POSTS_DIR } from "../constants/index.ts";
+import { POSTS_DIR } from "@/constants/index.ts";
 import {
   type PostListItem,
   type PostDetail,
   type CreatePostRequest,
   type UpdatePostRequest,
   type PostMeta,
-} from "../types/index.ts";
+} from "@/types/index.ts";
 import {
   readFrontMatterPartial,
   parseFrontMatter,
   parseMarkdownWhole,
   serializeMarkdown,
-} from "../utils/markdown.ts";
+} from "@/utils/markdown.ts";
 
 export class PostService {
   private ensurePostsDir = async () => {
@@ -39,7 +39,12 @@ export class PostService {
         if (!meta.title || !meta.date) {
           continue; // skip malformed entries
         }
-        items.push({ id, title: meta.title, tags: meta.tags ?? [], date: meta.date });
+        items.push({
+          id,
+          title: meta.title,
+          tags: meta.tags ?? [],
+          date: meta.date,
+        });
       } catch {
         // skip unreadable/malformed file
         continue;
@@ -47,7 +52,9 @@ export class PostService {
     }
 
     // Sort by date desc (newest first)
-    items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    items.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
     return items;
   };
 
@@ -80,7 +87,10 @@ export class PostService {
     return { id, title: meta.title, tags: meta.tags, date: meta.date };
   };
 
-  public update = async (id: string, req: UpdatePostRequest): Promise<PostListItem> => {
+  public update = async (
+    id: string,
+    req: UpdatePostRequest,
+  ): Promise<PostListItem> => {
     const filePath = this.idToPath(id);
     // Read existing
     const raw = await fsp.readFile(filePath, "utf8");
@@ -92,13 +102,19 @@ export class PostService {
       date: parsed.meta.date ?? new Date().toISOString(),
       repo: parsed.meta.repo ?? "",
       commit: parsed.meta.commit ?? "",
-      tags: Array.isArray(req.tags) ? req.tags : parsed.meta.tags ?? [],
+      tags: Array.isArray(req.tags) ? req.tags : (parsed.meta.tags ?? []),
     };
-    const updatedContent = typeof req.content === "string" ? req.content : parsed.content ?? "";
+    const updatedContent =
+      typeof req.content === "string" ? req.content : (parsed.content ?? "");
 
     const newBody = serializeMarkdown(updatedMeta, updatedContent);
     await fsp.writeFile(filePath, newBody, "utf8");
-    return { id, title: updatedMeta.title, tags: updatedMeta.tags ?? [], date: updatedMeta.date };
+    return {
+      id,
+      title: updatedMeta.title,
+      tags: updatedMeta.tags ?? [],
+      date: updatedMeta.date,
+    };
   };
 
   public delete = async (id: string): Promise<void> => {

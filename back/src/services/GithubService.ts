@@ -1,9 +1,8 @@
 import { Octokit } from "octokit";
-import type { CommitFile } from "../types/index.ts";
+import type { CommitFile, CommitItem } from "@/types/index.ts";
 import { type Endpoints } from "@octokit/types";
+import { getCommitDate } from "@/utils/github.ts";
 
-type CommitItem =
-  Endpoints["GET /repos/{owner}/{repo}/commits"]["response"]["data"][number];
 type CommitDetailResponse =
   Endpoints["GET /repos/{owner}/{repo}/commits/{ref}"]["response"]["data"];
 type FileItem = Exclude<CommitDetailResponse["files"], undefined>[number];
@@ -80,10 +79,7 @@ export class GithubService {
     );
 
     return commits.map((c: CommitItem) => {
-      const date: string =
-        c.commit.author?.date ||
-        c.commit.committer?.date ||
-        new Date(0).toISOString();
+      const date = getCommitDate(c);
       const message: string = c.commit.message || "";
       return {
         hash: c.sha,
@@ -125,10 +121,7 @@ export class GithubService {
       };
     });
 
-    const date: string =
-      data.commit.author?.date ||
-      data.commit.committer?.date ||
-      new Date(0).toISOString();
+    const date = getCommitDate(data);
 
     return {
       hash: data.sha,

@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
-import { GithubService } from "../services/GithubService.ts";
+import { GithubService } from "@/services/GithubService.ts";
 import type {
   GetCommitDetailListRequest,
   GetRepoListRequest,
-} from "../types/index.ts";
+} from "@/types/index.ts";
 
 const githubService = new GithubService();
 

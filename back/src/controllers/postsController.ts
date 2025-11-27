@@ -1,9 +1,6 @@
 import type { Request, Response } from "express";
-import { PostService } from "../services/PostService.ts";
-import type {
-  CreatePostRequest,
-  UpdatePostRequest,
-} from "../types/index.ts";
+import { PostService } from "@/services/PostService.ts";
+import type { CreatePostRequest, UpdatePostRequest } from "@/types/index.ts";
 
 const postService = new PostService();
 
@@ -69,8 +66,15 @@ export const updatePost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params as { id: string };
     const body = req.body as Partial<UpdatePostRequest>;
-    if (!body || (typeof body.title !== "string" && typeof body.content !== "string" && !Array.isArray(body.tags))) {
-      res.status(400).json({ error: "Provide at least one of: title, content, tags[]." });
+    if (
+      !body ||
+      (typeof body.title !== "string" &&
+        typeof body.content !== "string" &&
+        !Array.isArray(body.tags))
+    ) {
+      res
+        .status(400)
+        .json({ error: "Provide at least one of: title, content, tags[]." });
       return;
     }
     const updated = await postService.update(id, {
@@ -93,4 +97,3 @@ export const deletePost = async (req: Request, res: Response) => {
     handleFsError(res, err);
   }
 };
-

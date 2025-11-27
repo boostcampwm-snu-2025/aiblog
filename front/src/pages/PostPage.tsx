@@ -3,10 +3,10 @@ import { Link, useNavigate, useSearchParams } from "react-router";
 import ReactMarkdown from "react-markdown";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { getApiBase } from "../utils";
-import { type PostDetail } from "../types/post";
-import { formatDate } from "../utils/date";
-import { useFetchJson } from "../hooks/useFetchJson";
+import { getApiBase } from "@/utils";
+import { type PostDetail } from "@/types/post";
+import { formatDate } from "@/utils/date";
+import { useFetchJson } from "@/hooks/useFetchJson";
 
 export const PostPage = () => {
   const navigate = useNavigate();

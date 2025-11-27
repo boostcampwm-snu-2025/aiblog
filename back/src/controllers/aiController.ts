@@ -1,8 +1,5 @@
 import type { Request, Response } from "express";
-import {
-  AiService,
-  type AiGenerateRequest,
-} from "../services/AiService.ts";
+import { AiService, type AiGenerateRequest } from "@/services/AiService.ts";
 
 const aiService = new AiService();
 
@@ -18,8 +15,18 @@ export const generatePost = async (req: Request, res: Response) => {
   try {
     const body = req.body as Partial<AiGenerateRequest>;
 
-    if (!body || typeof body.commitMessage !== "string" || typeof body.commitDate !== "string" || !Array.isArray(body.files)) {
-      res.status(400).json({ error: "Invalid request body. Expected commitMessage, commitDate, files[]." });
+    if (
+      !body ||
+      typeof body.commitMessage !== "string" ||
+      typeof body.commitDate !== "string" ||
+      !Array.isArray(body.files)
+    ) {
+      res
+        .status(400)
+        .json({
+          error:
+            "Invalid request body. Expected commitMessage, commitDate, files[].",
+        });
       return;
     }
 
@@ -39,7 +46,10 @@ export const generatePost = async (req: Request, res: Response) => {
       });
     } catch (makeStreamErr) {
       res.write("event: error\n");
-      sendSseData(res, (makeStreamErr as any)?.message ?? "Failed to start AI stream");
+      sendSseData(
+        res,
+        (makeStreamErr as any)?.message ?? "Failed to start AI stream",
+      );
       res.end();
       return;
     }

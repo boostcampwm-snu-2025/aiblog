@@ -1,10 +1,10 @@
-import "./App.css";
+import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
-import { EditPage } from "./pages/EditPage";
-import { MainPage } from "./pages/MainPage";
-import { PostPage } from "./pages/PostPage";
-import { Header } from "./components/Header";
-import { Footer } from "./components/Footer";
+import { EditPage } from "@/pages/EditPage";
+import { MainPage } from "@/pages/MainPage";
+import { PostPage } from "@/pages/PostPage";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 const App = () => {
   return (

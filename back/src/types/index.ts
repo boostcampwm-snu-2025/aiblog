@@ -1,3 +1,4 @@
+import { type Endpoints } from "@octokit/types";
 export interface PostMeta {
   title: string;
   date: string; // ISO date-time
@@ -54,3 +55,6 @@ export interface CommitFile {
   changes: number;
   patch: string;
 }
+
+export type CommitItem =
+  Endpoints["GET /repos/{owner}/{repo}/commits"]["response"]["data"][number];

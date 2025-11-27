@@ -1,2 +1,1 @@
-export const postHref = (id: string) => `/post?id=${encodeURIComponent(id)}`;
-
+export const getPostHref = (id: string) => `/post?id=${encodeURIComponent(id)}`;

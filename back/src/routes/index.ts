@@ -1,7 +1,7 @@
 import { Router } from "express";
-import githubRouter from "./github.ts";
-import aiRouter from "./ai.ts";
-import postsRouter from "./posts.ts";
+import githubRouter from "@/routes/github.ts";
+import aiRouter from "@/routes/ai.ts";
+import postsRouter from "@/routes/posts.ts";
 
 const router = Router();
 
