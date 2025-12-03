@@ -21,15 +21,10 @@ app.use(express.urlencoded({ extended: true }))
 app.use(passport.initialize())
 
 // Routes
-console.log('=== Express 라우트 마운트 ===')
 app.use('/api/auth', authRoutes)
-console.log('✓ /api/auth 마운트됨')
 app.use('/api/github', githubRoutes)
-console.log('✓ /api/github 마운트됨')
 app.use('/api/gemini', geminiRoutes)
-console.log('✓ /api/gemini 마운트됨')
 app.use('/api/posts', postRoutes)
-console.log('✓ /api/posts 마운트됨')
 
 // Health check
 app.get('/health', (req, res) => {

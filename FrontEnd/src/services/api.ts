@@ -24,14 +24,6 @@ apiClient.interceptors.request.use((config) => {
     config.headers['X-GitHub-Token'] = githubToken
   }
 
-  // PR details 요청 로깅
-  if (config.url?.includes('/pull/') && config.url?.includes('/details')) {
-    console.log('=== API 요청 ===')
-    console.log('URL:', config.url)
-    console.log('Authorization:', config.headers.Authorization ? '있음' : '없음')
-    console.log('X-GitHub-Token:', config.headers['X-GitHub-Token'] ? '있음' : '없음')
-  }
-
   return config
 })
 

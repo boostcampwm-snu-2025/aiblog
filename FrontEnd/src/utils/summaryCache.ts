@@ -37,7 +37,6 @@ const getFromCache = (key: CacheKey): string | null => {
 
     return entry.summary
   } catch (error) {
-    console.error('캐시 조회 오류:', error)
     return null
   }
 }
@@ -51,7 +50,7 @@ const saveToCache = (key: CacheKey, summary: string): void => {
     }
     localStorage.setItem(`summary_cache_${key}`, JSON.stringify(entry))
   } catch (error) {
-    console.error('캐시 저장 오류:', error)
+    // 캐시 저장 실패 시 무시
   }
 }
 
@@ -70,7 +69,7 @@ const clearCache = (key?: CacheKey): void => {
       })
     }
   } catch (error) {
-    console.error('캐시 초기화 오류:', error)
+    // 캐시 초기화 실패 시 무시
   }
 }
 

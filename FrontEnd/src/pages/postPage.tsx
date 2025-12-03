@@ -40,15 +40,10 @@ export default function PostPage({ onNavigateToMain }: PostPageProps) {
     try {
       setLoading(true)
       const response = await getBlogPosts(page)
-      console.log('=== 포스트 응답 ===')
-      console.log('Response:', response)
-      console.log('totalPages:', response.totalPages)
-      console.log('posts 길이:', response.posts.length)
 
       setPosts(response.posts)
       setTotalPages(response.totalPages || 1) // 안전장치: 기본값 1
     } catch (error) {
-      console.error('포스트 로드 실패:', error)
     } finally {
       setLoading(false)
     }
@@ -73,7 +68,6 @@ export default function PostPage({ onNavigateToMain }: PostPageProps) {
       // 현재 페이지 새로 로드
       loadPosts(currentPage)
     } catch (error) {
-      console.error('포스트 삭제 실패:', error)
     } finally {
       setDeleting(false)
     }
@@ -146,7 +140,7 @@ export default function PostPage({ onNavigateToMain }: PostPageProps) {
                               {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
                             </div>
                           )}
-                          <div className="text-contents text-primary-line text-sm">
+                          <div className="text-contents text-primary-line">
                             {post.typeLabel}
                           </div>
                         </div>
