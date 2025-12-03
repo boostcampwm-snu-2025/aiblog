@@ -4,9 +4,12 @@ import RepoSearch from './components/RepoSearch.jsx';
 import CommitList from './components/CommitList.jsx';
 import SelectedCommit from './components/SelectedCommit.jsx';
 import SavedPosts from './components/SavedPosts.jsx';
+// 맨 위 import 추가
+import { usePosts } from './components/PostsContext.jsx';
 
 import { getCommits, getPRs, summarizeCommit, summarizePR, savePost } from './api.js';
 
+// PR 리스트(간단 버전). 별도 파일이 있으면 이 블록을 제거하고 import 하세요.
 function PRList({ prs = [], onSelect, onSummarize }) {
   const list = Array.isArray(prs) ? prs : [];
   return (
@@ -16,11 +19,13 @@ function PRList({ prs = [], onSelect, onSummarize }) {
         <div className="badge">No PRs</div>
       ) : (
         <div className="list">
-          {list.map((pr) => (
+          {list.map(pr => (
             <div key={pr.number} className="item">
               <div>
                 <div><strong>#{pr.number} {pr.title}</strong></div>
-                <div className="badge">{new Date(pr.updatedAt).toISOString().slice(0, 10)}</div>
+                <div className="badge">
+                  {new Date(pr.updatedAt).toISOString().slice(0, 10)}
+                </div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button className="btn secondary" onClick={() => onSelect(pr)}>Open</button>
@@ -35,40 +40,34 @@ function PRList({ prs = [], onSelect, onSummarize }) {
 }
 
 export default function App() {
-  const [view, setView] = useState('home');           
-  const [mode, setMode] = useState('commits');        
+  const [view, setView] = useState('home');         // 'home' | 'saved'
+  const [mode, setMode] = useState('commits');      // 'commits' | 'prs'
   const [currentRepo, setCurrentRepo] = useState(''); 
-
-  // Commits 상태
+  const { actions: postActions } = usePosts();
+  // Commits
   const [commits, setCommits] = useState([]);
   const [selected, setSelected] = useState(null);
   const [summary, setSummary] = useState('');
 
-  // PR 상태
+  // PRs
   const [prs, setPrs] = useState([]);
   const [selectedPr, setSelectedPr] = useState(null);
   const [prSummary, setPrSummary] = useState('');
 
-  // 공통
+  // Common
   const [error, setError] = useState('');
   const [loadingList, setLoadingList] = useState(false);
 
-  // repo 불러오기(Commits 기본)
+  // 레포 로드(커밋 기본)
   async function load(repo) {
     setError('');
     setCurrentRepo(repo || '');
-    setMode('commits');        // 기본은 커밋 탭
+    setMode('commits');
     setLoadingList(true);
 
-    // 커밋 패널 초기화
-    setCommits([]);
-    setSelected(null);
-    setSummary('');
-
-    // PR 패널도 같이 초기화
-    setPrs([]);
-    setSelectedPr(null);
-    setPrSummary('');
+    // 초기화
+    setCommits([]); setSelected(null); setSummary('');
+    setPrs([]); setSelectedPr(null); setPrSummary('');
 
     try {
       const list = await getCommits(repo);
@@ -93,13 +92,13 @@ export default function App() {
     }
   }
 
-  // PR 목록 불러오기
+  // PR 목록 로드(필요 시 1회)
   async function loadPRsIfNeeded() {
     if (!currentRepo) {
       setError('레포를 먼저 Load 해주세요 (owner/repo)');
       return;
     }
-    if (prs.length > 0) return; // 이미 로드됨
+    if (prs.length > 0) return;
     setLoadingList(true);
     try {
       const list = await getPRs(currentRepo);
@@ -124,20 +123,30 @@ export default function App() {
     }
   }
 
-  // PR 저장
+  // 커밋 저장 핸들러 추가
+  async function onSaveCommit() {
+    if (!selected || !summary) return;
+    const local = postActions.add({
+      title: selected.messageHeadline || '(no title)',
+      body: summary,
+      sourceUrl: selected.url,
+      tags: ['commit'],
+    });
+    try { await savePost(local); } catch (_) {} // 서버는 부가 저장(실패해도 로컬은 유지)
+    alert('Saved!');
+  }
+
+  // PR 저장은 기존 함수에 컨텍스트 추가
   async function onSavePr() {
     if (!selectedPr || !prSummary) return;
-    try {
-      await savePost({
-        title: selectedPr.title,
-        body: prSummary,
-        sourceUrl: selectedPr.url,
-        tags: ['pr']
-      });
-      alert('Saved!');
-    } catch (e) {
-      alert('Save failed: ' + (e.message || 'unknown'));
-    }
+    const local = postActions.add({
+      title: selectedPr.title,
+      body: prSummary,
+      sourceUrl: selectedPr.url,
+      tags: ['pr'],
+    });
+    try { await savePost(local); } catch (_) {}
+    alert('Saved!');
   }
 
   return (
@@ -146,11 +155,12 @@ export default function App() {
       <div className="container">
         {view === 'home' && (
           <div className="row">
+            {/* 좌측 패널 */}
             <div>
               <RepoSearch onSearch={load} />
               <div style={{ height: 12 }} />
 
-              {/* 탭 전환 버튼 */}
+              {/* 탭 전환 */}
               <div className="card" style={{ marginBottom: 12, display: 'flex', gap: 8 }}>
                 <button
                   className={`btn ${mode === 'commits' ? '' : 'secondary'}`}
@@ -187,9 +197,10 @@ export default function App() {
               )}
             </div>
 
+            {/* 우측 패널 */}
             <div>
               {mode === 'commits' ? (
-                <SelectedCommit commit={selected} summary={summary} />
+                <SelectedCommit commit={selected} summary={summary} onSave={onSaveCommit} />
               ) : (
                 <div className="card">
                   <h3 style={{ marginTop: 0 }}>
@@ -206,7 +217,11 @@ export default function App() {
                   <h4>AI Summary</h4>
                   <textarea readOnly defaultValue={prSummary || ''} />
                   <div style={{ marginTop: 12 }}>
-                    <button className="btn" onClick={onSavePr} disabled={!selectedPr || !prSummary}>
+                    <button
+                      className="btn"
+                      onClick={onSavePr}
+                      disabled={!selectedPr || !prSummary}
+                    >
                       Save as Blog Post
                     </button>
                   </div>
