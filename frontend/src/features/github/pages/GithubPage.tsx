@@ -1,193 +1,75 @@
+import { useState } from "react";
+import Loader from "../../../shared/ui/Loader";
+
 import RepoInput from "../components/RepoInput";
+import RepoList from "../components/RepoList";
 import CommitList from "../components/CommitList";
 import PRList from "../components/PRList";
-import RepoList from "../components/RepoList";
-import PRDetailModal from "../components/PRDetailModal";
 import SummaryPanel from "../components/SummaryPanel";
-import Loader from "../../../shared/ui/Loader";
-import useFetch from "../../../shared/hooks/useFetch";
-import {
-  getCommits,
-  getPRs,
-  getMyRepos,
-  getSimplePRDetail,
-} from "../../../shared/api/github";
-import type {
-  Commit,
-  PullRequest,
-  Repo,
-  SimplePRDetail,
-} from "../../../shared/api/github";
-import { useState, useEffect } from "react";
+import PRDetailModal from "../components/PRDetailModal";
+
+import { useRepoSelection } from "../hooks/useRepoSelection";
+import { useGithubData } from "../hooks/useGithubData";
+import { usePRDetail } from "../hooks/usePRDetail";
+import { useSummaryState } from "../hooks/useSummaryState";
+import { TabSwitcher } from "../components/TabSwitcher";
+import { RepoControls } from "../components/RepoControls";
 
 export default function GithubPage() {
-  const [owner, setOwner] = useState("");
-  const [repo, setRepo] = useState("");
-  const [activeTab, setActiveTab] = useState<"commits" | "prs">("commits");
-  const [showRepos, setShowRepos] = useState(false);
+  const [tab, setTab] = useState<"commits" | "prs">("commits");
 
-  const [commitPage, setCommitPage] = useState(1);
-  const [prPage, setPrPage] = useState(1);
-  const [summaryTitle, setSummaryTitle] = useState<string | null>(null);
-  const [summaryResult, setSummaryResult] = useState<string | null>(null);
-
-  const commitsFetch = useFetch<Commit[], [string, string]>(getCommits);
-  const prsFetch = useFetch<PullRequest[], [string, string]>(getPRs);
-  const reposFetch = useFetch<Repo[], []>(getMyRepos);
-
-  // ✅ PR 상세용 상태
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [selectedPR, setSelectedPR] = useState<number | null>(null);
-  const prDetailFetch = useFetch<SimplePRDetail, [string, string, number]>(
-    getSimplePRDetail
-  );
-
-  const handleSearch = (o: string, r: string) => {
-    commitsFetch.fetchData(o, r);
-    prsFetch.fetchData(o, r);
-    setShowRepos(false);
-  };
-
-  const handleLoadRepos = () => {
-    reposFetch.fetchData();
-    setShowRepos(true);
-  };
-
-  const handleSelectRepo = (selectedOwner: string, selectedRepo: string) => {
-    setOwner(selectedOwner);
-    setRepo(selectedRepo);
-    handleSearch(selectedOwner, selectedRepo);
-  };
-
-  // ✅ 상세 보기 열기
-  const openPRDetail = (number: number) => {
-    if (!owner || !repo) return;
-    setSelectedPR(number);
-    setDetailOpen(true);
-  };
-
-  // ✅ 상세 정보 fetch
-  useEffect(() => {
-    if (detailOpen && selectedPR != null && owner && repo) {
-      prDetailFetch.fetchData(owner, repo, selectedPR);
-    }
-  }, [detailOpen, selectedPR, owner, repo, prDetailFetch.fetchData]);
-
-  const handleLoadMoreCommits = async () => {
-    const nextPage = commitPage + 1;
-    const newData = await getCommits(owner, repo, nextPage);
-    commitsFetch.setData(prev =>
-      prev ? [...prev, ...newData] : [...newData]
-    );
-    setCommitPage(nextPage);
-  };
-
-  const handleLoadMorePRs = async () => {
-    const nextPage = prPage + 1;
-    const newData = await getPRs(owner, repo, nextPage);
-    prsFetch.setData(prev =>
-      prev ? [...prev, ...newData] : [...newData]
-    );
-    setPrPage(nextPage);
-  };
-
-  const handleSaveSummary = () => {
-    if (!summaryTitle || !summaryResult) return;
-
-    const posts = JSON.parse(localStorage.getItem("blog-posts") || "[]");
-    posts.push({
-      title: summaryTitle,
-      content: summaryResult,
-      createdAt: new Date().toISOString(),
-    });
-    localStorage.setItem("blog-posts", JSON.stringify(posts));
-
-    alert("저장 완료!");
-  };
-
-  const loading = commitsFetch.loading || prsFetch.loading;
+  const repoSel = useRepoSelection();
+  const github = useGithubData(repoSel.owner, repoSel.repo);
+  const prDetail = usePRDetail(repoSel.owner, repoSel.repo);
+  const summary = useSummaryState();
 
   return (
     <div className="p-4 text-center">
       <h1 className="text-2xl font-bold mb-4">🔍 GitHub Repo Viewer</h1>
 
-      <div className="flex justify-center gap-3 mb-2">
-        <button
-          onClick={handleLoadRepos}
-          className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
-        >
-          내 저장소 불러오기
-        </button>
-        <button
-          onClick={() => {
-            setOwner("");
-            setRepo("");
-            setShowRepos(false);
-          }}
-          className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
-        >
-          직접 입력
-        </button>
-      </div>
+      <RepoControls
+        loadRepos={repoSel.loadRepos}
+        resetInput={() => {
+          repoSel.setOwner("");
+          repoSel.setRepo("");
+          repoSel.setShowRepos(false);
+        }}
+      />
 
-      {showRepos ? (
+      {repoSel.showRepos ? (
         <>
-          {reposFetch.loading && <Loader text="저장소 목록 불러오는 중..." />}
-          {reposFetch.data && (
-            <RepoList repos={reposFetch.data} onSelect={handleSelectRepo} />
+          {repoSel.reposFetch.loading && <Loader text="저장소 목록 불러오는 중..." />}
+          {repoSel.reposFetch.data && (
+            <RepoList repos={repoSel.reposFetch.data} onSelect={repoSel.selectRepo} />
           )}
         </>
       ) : (
         <>
           <RepoInput
-            owner={owner}
-            repo={repo}
-            onChangeOwner={setOwner}
-            onChangeRepo={setRepo}
-            onSubmit={handleSearch}
+            owner={repoSel.owner}
+            repo={repoSel.repo}
+            onChangeOwner={repoSel.setOwner}
+            onChangeRepo={repoSel.setRepo}
+            onSubmit={github.search}
           />
 
-          <div className="flex justify-center gap-4 mb-4">
-            <button
-              onClick={() => setActiveTab("commits")}
-              className={`px-4 py-2 rounded ${
-                activeTab === "commits"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-            >
-              Commits
-            </button>
-            <button
-              onClick={() => setActiveTab("prs")}
-              className={`px-4 py-2 rounded ${
-                activeTab === "prs"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-            >
-              Pull Requests
-            </button>
-          </div>
+          <TabSwitcher active={tab} onChange={setTab} />
 
-          {loading && <Loader text="데이터 불러오는 중..." />}
+          {github.loading && <Loader text="데이터 불러오는 중..." />}
 
           <div className="flex gap-6 items-start">
             <div className="flex-1">
-              {!loading && activeTab === "commits" && commitsFetch.data && (
+              {!github.loading && tab === "commits" && github.commitsFetch.data && (
                 <>
                   <CommitList
-                    commits={commitsFetch.data}
-                    owner={owner}
-                    repo={repo}
-                    onSummary={(title, summary) => {
-                      setSummaryTitle(title);
-                      setSummaryResult(summary);
-                    }}
+                    commits={github.commitsFetch.data}
+                    owner={repoSel.owner}
+                    repo={repoSel.repo}
+                    onSummary={(t, s) => summary.setSummary({ title: t, content: s })}
                   />
-                  {commitsFetch.data.length >= 10 && (
+                  {github.commitsFetch.data.length >= github.ITEMS_PER_PAGE && (
                     <button
-                      onClick={handleLoadMoreCommits}
+                      onClick={github.loadMoreCommits}
                       className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
                     >
                       더 보기
@@ -196,21 +78,18 @@ export default function GithubPage() {
                 </>
               )}
 
-              {!loading && activeTab === "prs" && prsFetch.data && (
+              {!github.loading && tab === "prs" && github.prsFetch.data && (
                 <>
                   <PRList
-                    prs={prsFetch.data}
-                    owner={owner}
-                    repo={repo}
-                    onOpenDetail={openPRDetail}
-                    onSummary={(title, summary) => {
-                      setSummaryTitle(title);
-                      setSummaryResult(summary);
-                    }}
+                    prs={github.prsFetch.data}
+                    owner={repoSel.owner}
+                    repo={repoSel.repo}
+                    onOpenDetail={prDetail.openDetail}
+                    onSummary={(t, s) => summary.setSummary({ title: t, content: s })}
                   />
-                  {prsFetch.data.length >= 10 && (
+                  {github.prsFetch.data.length >= 10 && (
                     <button
-                      onClick={handleLoadMorePRs}
+                      onClick={github.loadMorePRs}
                       className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
                     >
                       더 보기
@@ -221,19 +100,18 @@ export default function GithubPage() {
             </div>
 
             <SummaryPanel
-              title={summaryTitle}
-              summary={summaryResult}
-              onSave={handleSaveSummary}
+              title={summary.summary?.title ?? ""}
+              summary={summary.summary?.content ?? ""}
+              onSave={summary.saveSummary}
             />
           </div>
         </>
       )}
 
-      {/* ✅ PR 상세 모달 */}
       <PRDetailModal
-        open={detailOpen}
-        onClose={() => setDetailOpen(false)}
-        data={prDetailFetch.data}
+        open={prDetail.detailOpen}
+        onClose={() => prDetail.setDetailOpen(false)}
+        data={prDetail.prDetailFetch.data}
       />
     </div>
   );

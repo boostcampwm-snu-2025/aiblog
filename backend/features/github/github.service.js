@@ -13,8 +13,12 @@ async function githubFetch(path, params = {}) {
   });
 
   if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.message || `GitHub API error: ${res.status}`);
+    try {
+      const errData = await res.json();
+      throw new Error(errData.message || `GitHub API error: ${res.status}`);
+    } catch {
+      throw new Error('parse error~~');
+    }
   }
 
   return res.json();

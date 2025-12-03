@@ -26,6 +26,8 @@ export default function SummaryButton({
 
       const summary = await generateSummary(title, content);
       onSummary(title, summary);
+    } catch (err) {
+      console.error("Error while generating summary:", err);
     } finally {
       setLoading(false);
     }
