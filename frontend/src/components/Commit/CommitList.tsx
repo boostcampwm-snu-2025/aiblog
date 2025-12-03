@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useRepoContext } from '../../contexts/Repocontext';
 import CommitItem from './CommitItem';
 import { paginate } from '../../utils/page';
+import Loading from '../Loading';
+import Error from '../Error';
 
 const CommitList = () => {
     const { commits, loading, error } = useRepoContext();
@@ -22,25 +23,19 @@ const CommitList = () => {
 
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
-                <CircularProgress size={24} />
-            </Box>
+            <Loading />
         );
     }
 
     if (error) {
         return (
-            <Typography variant="body2" color="error" sx={{ px: 1 }}>
-                {error}
-            </Typography>
+            <Error error_msg={error} />
         );
     }
 
     if (totalItems === 0) {
         return (
-            <Typography variant="body2" color="text.secondary" sx={{ px: 1 }}>
-                조회할 커밋이 없습니다.
-            </Typography>
+            <Error error_msg="조회할 커밋이 없습니다." />
         );
     }
 

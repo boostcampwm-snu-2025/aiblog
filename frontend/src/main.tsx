@@ -5,12 +5,18 @@ import App from './App.tsx'
 import { AppProvider } from './contexts/Appcontext.tsx'
 import { RepoProvider } from './contexts/Repocontext.tsx'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AppProvider>
-      <RepoProvider>
-        <App />
-      </RepoProvider>
-    </AppProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppProvider>
+        <RepoProvider>
+          <App />
+        </RepoProvider>
+      </AppProvider>
+    </QueryClientProvider>
   </StrictMode>,
 )

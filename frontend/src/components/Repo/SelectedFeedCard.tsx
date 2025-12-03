@@ -9,6 +9,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRepoContext } from '../../contexts/Repocontext';
 import { formatDateTime } from '../../utils/date';
 import { summaryApi } from '../../api/summaries';
+import { useCreatePost } from '../../hooks/usePosts';
+import SaveIcon from '@mui/icons-material/Save';
+import ReactMarkdown from 'react-markdown';
 
 const SelectedFeedCard = () => {
     const { selectedFeed, selectedCommit, selectedPullRequest, selectedRepo } = useRepoContext();
@@ -16,6 +19,8 @@ const SelectedFeedCard = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isTruncated, setIsTruncated] = useState(false);
+
+    const createPostMutation = useCreatePost();
 
     const selectedItem = useMemo(() => {
         if (!selectedRepo) {
@@ -99,6 +104,25 @@ const SelectedFeedCard = () => {
         }
     };
 
+    const handleSavePost = () => {
+        if (!selectedItem || !summary) return;
+
+        createPostMutation.mutate(
+            {
+                title: `[AI Summary] ${selectedItem.title}`,
+                content: summary,
+            },
+            {
+                onSuccess: () => {
+                    alert('Post saved successfully!');
+                },
+                onError: (err) => {
+                    setError(err.message);
+                },
+            }
+        );
+    };
+
     if (!selectedItem) {
         return (
             <Box
@@ -167,13 +191,23 @@ const SelectedFeedCard = () => {
                         AI Summary
                     </Typography>
                     <Typography variant="body2" color="text.primary" sx={{ whiteSpace: 'pre-line' }}>
-                        {summary}
+                        <ReactMarkdown>{summary}</ReactMarkdown>
                     </Typography>
                     {isTruncated && (
                         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
                             전체 변경 사항이 길어 일부만 요약했어요. 자세한 내용은 GitHub에서 확인해주세요.
                         </Typography>
                     )}
+
+                    <Button
+                        variant="outlined"
+                        startIcon={<SaveIcon />}
+                        onClick={handleSavePost}
+                        disabled={createPostMutation.isPending}
+                        sx={{ mt: 2 }}
+                    >
+                        {createPostMutation.isPending ? 'Saving...' : 'Save Post'}
+                    </Button>
                 </Box>
             )}
 
